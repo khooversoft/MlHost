@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MlHost.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MlHost.Services
 {
-    public class PythonHostedService : IHostedService
+    internal class PythonHostedService : IHostedService
     {
         private readonly ILogger<PythonHostedService> _logging;
         private readonly IPackageDeployment _packageDeployment;
@@ -30,9 +31,11 @@ namespace MlHost.Services
 
             _ = Task.Run(async () =>
             {
-                // Run in the background and set running state to run
-                string deploymentFolder = await _packageDeployment.Deploy(cancellationToken);
-                _executeTask = _executePython.Run(deploymentFolder);
+                // Run in the background and set running state to run when completed
+                _executePython.KillAnyRunningProcesses();
+
+                await _packageDeployment.Deploy();
+                _executeTask = _executePython.Run();
             }, cancellationToken);
 
             return Task.CompletedTask;

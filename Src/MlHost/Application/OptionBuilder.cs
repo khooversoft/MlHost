@@ -1,19 +1,29 @@
 ﻿using Microsoft.Extensions.Configuration;
+using MlHost.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace MlHost.Application
 {
-    public class OptionBuilder
+    internal class OptionBuilder
     {
         public OptionBuilder() { }
 
         public string? JsonFile { get; set; }
 
+        public string? SecretId { get; set; }
+
         public string[]? Args { get; set; }
+
+        public OptionBuilder SetArgs(params string[] args)
+        {
+            Args = args;
+            return this;
+        }
 
         public OptionBuilder AddCommandLine(params string[] args)
         {
@@ -27,24 +37,39 @@ namespace MlHost.Application
             return this;
         }
 
+        public OptionBuilder AddUserSecrets(string secretId)
+        {
+            SecretId = secretId;
+            return this;
+        }
+
         public IOption Build()
         {
-            IConfigurationBuilder builder = new ConfigurationBuilder();
-
-            string currentDirectory = Directory.GetCurrentDirectory();
-            builder.SetBasePath(currentDirectory);
-
-            if (Args != null) builder.AddCommandLine(Args);
-            if (!string.IsNullOrWhiteSpace(JsonFile)) builder.AddJsonFile(JsonFile);
-
-            IConfiguration configuration = builder.Build();
+            IConfiguration configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .Do(x => JsonFile.ToNullIfEmpty() switch { string v => x.AddJsonFile(v), _ => x })
+                .Do(x => SecretId.ToNullIfEmpty() switch { string v => x.AddUserSecrets(v), _ => x })
+                .AddCommandLine(Args ?? Array.Empty<string>())
+                .Build();
 
             var option = new Option();
             configuration.Bind(option, x => x.BindNonPublicProperties = true);
 
             option.Verify();
 
+            option.Deployment.DeploymentFolder = BuildPathRelativeFromExceutingAssembly(option.Deployment.DeploymentFolder);
+            option.Deployment.PackageFolder = BuildPathRelativeFromExceutingAssembly(option.Deployment.PackageFolder);
+
             return option;
+        }
+
+        public static string BuildPathRelativeFromExceutingAssembly(string folder)
+        {
+            if (Path.GetDirectoryName(folder).ToNullIfEmpty() != null) return folder;
+
+            return Assembly.GetExecutingAssembly()
+                .Do(x => Path.GetDirectoryName(x.Location))
+                .Do(x => Path.Combine(x!, folder));
         }
     }
 }

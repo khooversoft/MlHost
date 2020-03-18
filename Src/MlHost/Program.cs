@@ -23,7 +23,7 @@ namespace MlHost
                 .Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args, IOption option) =>
+        internal static IHostBuilder CreateHostBuilder(string[] args, IOption option) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices(services => 
                 {

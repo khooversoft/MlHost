@@ -7,6 +7,10 @@ using System.Text;
 
 namespace MlHost.Test.Application
 {
+    public class MemoryLogger<T> : MemoryLogger, ILogger<T>
+    {
+    }
+
     public class MemoryLogger : ILogger, IEnumerable<string>
     {
         private readonly ConcurrentQueue<string> _loggingQueue = new ConcurrentQueue<string>();

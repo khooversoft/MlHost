@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace MlHost.Services
 {
-    public interface IPackageDeployment
+    internal interface IPackageDeployment
     {
-        Task<string> Deploy(CancellationToken token);
+        Task Deploy();
     }
 }

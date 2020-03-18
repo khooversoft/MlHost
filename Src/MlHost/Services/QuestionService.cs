@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace MlHost.Services
 {
-    public class QuestionService : IQuestion, IDisposable
+    internal class QuestionService : IQuestion, IDisposable
     {
         private readonly IOption _option;
         private readonly IJson _json;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MlHost.Application;
 using MlHost.Tools;
 using System;
 using System.Diagnostics;
@@ -9,27 +10,28 @@ using System.Threading.Tasks;
 namespace MlHost.Services
 {
     /// <summary>
-    /// Execute pyton 
+    /// Execute python 
     /// </summary>
-    public class ExecutePython : IExecutePython
+    internal class ExecutePython : IExecutePython
     {
         private readonly ILogger<ExecutePython> _logger;
+        private readonly IOption _option;
         private readonly IExecutionContext _executionContext;
 
-        public ExecutePython(ILogger<ExecutePython> logger, IExecutionContext executionContext)
+        public ExecutePython(ILogger<ExecutePython> logger, IOption option, IExecutionContext executionContext)
         {
             _logger = logger;
+            _option = option;
             _executionContext = executionContext;
         }
 
-        public Task Run(string deploymentFolder)
+        public Task Run()
         {
             var timeout = TimeSpan.FromMinutes(5);
-            if (string.IsNullOrWhiteSpace(deploymentFolder)) throw new ArgumentException(nameof(deploymentFolder));
 
             KillAnyRunningProcesses();
 
-            string fullPath = Path.Combine(deploymentFolder, @"python-3.8.1.amd64\python.exe");
+            string fullPath = Path.Combine(_option.Deployment.DeploymentFolder, @"python-3.8.1.amd64\python.exe");
             if (!File.Exists(fullPath)) throw new FileNotFoundException(fullPath);
 
             var tcs = new TaskCompletionSource<bool>();
@@ -46,7 +48,7 @@ namespace MlHost.Services
             {
                 File = fullPath,
                 Arguments = @".\app.py",
-                WorkingDirectory = deploymentFolder,
+                WorkingDirectory = _option.Deployment.DeploymentFolder,
                 CaptureOutput = WaitForRunning,
             };
 
@@ -76,12 +78,19 @@ namespace MlHost.Services
             }
         }
 
-        private void KillAnyRunningProcesses()
+        public void KillAnyRunningProcesses()
         {
-            foreach(var process in Process.GetProcessesByName("python.exe"))
+            foreach(var process in Process.GetProcessesByName("python"))
             {
-                _logger.LogWarning($"Killing already running python.exe process '{process.ProcessName} before starting child process");
-                try { process.Kill(true); } catch { }
+                _logger.LogWarning($"Killing already running python.exe process {process.ProcessName} before starting child process");
+                try 
+                { 
+                    process.Kill(true);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Cannot kill process {process.ProcessName}");
+                }
             }
         }
     }

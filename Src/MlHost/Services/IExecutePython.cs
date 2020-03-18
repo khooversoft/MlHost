@@ -2,8 +2,10 @@
 
 namespace MlHost.Services
 {
-    public interface IExecutePython
+    internal interface IExecutePython
     {
-        Task Run(string deploymentFolder);
+        Task Run();
+
+        void KillAnyRunningProcesses();
     }
 }

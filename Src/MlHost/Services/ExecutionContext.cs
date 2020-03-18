@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MlHost.Services
 {
-    public class ExecutionContext : IExecutionContext
+    internal class ExecutionContext : IExecutionContext
     {
         public ExecutionContext() { }
 

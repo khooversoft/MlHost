@@ -1,9 +1,15 @@
 ﻿namespace MlHost.Application
 {
-    public interface IOption
+    internal interface IOption
     {
-        string? ServiceUri { get; }
+        string ServiceUri { get; }
 
         bool ForceDeployment { get; }
+
+        BlobStoreOption BlobStore { get; }
+
+        DeploymentOption Deployment { get; }
+
+        string ZipFileUri { get; }
     }
 }

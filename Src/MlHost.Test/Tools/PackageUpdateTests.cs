@@ -1,4 +1,8 @@
 ﻿using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using MlHost.Application;
+using MlHost.Services;
+using MlHost.Services.PackageSource;
 using MlHost.Test.Application;
 using MlHost.Tools;
 using System;
@@ -7,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace MlHost.Test.Tools
@@ -31,13 +36,32 @@ namespace MlHost.Test.Tools
         };
 
         [Fact]
-        public void GivenEmbeddedZipFile_WhenDeployed_ShouldMatchFiles()
+        public async Task GivenEmbeddedZipFile_WhenDeployed_ShouldMatchFiles()
         {
             string tempFolder = Path.Combine(Path.GetTempPath(), nameof(PackageUpdateTests));
             if (Directory.Exists(tempFolder)) Directory.Delete(tempFolder, true);
-            var memoryLogger = new MemoryLogger();
 
-            new PackageUpdate(memoryLogger, CancellationToken.None).UpdateToFolder(tempFolder, typeof(PackageUpdateTests), "MlHost.Test.Package.TestZip.zip");
+            var memoryLogger = new MemoryLogger<PackageDeployment>();
+            IExecutionContext executionContext = new Services.ExecutionContext();
+
+            string[] args = new[]
+            {
+                "ZipFileUri=notValid",
+                "ForceDeployment=false",
+                "BlobStore:ContainerName=notValid",
+                "BlobStore:ConnectionString=notValid",
+                $"Deployment:DeploymentFolder={tempFolder}",
+                "Deployment:PackageFolder=notValid",
+            };
+
+            IOption option = new OptionBuilder()
+                .SetArgs(args)
+                .Build();
+
+            IPackageSource originalPackageSource = new PackageSourceFromResource(typeof(PackageUpdateTests), "MlHost.Test.Package.TestZip.zip");
+            IPackageDeployment originalDeployment = new PackageDeployment(memoryLogger, option, executionContext, originalPackageSource);
+            await originalDeployment.Deploy();
+
             memoryLogger.Count().Should().BeGreaterThan(0);
 
             string[] files = Directory.GetFiles(tempFolder, "*.*", SearchOption.AllDirectories)
@@ -50,8 +74,10 @@ namespace MlHost.Test.Tools
                 .All(x => x.o.Equals(x.i, StringComparison.OrdinalIgnoreCase))
                 .Should().BeTrue();
 
-            memoryLogger = new MemoryLogger();
-            new PackageUpdate(memoryLogger, CancellationToken.None).UpdateToFolder(tempFolder, typeof(PackageUpdateTests), "MlHost.Test.Package.TestZip-Update.zip");
+            IPackageSource updatePackageSource = new PackageSourceFromResource(typeof(PackageUpdateTests), "MlHost.Test.Package.TestZip-Update.zip");
+            IPackageDeployment updateDeployment = new PackageDeployment(memoryLogger, option, executionContext, updatePackageSource);
+            await updateDeployment.Deploy();
+
             memoryLogger.Count().Should().BeGreaterThan(0);
 
             string[] updateFiles = Directory.GetFiles(tempFolder, "*.*", SearchOption.AllDirectories)

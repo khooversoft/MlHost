@@ -23,11 +23,9 @@ namespace MlHost.Controllers
         [HttpGet]
         public IActionResult Ping()
         {
-            string msg = _executionContext.Running ? "Running" : "Starting up";
-
             var response = new PingResponse
             {
-                Status = msg,
+                Status = _executionContext.Running ? "Running" : "Starting up",
             };
 
             return Ok(response);

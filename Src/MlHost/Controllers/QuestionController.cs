@@ -30,25 +30,21 @@ namespace MlHost.Controllers
         [HttpPost("predict")]
         public async Task<IActionResult> Predict([FromBody] QuestionModel questionModel)
         {
-            if( !_executionContext.Running)
+            if (!_executionContext.Running)
             {
                 _logger.LogInformation($"Predict is starting up");
                 return StatusCode((int)HttpStatusCode.NoContent);
             }
 
             var sw = Stopwatch.StartNew();
-            try
-            {
-                _logger.LogInformation($"Question: {questionModel.Question}");
-                AnswerModel value = await _question.Ask(questionModel);
 
-                return base.Ok(value);
-            }
-            finally
-            {
-                sw.Stop();
-                _logger.LogInformation($"Question: {questionModel.Question}, completed: {sw.ElapsedMilliseconds}ms");
-            }
+            _logger.LogInformation($"Question: {questionModel.Question}");
+            AnswerModel value = await _question.Ask(questionModel);
+
+            sw.Stop();
+            _logger.LogInformation($"Question: {questionModel.Question}, completed: {sw.ElapsedMilliseconds}ms");
+
+            return base.Ok(value);
         }
     }
 }

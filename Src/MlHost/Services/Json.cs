@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MlHost.Services
 {
-    public class Json : IJson
+    internal class Json : IJson
     {
         private static readonly JsonSerializerOptions _options = new JsonSerializerOptions
         {
