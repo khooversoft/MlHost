@@ -1,0 +1,6 @@
+{
+  "BlobStore": {
+    "ContainerName": "model-test",
+    "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=mlteststoragev1;AccountKey=4jJ/QOwTIUXKkQD5HVDnRpzNFqy7zv7N/jHfj1QrsUEunuoNsjuY4IDESM9LA5DyX9puTsJkvkqRqup83i3ieg==;EndpointSuffix=core.windows.net"
+  }
+}

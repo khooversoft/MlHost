@@ -55,7 +55,7 @@ namespace MlHost.Test.Tools
             };
 
             IOption option = new OptionBuilder()
-                .SetArgs(args)
+                .AddCommandLine(args)
                 .Build();
 
             IPackageSource originalPackageSource = new PackageSourceFromResource(typeof(PackageUpdateTests), "MlHost.Test.Package.TestZip.zip");

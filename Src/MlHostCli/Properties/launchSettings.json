@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MlHostCli": {
+      "commandName": "Project",
+      "commandLineArgs": "list"
+    }
+  }
+}

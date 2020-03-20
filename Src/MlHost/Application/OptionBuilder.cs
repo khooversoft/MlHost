@@ -19,12 +19,6 @@ namespace MlHost.Application
 
         public string[]? Args { get; set; }
 
-        public OptionBuilder SetArgs(params string[] args)
-        {
-            Args = args;
-            return this;
-        }
-
         public OptionBuilder AddCommandLine(params string[] args)
         {
             Args = args.ToArray();

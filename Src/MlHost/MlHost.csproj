@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Deploy\" />
     <Folder Include="Package\" />
   </ItemGroup>
 

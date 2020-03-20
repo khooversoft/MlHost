@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>MlHostCli.Test</UserSecretsId>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="TestConfig\TestConfig.json" />
+    <None Remove="TestConfig\TestZip.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="TestConfig\TestConfig.json" />
+    <EmbeddedResource Include="TestConfig\TestZip.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="5.10.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Include="xunit" Version="2.4.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+    <PackageReference Include="coverlet.collector" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MlHostApi\MlHostApi.csproj" />
+    <ProjectReference Include="..\MlHostCli\MlHostCli.csproj" />
+  </ItemGroup>
+
+</Project>
