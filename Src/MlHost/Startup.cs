@@ -1,19 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using MlHost.Application;
 using MlHost.Services;
-using MlHost.Services.AzureBlob;
-using MlHost.Services.PackageSource;
+using MlHost.Tools;
+using MlHostApi.Repository;
 
 namespace MlHost
 {
@@ -36,7 +29,13 @@ namespace MlHost
             services.AddSingleton<IExecutePython, ExecutePython>();
             services.AddSingleton<IJson, Json>();
             services.AddSingleton<IPackageSource, PackageSourceFromStorage>();
-            services.AddSingleton<IBlobRepository, BlobRepository>();
+            services.AddSingleton<IModelRepository, ModelRepository>();
+
+            services.AddSingleton<IBlobRepository>(x =>
+            {
+                IOption option = x.Resolve<IOption>();
+                return new BlobRepository(option.BlobStore.ContainerName, option.BlobStore.ConnectionString);
+            });
 
             services.AddHostedService<PythonHostedService>();
             services.AddApplicationInsightsTelemetry();

@@ -6,15 +6,11 @@ using System.Text;
 namespace MlHostCli.Application
 {
     internal class BlobStoreOption
-    {
-        public string ContainerName { get; set; } = null!;
+    {       
+        public string? ContainerName { get; set; }
 
-        public string ConnectionString { get; set; } = null!;
+        public string? AccountName { get; set; }
 
-        public void Verify()
-        {
-            ContainerName.VerifyNotEmpty($"{nameof(ContainerName)} is missing");
-            ConnectionString.VerifyNotEmpty($"{nameof(ConnectionString)} is missing");
-        }
+        public string? AccountKey { get; set; }
     }
 }

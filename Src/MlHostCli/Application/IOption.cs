@@ -2,30 +2,26 @@
 {
     internal interface IOption
     {
-        bool Activate { get; }
+        bool Help { get; }
 
-        BlobStoreOption BlobStore { get; }
-
-        bool Delete { get; }
-
+        bool Upload { get; }
         bool Download { get; }
+        bool Delete { get; }
+        bool List { get; }
+        bool Activate { get; }
+        bool Deactivate { get; }
 
         bool Force { get; }
 
-        bool Help { get; }
+        string? ModelName { get; }
+        string? VersionId { get; }
 
-        string HostName { get; }
+        string? HostName { get; }
 
-        bool List { get; }
+        string? SecretId { get; }
 
-        string ModelName { get; }
+        string? ZipFile { get; }
 
-        string SecretId { get; }
-
-        bool Upload { get; }
-
-        string VersionId { get; }
-
-        string ZipFile { get; }
+        BlobStoreOption? BlobStore { get; }
     }
 }

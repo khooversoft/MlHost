@@ -5,6 +5,9 @@ using System.Linq;
 using System.Text;
 using MlHostApi.Tools;
 using System.IO;
+using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.Azure.KeyVault;
+using Microsoft.Extensions.Configuration.AzureKeyVault;
 
 namespace MlHostCli.Application
 {
@@ -16,17 +19,9 @@ namespace MlHostCli.Application
 
         public string? ConfigFile { get; set; }
 
-        public string? SecretId { get; set; }
-
         public OptionBuilder AddCommandLine(params string[] args)
         {
             Args = args.ToArray();
-            return this;
-        }
-
-        public OptionBuilder AddUserSecrets(string secretId)
-        {
-            SecretId = secretId;
             return this;
         }
 
@@ -50,19 +45,42 @@ namespace MlHostCli.Application
                 .Select(x => x[1])
                 .FirstOrDefault();
 
-            IConfiguration configuration = new ConfigurationBuilder()
+            Option tempOption = new ConfigurationBuilder()
+                    .Func(x => configFile.ToNullIfEmpty() switch { string v => x.AddJsonFile(configFile), _ => x })
+                    .AddCommandLine(args)
+                    .Build()
+                    .Bind();
+
+            if (tempOption.Help)
+            {
+                return new Option { Help = true };
+            }
+
+            string accountKey = tempOption.BlobStore?.AccountKey switch
+            {
+                string v => v,
+
+                _ => new ConfigurationBuilder()
+                    .Func(x =>
+                    {
+                        tempOption.KeyVault.Verify();
+
+                        var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback));
+                        x.AddAzureKeyVault($"https://{tempOption.KeyVault!.KeyVaultName}.vault.azure.net/", keyVaultClient, new DefaultKeyVaultSecretManager());
+                        return x.Build()[tempOption.KeyVault!.KeyName];
+                    }),
+            };
+
+            return new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .Do(x => configFile.ToNullIfEmpty() switch { string v => x.AddJsonFile(v), _ => x })
-                .Do(x => SecretId.ToNullIfEmpty() switch { string v => x.AddUserSecrets(v), _ => x })
-                .AddCommandLine(args)
-                .Build();
-
-            var option = new Option();
-            configuration.Bind(option, x => x.BindNonPublicProperties = true);
-
-            option.Verify();
-
-            return option;
+                .Func(x => configFile.ToNullIfEmpty() switch { string v => x.AddJsonFile(v), _ => x })
+                .Func(x => tempOption.SecretId.ToNullIfEmpty() switch { string v => x.AddUserSecrets(v), _ => x })
+                .AddCommandLine(args
+                    .Append($"{nameof(Option.BlobStore)}:{nameof(Option.BlobStore.AccountKey)}={accountKey}")
+                    .ToArray())
+                .Build()
+                .Bind()
+                .Verify();
         }
     }
 }

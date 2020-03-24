@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MlHost.Models;
 using MlHost.Services;
+using MlHostApi.Models;
 using System;
 using System.Net.Http;
 using System.Threading;

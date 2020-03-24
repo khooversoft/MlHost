@@ -9,7 +9,7 @@ namespace MlHostCli.Test.Application
     {
         public bool Activate { get; set; }
 
-        public BlobStoreOption BlobStore { get; set; } = null!;
+        public BlobStoreOption? BlobStore { get; set; }
 
         public bool Delete { get; set; }
 
@@ -19,18 +19,20 @@ namespace MlHostCli.Test.Application
 
         public bool Help { get; set; }
 
-        public string HostName { get; set; } = null!;
+        public string? HostName { get; set; }
 
         public bool List { get; set; }
 
-        public string ModelName { get; set; } = null!;
+        public string? ModelName { get; set; }
 
-        public string SecretId { get; set; } = null!;
+        public string? SecretId { get; set; }
 
         public bool Upload { get; set; }
 
-        public string VersionId { get; set; } = null!;
+        public string? VersionId { get; set; }
 
-        public string ZipFile { get; set; } = null!;
+        public string? ZipFile { get; set; }
+
+        public bool Deactivate { get; set; }
     }
 }

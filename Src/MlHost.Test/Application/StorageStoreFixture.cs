@@ -1,13 +1,9 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MlHost.Application;
-using MlHost.Services.PackageSource;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MlHost.Test.Application
 {

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using MlHost.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using MlHost.Services;
+using MlHostApi.Models;
 
 namespace MlHost.Controllers
 {

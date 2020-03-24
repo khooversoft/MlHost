@@ -1,4 +1,5 @@
 ﻿using MlHost.Tools;
+using MlHostApi.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,33 +11,14 @@ namespace MlHost.Application
     {
         public string ServiceUri { get; set; } = "http://localhost:5003/predict";
 
-        public bool ForceDeployment { get; set; } = false;
+        public bool ForceDeployment { get; set; }
 
-        public string ZipFileUri { get; set; } = null!;
+        public string? HostName { get; set; }
 
-        public BlobStoreOption BlobStore { get; set; } = null!;
+        public BlobStoreOption? BlobStore { get; set; }
 
-        public DeploymentOption Deployment { get; set; } = null!;
+        public DeploymentOption? Deployment { get; set; }
 
-        public void Verify()
-        {
-            ServiceUri.VerifyNotEmpty($"{nameof(ServiceUri)} is missing");
-            BlobStore.VerifyNotNull($"{nameof(BlobStore)} is missing");
-
-            BlobStore.Verify();
-            Deployment.Verify();
-        }
-
-        public IReadOnlyList<KeyValuePair<string, string>> ToDetails()
-        {
-            return new KeyValuePair<string, string>[]
-            {
-                new KeyValuePair<string, string>(nameof(ServiceUri), ServiceUri),
-                new KeyValuePair<string, string>(nameof(ForceDeployment), ForceDeployment.ToString()),
-            }
-            .Concat(BlobStore.ToDetails(nameof(BlobStore)))
-            .Concat(Deployment.ToDetails(nameof(Deployment)))
-            .ToList();
-        }
+        public KeyVaultOption? KeyVault { get; set; }
     }
 }

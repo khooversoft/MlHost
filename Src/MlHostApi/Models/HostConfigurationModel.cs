@@ -7,11 +7,6 @@ namespace MlHostApi.Models
 {
     public class HostConfigurationModel
     {
-        public IList<HostAssignment>? HostAssignments { get; set; }
-
-        public void Verify()
-        {
-            HostAssignments?.ForEach(x => x.Verify());
-        }
+        public IList<HostAssignment>? HostAssignments { get; set; } = new List<HostAssignment>();
     }
 }

@@ -18,10 +18,12 @@ namespace MlHostCli.Activity
     internal class ListModelActivity
     {
         private readonly IModelRepository _modelRepository;
+        private readonly ITelemetry _telemetry;
 
-        public ListModelActivity(IModelRepository modelRepository)
+        public ListModelActivity(IModelRepository modelRepository, ITelemetry telemetry)
         {
             _modelRepository = modelRepository;
+            _telemetry = telemetry;
         }
 
         public async Task List(CancellationToken token)
@@ -31,11 +33,12 @@ namespace MlHostCli.Activity
             const string fmt = "{0,-20} {1}";
             string line = new string('=', 20);
 
-            Console.WriteLine(fmt, "Host name", "Model ID");
-            Console.WriteLine(fmt, line, line);
+            _telemetry.WriteLine("");
+            _telemetry.WriteLine(string.Format(fmt, "Host name", "Model ID"));
+            _telemetry.WriteLine(string.Format(fmt, line, line));
 
             model.HostAssignments
-                ?.ForEach(x => Console.WriteLine(string.Format(fmt, x.HostName, x.ModelId)));
+                ?.ForEach(x => _telemetry.WriteLine(string.Format(fmt, x.HostName, x.ModelId)));
         }
     }
 }

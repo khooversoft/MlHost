@@ -1,0 +1,20 @@
+{
+  "force": true,
+  "upload": true,
+  "zipfile": "D:\\Sources\\MlHost\\Src\\MlHostCli\\Config\\TestZip.zip",
+  "Activate": true,
+  "HostName": "mlhost001",
+  "ModelName": "TestModel",
+  "VersionId": "v1000",
+  //"Deactivate": true,
+  "List": true,
+  //"SecretId": "MlHostCli.exe",
+  "KeyVault": {
+    "KeyVaultName": "mltest-kv",
+    "KeyName": "mlteststoragev1-accountkey"
+  },
+  "BlobStore": {
+    "ContainerName": "model-test",
+    "AccountName": "mlteststoragev1"
+  }
+}

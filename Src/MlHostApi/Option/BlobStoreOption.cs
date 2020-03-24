@@ -1,14 +1,12 @@
-﻿using MlHost.Tools;
-using MlHostApi.Tools;
+﻿using MlHostApi.Tools;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace MlHost.Application
+namespace MlHostApi.Option
 {
-    internal class BlobStoreOption
-    {
+    public class BlobStoreOption
+    {       
         public string? ContainerName { get; set; }
 
         public string? AccountName { get; set; }

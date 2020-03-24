@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MlHost.Models
+namespace MlHostApi.Models
 {
-    public class QuestionModel
+    public class QuestionRequest
     {
         public string? Question { get; set; }
     }

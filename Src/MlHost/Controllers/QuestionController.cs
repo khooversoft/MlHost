@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using MlHost.Services;
+using MlHostApi.Models;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using MlHost.Models;
-using MlHost.Services;
 
 namespace MlHost.Controllers
 {
@@ -28,7 +24,7 @@ namespace MlHost.Controllers
         }
 
         [HttpPost("predict")]
-        public async Task<IActionResult> Predict([FromBody] QuestionModel questionModel)
+        public async Task<IActionResult> Predict([FromBody] QuestionRequest questionModel)
         {
             if (!_executionContext.Running)
             {
@@ -39,7 +35,7 @@ namespace MlHost.Controllers
             var sw = Stopwatch.StartNew();
 
             _logger.LogInformation($"Question: {questionModel.Question}");
-            AnswerModel value = await _question.Ask(questionModel);
+            AnswerResponse value = await _question.Ask(questionModel);
 
             sw.Stop();
             _logger.LogInformation($"Question: {questionModel.Question}, completed: {sw.ElapsedMilliseconds}ms");

@@ -15,7 +15,6 @@ namespace MlHostCli.Application
                 "ML Host command line interface commands",
                 "",
                $"                      : Model name and version must match {VerifyExtensions.ValidPattern}.",
-                "SecretId={secretId}   : Use .NET Core configuration secret json file.  SecretId indicates which secret file to use.",
                 "",
                 "Help                  : Display help",
                 "List                  : List active models",
@@ -45,6 +44,17 @@ namespace MlHostCli.Application
                 "  VersionId={name}    : Model's version",
                 "  HostName={name}     : Name of the host to run the ML model",
                 "",
+                "",
+                "Configuration for BlobStorage",
+                "",
+                "  SecretId={secretId}                       : Use .NET Core configuration secret json file.  SecretId indicates which secret file to use.",
+                "",
+                "  BlobStore:ContainerName={container name}  : Azure Blob Storage container name (required)",
+                "  BlobStore:AccountName={accountName}       : Azure Blob Storage account name (required)",
+                "  BlobStore:AccountKey={accountKey}         : Azure Blob Storage account key (required)",
+
+                "  KeyVault:KeyVaultName={keyVaultName}      : Name of the Azure key vault (required if 'BlobStore:AccountKey' is not specified",
+                "  KeyVault:KeyName={keyName}                : Name of the Azure key vault's key where the 'BlobStore:AcountKey' is stored",
             };
         }
     }

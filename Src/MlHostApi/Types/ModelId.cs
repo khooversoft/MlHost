@@ -1,6 +1,7 @@
 ﻿using MlHostApi.Tools;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -10,23 +11,35 @@ namespace MlHostApi.Types
     {
         public ModelId(string modelName, string versionId)
         {
-            ModelName = modelName.VerifyBlobVector(nameof(modelName));
-            VersionId = versionId.VerifyBlobVector(nameof(VersionId));
+            ModelName = modelName.ToLower().VerifyBlobVector(nameof(modelName));
+            VersionId = versionId.ToLower().VerifyBlobVector(nameof(VersionId));
+        }
+
+        public ModelId(string root, string modelName, string versionId)
+        {
+            Root = root.ToLower().VerifyBlobVector(nameof(root));
+            ModelName = modelName.ToLower().VerifyBlobVector(nameof(modelName));
+            VersionId = versionId.ToLower().VerifyBlobVector(nameof(VersionId));
         }
 
         public ModelId(string path)
         {
             path.VerifyNotEmpty(nameof(path));
 
-            string[] pathVectors = path.Split("/", StringSplitOptions.RemoveEmptyEntries);
-            if (pathVectors.Length != 2) throw new ArgumentException($"{path} is invalid");
+            Stack<string> pathVectors = path.ToLower().Split("/", StringSplitOptions.RemoveEmptyEntries)
+                .Reverse()
+                .Func(x => new Stack<string>(x));
 
-            int index = 0;
-            ModelName = pathVectors[index++].VerifyBlobVector($"{nameof(ModelName)} is invalid");
-            VersionId = pathVectors[index++].VerifyBlobVector($"{nameof(VersionId)} is invalid");
+            if (pathVectors.Count < 2 || pathVectors.Count > 3) throw new ArgumentException($"{path} does not have 2 or 3 vectors");
+
+            if (pathVectors.Count == 3) Root = pathVectors.Pop().VerifyBlobVector($"{nameof(Root)} is invalid"); ;
+            ModelName = pathVectors.Pop().VerifyBlobVector($"{nameof(ModelName)} is invalid");
+            VersionId = pathVectors.Pop().VerifyBlobVector($"{nameof(VersionId)} is invalid");
         }
 
-        public string Root { get; } = "ml-models";
+        public static string RootName { get; } = "ml-models";
+
+        public string Root { get; } = RootName;
 
         public string ModelName { get; }
 

@@ -1,12 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using MlHost.Application;
-using MlHost.Models;
+using MlHostApi.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,7 +23,7 @@ namespace MlHost.Services
             _logging = logging;
         }
 
-        public async Task<AnswerModel> Ask(QuestionModel questionModel)
+        public async Task<AnswerResponse> Ask(QuestionRequest questionModel)
         {
             questionModel = questionModel ?? throw new AggregateException(nameof(questionModel));
             if (string.IsNullOrWhiteSpace(questionModel.Question)) throw new ArgumentException(nameof(questionModel.Question));
@@ -38,7 +35,7 @@ namespace MlHost.Services
             response.EnsureSuccessStatusCode();
 
             var responseString = await response.Content.ReadAsStringAsync();
-            AnswerModel answerModel = _json.Deserialize<AnswerModel>(responseString);
+            AnswerResponse answerModel = _json.Deserialize<AnswerResponse>(responseString);
 
             return answerModel;
         }

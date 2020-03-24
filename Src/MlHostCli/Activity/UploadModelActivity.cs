@@ -1,4 +1,5 @@
 ﻿using MlHostApi.Repository;
+using MlHostApi.Services;
 using MlHostApi.Tools;
 using MlHostApi.Types;
 using MlHostCli.Application;
@@ -17,31 +18,33 @@ namespace MlHostCli.Activity
     {
         private readonly IOption _option;
         private readonly IModelRepository _modelRepository;
-
+        private readonly ITelemetry _telemetry;
         private static readonly IReadOnlyList<string> _validFiles = new string[]
         {
             "app.py",
             "python-3.8.1.amd64",
         };
 
-        public UploadModelActivity(IOption option, IModelRepository modelRepository)
+        public UploadModelActivity(IOption option, IModelRepository modelRepository, ITelemetry telemetry)
         {
             _option = option;
             _modelRepository = modelRepository;
+            _telemetry = telemetry;
         }
 
         public async Task Upload(CancellationToken token)
         {
-            var modelId = new ModelId(_option.ModelName, _option.VersionId);
+            var modelId = new ModelId(_option.ModelName!, _option.VersionId!);
+
+            _telemetry.WriteLine($"Uploading model {_option.ZipFile} to model {modelId}, force={_option.Force}");
 
             VerifyIsZip();
-            await _modelRepository.Delete(modelId, token);
-            await _modelRepository.Upload(_option.ZipFile, modelId, token);
+            await _modelRepository.Upload(_option.ZipFile!, modelId, _option.Force, token);
         }
 
         private void VerifyIsZip()
         {
-            using Stream zipStream = new FileStream(_option.ZipFile, FileMode.Open);
+            using Stream zipStream = new FileStream(_option.ZipFile!, FileMode.Open);
             using ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read, false);
 
             Func<string, string?> getRootName = x => x.Split('/', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();

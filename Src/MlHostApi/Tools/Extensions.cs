@@ -15,7 +15,13 @@ namespace MlHostApi.Tools
 
         public static T VerifyAssert<T>(this T subject, Func<T, bool> test, string message) => test(subject) switch { true => subject, _ => throw new ArgumentException(message) };
 
-        public static TResult Do<T, TResult>(this T subject, Func<T, TResult> function) => function.VerifyNotNull(nameof(subject))(subject);
+        public static TResult Func<T, TResult>(this T subject, Func<T, TResult> function) => function.VerifyNotNull(nameof(subject))(subject);
+
+        public static T Action<T>(this T subject, Action<T> action)
+        {
+            action.VerifyNotNull(nameof(subject))(subject);
+            return subject;
+        }
 
         public static void ForEach<T>(this IEnumerable<T> subjects, Action<T> action)
         {

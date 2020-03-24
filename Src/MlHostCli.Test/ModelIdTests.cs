@@ -26,17 +26,23 @@ namespace MlHostCli.Test
         [Fact]
         public void GivenNotValidNodeId_WhenConstructed_ShouldBeCorrect()
         {
-            Action act = () => new ModelId("modelName/versionid");
+            Action act = () => new ModelId("3modelName/versionid");
             act.Should().Throw<ArgumentException>();
 
-            Action act2= () => new ModelId("modelName", "versionid");
+            Action act2= () => new ModelId("3modelName", "versionid");
             act2.Should().Throw<ArgumentException>();
 
-            Action act3 = () => new ModelId("modelname/versionId");
+            Action act3 = () => new ModelId("modelname/2versionId");
             act2.Should().Throw<ArgumentException>();
 
-            Action act4 = () => new ModelId("modelname", "versionId");
+            Action act4 = () => new ModelId("modelname", "2versionId");
             act2.Should().Throw<ArgumentException>();
+
+            Action act5 = () => new ModelId("modelname/-versionId");
+            act5.Should().Throw<ArgumentException>();
+
+            Action act6 = () => new ModelId("modelname", "-versionId");
+            act6.Should().Throw<ArgumentException>();
         }
 
         [Fact]

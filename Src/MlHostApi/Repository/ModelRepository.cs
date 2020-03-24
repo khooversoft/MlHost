@@ -37,13 +37,13 @@ namespace MlHostApi.Repository
             _json = json;
         }
 
-        public Task Upload(string modelVersionFile, ModelId modelId, CancellationToken token)
+        public async Task Upload(string modelVersionFile, ModelId modelId, bool force, CancellationToken token)
         {
             modelVersionFile.VerifyNotEmpty(nameof(modelVersionFile));
             modelId.VerifyNotNull(nameof(modelId));
 
             using Stream fileStream = new FileStream(modelVersionFile, FileMode.Open);
-            return _blobRepository.Upload(fileStream, modelId, token);
+            await _blobRepository.Upload(fileStream, modelId, force, token);
         }
 
         public async Task Download(ModelId modelId, string toFile, CancellationToken token)
@@ -55,22 +55,25 @@ namespace MlHostApi.Repository
             await _blobRepository.Download(modelId, fileStream, token);
         }
 
-        public Task Delete(ModelId nodeId, CancellationToken token)
+        public async Task Delete(ModelId modelId, CancellationToken token)
         {
-            nodeId.VerifyNotNull(nameof(nodeId));
-            return _blobRepository.Delete(nodeId, token);
+            modelId.VerifyNotNull(nameof(modelId));
+
+            await RemoveActivation(modelId, token);
+            await _blobRepository.Delete(modelId, token);
+        }
+
+        public async Task<bool> Exist(ModelId modelId, CancellationToken token)
+        {
+            modelId.VerifyNotNull(nameof(modelId));
+            IReadOnlyList<string> list = await Search(modelId, modelId.ToRegexPattern(), token);
+            return list.Count == 1;
         }
 
         public async Task<HostConfigurationModel> ReadConfiguration(CancellationToken token)
         {
             bool exist = await _blobRepository.Exist(_hostConfiguratonPath, token);
-            if( !exist)
-            {
-                return new HostConfigurationModel
-                {
-                    HostAssignments = new List<HostAssignment>(),
-                };
-            }
+            if (!exist) return new HostConfigurationModel();
 
             byte[] data = await _blobRepository.Read(_hostConfiguratonPath, token);
             string json = Encoding.UTF8.GetString(data);
@@ -78,25 +81,53 @@ namespace MlHostApi.Repository
             return _json.Deserialize<HostConfigurationModel>(json).VerifyNotNull("Deserialize failed");
         }
 
-        public Task WriteConfiguration(HostConfigurationModel hostConfigurationModel, CancellationToken token)
+        public async Task WriteConfiguration(HostConfigurationModel hostConfigurationModel, CancellationToken token)
         {
             hostConfigurationModel.VerifyNotNull(nameof(hostConfigurationModel));
 
             string json = _json.Serialize(hostConfigurationModel);
             byte[] data = Encoding.UTF8.GetBytes(json);
 
-            return _blobRepository.Write(_hostConfiguratonPath, data, token);
+            await _blobRepository.Write(_hostConfiguratonPath, data, token);
         }
 
         public Task<IReadOnlyList<string>> Search(string prefix, string pattern, CancellationToken token)
         {
-            if (pattern == "*")
+            if (pattern == "*" || pattern.ToNullIfEmpty() == null)
             {
                 return _blobRepository.Search(prefix, x => true, token);
             }
 
             Regex regex = new Regex(pattern, RegexOptions.Compiled);
             return _blobRepository.Search(prefix, x => regex.Match(x).Success, token);
+        }
+
+        public async Task AddActivation(string hostName, ModelId modelId, CancellationToken token)
+        {
+            hostName.VerifyNotEmpty(nameof(hostName));
+            modelId.VerifyNotNull(nameof(modelId));
+
+            IDictionary<string, ModelId> hostAssigments = (await ReadConfiguration(token)).ToDictionary();
+
+            if (hostAssigments.TryGetValue(hostName, out ModelId? readModelId) && modelId == readModelId) return;
+
+            await hostAssigments
+                .Action(x => x[hostName] = modelId)
+                .ToModel()
+                .Func(async x => await WriteConfiguration(x, token));
+        }
+
+        public async Task RemoveActivation(string hostName, CancellationToken token)
+        {
+            hostName.VerifyNotEmpty(nameof(hostName));
+
+            IDictionary<string, ModelId> hostAssigments = (await ReadConfiguration(token)).ToDictionary();
+
+            if (!hostAssigments.Remove(hostName)) return;
+
+            await hostAssigments
+                .ToModel()
+                .Func(async x => await WriteConfiguration(x, token));
         }
     }
 }

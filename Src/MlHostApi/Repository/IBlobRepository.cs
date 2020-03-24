@@ -18,7 +18,7 @@ namespace MlHostApi.Repository
 
         Task<IReadOnlyList<string>> Search(string prefix, Func<string, bool> filter, CancellationToken token);
 
-        Task Upload(Stream fromStream, string toPath, CancellationToken token);
+        Task Upload(Stream fromStream, string toPath, bool force, CancellationToken token);
 
         Task Write(string path, byte[] data, CancellationToken token);
     }

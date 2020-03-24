@@ -12,8 +12,9 @@ namespace MlHostCli.Test.Application
     {
         public static string WriteResourceToFile(string fileName, string resourceId) =>
                 Path.GetTempPath()
-                    .Do(x => Path.Combine(x, fileName))
-                    .Do(x => { WriteFile(x, GetResourceStream(resourceId)); return x; });
+                    .Func(x => Path.Combine(x, Guid.NewGuid().ToString(), fileName))
+                    .Action(x => Directory.CreateDirectory(Path.GetDirectoryName(x)))
+                    .Action(x => WriteFile(x, GetResourceStream(resourceId)));
 
         public static Stream GetResourceStream(string streamId) =>
                 Assembly.GetAssembly(typeof(ActivityTests))!

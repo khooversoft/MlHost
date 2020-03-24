@@ -1,27 +1,25 @@
 ﻿using Microsoft.Extensions.Logging;
 using MlHost.Application;
-using MlHost.Services.AzureBlob;
-using System;
-using System.Collections.Generic;
+using MlHostApi.Repository;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
-namespace MlHost.Services.PackageSource
+namespace MlHost.Services
 {
     internal class PackageSourceFromStorage : IPackageSource
     {
         private readonly IOption _option;
         private readonly ILogger<PackageSourceFromStorage> _logger;
         private readonly IBlobRepository _blobRepository;
+        private readonly IExecutionContext _executionContext;
 
-        public PackageSourceFromStorage(IOption option, ILogger<PackageSourceFromStorage> logger, IBlobRepository blobRepository)
+        public PackageSourceFromStorage(IOption option, ILogger<PackageSourceFromStorage> logger, IBlobRepository blobRepository, IExecutionContext executionContext)
         {
             _option = option;
             _logger = logger;
             _blobRepository = blobRepository;
+            _executionContext = executionContext;
         }
 
         public async Task<Stream> GetStream()
@@ -48,7 +46,7 @@ namespace MlHost.Services.PackageSource
             var sw = Stopwatch.StartNew();
 
             using Stream toStream = new FileStream(zipFilePath, FileMode.Create);
-            await _blobRepository.Download(_option.ZipFileUri, toStream);
+            await _blobRepository.Download(_option.ZipFileUri, toStream, _executionContext.TokenSource.Token);
 
             sw.Stop();
 

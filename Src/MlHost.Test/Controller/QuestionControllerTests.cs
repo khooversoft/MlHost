@@ -1,9 +1,7 @@
 ﻿using FluentAssertions;
-using MlHost.Models;
 using MlHost.Services;
 using MlHost.Test.Application;
-using System;
-using System.Collections.Generic;
+using MlHostApi.Models;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,11 +20,11 @@ namespace MlHost.Test.Controller
         }
 
         [Fact]
-        public async Task GivenStorageConfiguration_WhenUsed_ShouldDownloadAndRunMlModel()
+        public async Task GivenTestModel_WhenUsed_ShouldResponed()
         {
             await _storageStoreFixture.WaitForStartup();
 
-            var question = new QuestionModel
+            var question = new QuestionRequest
             {
                 Question = "what is my deductible",
             };
@@ -38,7 +36,7 @@ namespace MlHost.Test.Controller
             response.EnsureSuccessStatusCode();
 
             var responseString = await response.Content.ReadAsStringAsync();
-            AnswerModel answerModel = jsonSerializer.Deserialize<AnswerModel>(responseString);
+            AnswerResponse answerModel = jsonSerializer.Deserialize<AnswerResponse>(responseString);
 
             answerModel.Should().NotBeNull();
             answerModel.Start.Should().NotBe(0);

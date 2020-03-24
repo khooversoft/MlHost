@@ -1,4 +1,5 @@
-﻿using Azure.Storage.Blobs;
+﻿using Azure;
+using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using MlHostApi.Tools;
 using System;
@@ -30,12 +31,15 @@ namespace MlHostApi.Repository
 
         public Task Delete(string path, CancellationToken token)
         {
+            path.VerifyNotEmpty(nameof(path));
+
             return _containerClient.DeleteBlobIfExistsAsync(path, DeleteSnapshotsOption.IncludeSnapshots, cancellationToken: token);
         }
 
         public async Task Download(string path, Stream toStream, CancellationToken token)
         {
             path.VerifyNotEmpty(nameof(path));
+            toStream.VerifyNotNull(nameof(toStream));
 
             BlobClient blobClient = _containerClient.GetBlobClient(path);
             BlobDownloadInfo download = await blobClient.DownloadAsync(token);
@@ -43,17 +47,22 @@ namespace MlHostApi.Repository
             await download.Content.CopyToAsync(toStream);
         }
 
-        public Task Upload(Stream fromStream, string toPath, CancellationToken token)
+        public async Task Upload(Stream fromStream, string toPath, bool force, CancellationToken token)
         {
             fromStream.VerifyNotNull(nameof(fromStream));
             toPath.VerifyNotEmpty(nameof(toPath));
 
-            return _containerClient.UploadBlobAsync(toPath, fromStream, token);
+            if (force && (await Exist(toPath, token)))
+            {
+                await Delete(toPath, token);
+            }
+
+            await _containerClient.UploadBlobAsync(toPath, fromStream, token);
         }
 
         public async Task<bool> Exist(string path, CancellationToken token)
         {
-            await foreach (BlobItem blobItem in _containerClient.GetBlobsAsync(prefix: path, cancellationToken: token))
+            await foreach (BlobItem _ in _containerClient.GetBlobsAsync(prefix: path, cancellationToken: token))
             {
                 return true;
             }
@@ -74,10 +83,17 @@ namespace MlHostApi.Repository
             return memory.ToArray();
         }
 
-        public Task Write(string path, byte[] data, CancellationToken token)
+        public async Task Write(string path, byte[] data, CancellationToken token)
         {
+            path.VerifyNotEmpty(nameof(path));
+            data
+                .VerifyNotNull(nameof(data))
+                .VerifyAssert(x => x.Length > 0, $"{nameof(data)} length must be greater then 0");
+
+            await _containerClient.DeleteBlobIfExistsAsync(path, cancellationToken: token);
+
             using var memoryBuffer = new MemoryStream(data.ToArray());
-            return _containerClient.UploadBlobAsync(path, memoryBuffer, token);
+            await _containerClient.UploadBlobAsync(path, memoryBuffer, token);
         }
 
         public async Task<IReadOnlyList<string>> Search(string prefix, Func<string, bool> filter, CancellationToken token)

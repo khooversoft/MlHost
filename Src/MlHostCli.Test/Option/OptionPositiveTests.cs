@@ -39,7 +39,8 @@ namespace MlHostCli.Test.Option
                     "modelName=ml-model-temp",
                     "VersionId=v10-0-0-1",
                     "BlobStore:ContainerName=containerName",
-                    "BlobStore:ConnectionString=connectionString",
+                    "BlobStore:AccountName=accountName",
+                    "BlobStore:AccountKey=dummyKey",
                 };
 
                 IOption option = new OptionBuilder()
@@ -53,7 +54,8 @@ namespace MlHostCli.Test.Option
 
                 option.BlobStore.Should().NotBeNull();
                 option.BlobStore!.ContainerName.Should().Be("containerName");
-                option.BlobStore!.ConnectionString.Should().Be("connectionString");
+                option.BlobStore!.AccountName.Should().Be("accountName");
+                option.BlobStore!.AccountKey.Should().Be("dummyKey");
             }
             finally
             {
@@ -78,7 +80,8 @@ namespace MlHostCli.Test.Option
                 BlobStore = new
                 {
                     ContainerName = "containerName",
-                    ConnectionString = "connectionString",
+                    AccountName = "accountName",
+                    AccountKey = "accountKey",
                 },
             };
 
@@ -104,7 +107,8 @@ namespace MlHostCli.Test.Option
 
                 option.BlobStore.Should().NotBeNull();
                 option.BlobStore!.ContainerName.Should().Be("containerName");
-                option.BlobStore!.ConnectionString.Should().Be("connectionString");
+                option.BlobStore!.AccountName.Should().Be("accountName");
+                option.BlobStore!.AccountKey.Should().Be("accountKey");
             }
             finally
             {
@@ -122,7 +126,8 @@ namespace MlHostCli.Test.Option
                 "modelName=mymodel99",
                 "VersionId=x1000",
                 "BlobStore:ContainerName=containerName",
-                "BlobStore:ConnectionString=connectionString",
+                "BlobStore:AccountName=accountName",
+                "BlobStore:AccountKey=dummyKey",
             };
 
             IOption option = new OptionBuilder()
@@ -136,7 +141,8 @@ namespace MlHostCli.Test.Option
 
             option.BlobStore.Should().NotBeNull();
             option.BlobStore!.ContainerName.Should().Be("containerName");
-            option.BlobStore!.ConnectionString.Should().Be("connectionString");
+            option.BlobStore!.AccountName.Should().Be("accountName");
+            option.BlobStore!.AccountKey.Should().Be("dummyKey");
         }
 
         [Fact]
@@ -148,7 +154,8 @@ namespace MlHostCli.Test.Option
                 "modelName=mymodel-temp",
                 "VersionId=v1000",
                 "BlobStore:ContainerName=containerName",
-                "BlobStore:ConnectionString=connectionString",
+                "BlobStore:AccountName=accountName",
+                "BlobStore:AccountKey=dummyKey",
             };
 
             IOption option = new OptionBuilder()
@@ -161,7 +168,8 @@ namespace MlHostCli.Test.Option
 
             option.BlobStore.Should().NotBeNull();
             option.BlobStore!.ContainerName.Should().Be("containerName");
-            option.BlobStore!.ConnectionString.Should().Be("connectionString");
+            option.BlobStore!.AccountName.Should().Be("accountName");
+            option.BlobStore!.AccountKey.Should().Be("dummyKey");
         }
 
         [Fact]
@@ -174,7 +182,8 @@ namespace MlHostCli.Test.Option
                 "VersionId=v1000",
                 "HostName=Host-SVR1000",
                 "BlobStore:ContainerName=containerName",
-                "BlobStore:ConnectionString=connectionString",
+                "BlobStore:AccountName=accountName",
+                "BlobStore:AccountKey=dummyKey",
             };
 
             IOption option = new OptionBuilder()
@@ -188,7 +197,8 @@ namespace MlHostCli.Test.Option
 
             option.BlobStore.Should().NotBeNull();
             option.BlobStore!.ContainerName.Should().Be("containerName");
-            option.BlobStore!.ConnectionString.Should().Be("connectionString");
+            option.BlobStore!.AccountName.Should().Be("accountName");
+            option.BlobStore!.AccountKey.Should().Be("dummyKey");
         }
     }
 }

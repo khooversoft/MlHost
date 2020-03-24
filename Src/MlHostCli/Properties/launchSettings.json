@@ -2,7 +2,10 @@
   "profiles": {
     "MlHostCli": {
       "commandName": "Project",
-      "commandLineArgs": "list"
+      "commandLineArgs": "configfile=D:\\Sources\\MlHost\\Src\\MlHostCli\\Config\\PublishTestConfig-Activate.json",
+      "environmentVariables": {
+        "RunAs": "CurrentUser"
+      }
     }
   }
 }

@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using MlHostApi.Repository;
+using MlHostApi.Services;
 using MlHostApi.Tools;
 using MlHostCli.Activity;
 using MlHostCli.Application;
@@ -71,18 +72,18 @@ namespace MlHostCli
                     Console.WriteLine("Canceling...");
                 };
 
-                var activities = new Func<Task?>[]
+                var activities = new Func<Task>[]
                 {
-                    () => option.List ? container.Resolve<ListModelActivity>().List(cancellationTokenSource.Token) : null,
-                    () => option.Upload ? container.Resolve<UploadModelActivity>().Upload(cancellationTokenSource.Token) : null,
-                    () => option.Download ? container.Resolve<DownloadModelActivity>().Download(cancellationTokenSource.Token) : null,
-                    () => option.Delete ? container.Resolve<DeleteModelActivity>().Delete(cancellationTokenSource.Token) : null,
-                    () => option.Activate ? container.Resolve<ActivateModelActivity>().Activate(cancellationTokenSource.Token) : null,
+                    () => option.Upload ? container.Resolve<UploadModelActivity>().Upload(cancellationTokenSource.Token) : Task.CompletedTask,
+                    () => option.Download ? container.Resolve<DownloadModelActivity>().Download(cancellationTokenSource.Token) : Task.CompletedTask,
+                    () => option.Delete ? container.Resolve<DeleteModelActivity>().Delete(cancellationTokenSource.Token) : Task.CompletedTask,
+                    () => option.Activate ? container.Resolve<ActivateModelActivity>().Activate(cancellationTokenSource.Token) : Task.CompletedTask,
+                    () => option.Deactivate ? container.Resolve<DeactivateModelActivity>().Deactivate(cancellationTokenSource.Token) : Task.CompletedTask,
+                    () => option.List ? container.Resolve<ListModelActivity>().List(cancellationTokenSource.Token) : Task.CompletedTask,
                 };
 
                 await activities
-                    .Where(x => x != null)
-                    .ForEachAsync(async x => await x()!);
+                    .ForEachAsync(async x => await x());
 
                 Console.WriteLine("Completed");
                 return _ok;
@@ -97,13 +98,16 @@ namespace MlHostCli
 
             if (option.BlobStore != null)
             {
-                builder.RegisterInstance(new BlobRepository(option.BlobStore.ContainerName, option.BlobStore.ConnectionString)).As<IBlobRepository>().InstancePerLifetimeScope();
+                builder.RegisterInstance(new BlobRepository(option.BlobStore.ContainerName!, option.CreateBlobConnectionString())).As<IBlobRepository>();
                 builder.RegisterType<ModelRepository>().As<IModelRepository>().InstancePerLifetimeScope();
+                builder.RegisterType<Json>().As<IJson>().InstancePerLifetimeScope();
+                builder.RegisterType<ConsoleTelemetry>().As<ITelemetry>().InstancePerLifetimeScope();
                 builder.RegisterType<ActivateModelActivity>();
                 builder.RegisterType<DeleteModelActivity>();
                 builder.RegisterType<DownloadModelActivity>();
                 builder.RegisterType<ListModelActivity>();
                 builder.RegisterType<UploadModelActivity>();
+                builder.RegisterType<DeactivateModelActivity>();
             }
 
             return builder.Build();

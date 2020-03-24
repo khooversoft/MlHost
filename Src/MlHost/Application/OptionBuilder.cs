@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using MlHost.Tools;
+using MlHostApi.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -41,8 +42,8 @@ namespace MlHost.Application
         {
             IConfiguration configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .Do(x => JsonFile.ToNullIfEmpty() switch { string v => x.AddJsonFile(v), _ => x })
-                .Do(x => SecretId.ToNullIfEmpty() switch { string v => x.AddUserSecrets(v), _ => x })
+                .Func(x => JsonFile.ToNullIfEmpty() switch { string v => x.AddJsonFile(v), _ => x })
+                .Func(x => SecretId.ToNullIfEmpty() switch { string v => x.AddUserSecrets(v), _ => x })
                 .AddCommandLine(Args ?? Array.Empty<string>())
                 .Build();
 
@@ -51,8 +52,8 @@ namespace MlHost.Application
 
             option.Verify();
 
-            option.Deployment.DeploymentFolder = BuildPathRelativeFromExceutingAssembly(option.Deployment.DeploymentFolder);
-            option.Deployment.PackageFolder = BuildPathRelativeFromExceutingAssembly(option.Deployment.PackageFolder);
+            option.Deployment!.DeploymentFolder = BuildPathRelativeFromExceutingAssembly(option.Deployment.DeploymentFolder);
+            option.Deployment!.PackageFolder = BuildPathRelativeFromExceutingAssembly(option.Deployment.PackageFolder);
 
             return option;
         }
@@ -62,8 +63,8 @@ namespace MlHost.Application
             if (Path.GetDirectoryName(folder).ToNullIfEmpty() != null) return folder;
 
             return Assembly.GetExecutingAssembly()
-                .Do(x => Path.GetDirectoryName(x.Location))
-                .Do(x => Path.Combine(x!, folder));
+                .Func(x => Path.GetDirectoryName(x.Location))
+                .Func(x => Path.Combine(x!, folder));
         }
     }
 }
