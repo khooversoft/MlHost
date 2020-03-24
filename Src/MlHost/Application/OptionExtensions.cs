@@ -1,4 +1,5 @@
-﻿using MlHostApi.Option;
+﻿using Microsoft.Extensions.Configuration;
+using MlHostApi.Option;
 using MlHostApi.Tools;
 using System;
 using System.Collections.Generic;
@@ -14,11 +15,15 @@ namespace MlHost.Application
             option.VerifyNotNull(nameof(option));
 
             option.ServiceUri.VerifyNotEmpty($"{nameof(option.ServiceUri)} is missing");
-            option.BlobStore.VerifyNotNull($"{nameof(option.BlobStore)} is missing");
+            option.HostName.VerifyNotEmpty($"{nameof(option.HostName)} is missing");
 
             option.BlobStore!.Verify();
             option.Deployment!.Verify();
-            option.KeyVault!.Verify();
+
+            if (option.BlobStore!.AccountKey.ToNullIfEmpty() == null)
+            {
+                option.KeyVault!.Verify();
+            }
         }
 
         public static void Verify(this DeploymentOption deploymentOption)
@@ -26,6 +31,15 @@ namespace MlHost.Application
             deploymentOption.VerifyNotNull("Deployment option is required");
             deploymentOption.DeploymentFolder.VerifyNotEmpty($"{nameof(deploymentOption.DeploymentFolder)} is missing");
             deploymentOption.PackageFolder.VerifyNotEmpty($"{nameof(deploymentOption.PackageFolder)} is missing");
+        }
+
+        public static Option Bind(this IConfiguration configuration)
+        {
+            configuration.VerifyNotNull(nameof(configuration));
+
+            var option = new Option();
+            configuration.Bind(option, x => x.BindNonPublicProperties = true);
+            return option;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using MlHostApi.Option;
 using MlHostApi.Tools;
 using System;
 using System.Collections.Generic;
@@ -73,17 +74,6 @@ namespace MlHostCli.Application
             var option = new Option();
             configuration.Bind(option, x => x.BindNonPublicProperties = true);
             return option;
-        }
-
-        public static string CreateBlobConnectionString(this IOption option) =>
-            option.VerifyNotNull(nameof(option))
-            .Func(x => $"DefaultEndpointsProtocol=https;AccountName={x.BlobStore!.AccountName};AccountKey={x.BlobStore!.AccountKey};EndpointSuffix=core.windows.net");
-
-        public static void Verify(this KeyVaultOption? keyVaultOption)
-        {
-            keyVaultOption.VerifyNotNull("Key vault configuration is required");
-            keyVaultOption!.KeyVaultName.VerifyNotEmpty($"{keyVaultOption.KeyVaultName} is required");
-            keyVaultOption!.KeyName.VerifyNotEmpty($"{keyVaultOption.KeyName} is required");
         }
     }
 }

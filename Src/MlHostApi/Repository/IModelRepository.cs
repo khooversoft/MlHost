@@ -25,5 +25,7 @@ namespace MlHostApi.Repository
         Task AddActivation(string hostName, ModelId modelId, CancellationToken token);
 
         Task RemoveActivation(string hostName, CancellationToken token);
+
+        Task<ModelId?> GetRegistration(string hostName, CancellationToken token);
     }
 }

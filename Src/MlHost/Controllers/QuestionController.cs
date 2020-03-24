@@ -26,7 +26,7 @@ namespace MlHost.Controllers
         [HttpPost("predict")]
         public async Task<IActionResult> Predict([FromBody] QuestionRequest questionModel)
         {
-            if (!_executionContext.Running)
+            if (_executionContext.State != ExecutionState.Running)
             {
                 _logger.LogInformation($"Predict is starting up");
                 return StatusCode((int)HttpStatusCode.NoContent);

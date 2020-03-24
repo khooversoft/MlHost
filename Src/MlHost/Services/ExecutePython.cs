@@ -31,7 +31,7 @@ namespace MlHost.Services
 
             KillAnyRunningProcesses();
 
-            string fullPath = Path.Combine(_option.Deployment.DeploymentFolder, @"python-3.8.1.amd64\python.exe");
+            string fullPath = Path.Combine(_option.Deployment!.DeploymentFolder, @"python-3.8.1.amd64\python.exe");
             if (!File.Exists(fullPath)) throw new FileNotFoundException(fullPath);
 
             var tcs = new TaskCompletionSource<bool>();
@@ -67,7 +67,7 @@ namespace MlHost.Services
                 if (subject.IndexOf(lookFor) >= 0)
                 {
                     _logger.LogInformation("Python child process is running");
-                    _executionContext.Running = true;
+                    _executionContext.State = ExecutionState.Running;
 
                     tcs.SetResult(true);
                     scopedTokenSource.Dispose();
@@ -83,6 +83,7 @@ namespace MlHost.Services
             foreach(var process in Process.GetProcessesByName("python"))
             {
                 _logger.LogWarning($"Killing already running python.exe process {process.ProcessName} before starting child process");
+
                 try 
                 { 
                     process.Kill(true);

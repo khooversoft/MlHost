@@ -38,7 +38,7 @@ namespace MlHostCli.Test
                 VersionId = modelId.VersionId,
             };
 
-            await new UploadModelActivity(option, _modelFixture.ModelRepository).Upload(CancellationToken.None);
+            await new UploadModelActivity(option, _modelFixture.ModelRepository, _modelFixture.Telemetry).Upload(CancellationToken.None);
 
             IReadOnlyList<string> blobList = await _modelFixture.ModelRepository.Search(modelId, "*", CancellationToken.None);
             blobList.Should().NotBeNull();
@@ -61,7 +61,7 @@ namespace MlHostCli.Test
                 VersionId = modelId.VersionId,
             };
 
-            await new UploadModelActivity(option, _modelFixture.ModelRepository).Upload(CancellationToken.None);
+            await new UploadModelActivity(option, _modelFixture.ModelRepository, _modelFixture.Telemetry).Upload(CancellationToken.None);
 
             string toZipFile = Path.GetDirectoryName(tempZipFile).Func(x => Path.Combine(x!, "TestZip-Copy.Zip"));
 
@@ -72,13 +72,13 @@ namespace MlHostCli.Test
                 VersionId = option.VersionId,
             };
 
-            await new DownloadModelActivity(downloadOption, _modelFixture.ModelRepository).Download(CancellationToken.None);
+            await new DownloadModelActivity(downloadOption, _modelFixture.ModelRepository, _modelFixture.Telemetry).Download(CancellationToken.None);
 
             byte[] originalZipHash = GetFileHash(tempZipFile);
             byte[] downloadZipHash = GetFileHash(toZipFile);
             Enumerable.SequenceEqual(originalZipHash, downloadZipHash).Should().BeTrue();
 
-            DeleteModelActivity uploadDeleteActivity = new DeleteModelActivity(option, _modelFixture.ModelRepository);
+            DeleteModelActivity uploadDeleteActivity = new DeleteModelActivity(option, _modelFixture.ModelRepository, _modelFixture.Telemetry);
             await uploadDeleteActivity.Delete(CancellationToken.None);
 
             IReadOnlyList<string> blobList = await _modelFixture.ModelRepository.Search(modelId, "*", CancellationToken.None);

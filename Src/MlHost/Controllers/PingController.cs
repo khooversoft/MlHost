@@ -20,7 +20,7 @@ namespace MlHost.Controllers
         {
             var response = new PingResponse
             {
-                Status = _executionContext.Running ? "Running" : "Starting up",
+                Status = _executionContext.State.ToString(),
             };
 
             return Ok(response);

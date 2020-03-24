@@ -1,4 +1,5 @@
 ﻿using MlHost.Tools;
+using MlHostApi.Option;
 using MlHostApi.Tools;
 using System;
 using System.Collections.Generic;
@@ -20,5 +21,7 @@ namespace MlHost.Application
         public DeploymentOption? Deployment { get; set; }
 
         public KeyVaultOption? KeyVault { get; set; }
+
+        public string? SecretId { get; set; }
     }
 }

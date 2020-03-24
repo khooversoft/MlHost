@@ -8,6 +8,7 @@ using System.IO;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
+using MlHostApi.Option;
 
 namespace MlHostCli.Application
 {
@@ -63,7 +64,7 @@ namespace MlHostCli.Application
                 _ => new ConfigurationBuilder()
                     .Func(x =>
                     {
-                        tempOption.KeyVault.Verify();
+                        tempOption.KeyVault!.Verify();
 
                         var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback));
                         x.AddAzureKeyVault($"https://{tempOption.KeyVault!.KeyVaultName}.vault.azure.net/", keyVaultClient, new DefaultKeyVaultSecretManager());

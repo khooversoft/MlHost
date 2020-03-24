@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using MlHost.Application;
 using MlHostApi.Repository;
+using MlHostApi.Types;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -11,28 +13,27 @@ namespace MlHost.Services
     {
         private readonly IOption _option;
         private readonly ILogger<PackageSourceFromStorage> _logger;
-        private readonly IBlobRepository _blobRepository;
         private readonly IExecutionContext _executionContext;
+        private readonly IModelRepository _modelRepository;
 
-        public PackageSourceFromStorage(IOption option, ILogger<PackageSourceFromStorage> logger, IBlobRepository blobRepository, IExecutionContext executionContext)
+        public PackageSourceFromStorage(IOption option, ILogger<PackageSourceFromStorage> logger, IExecutionContext executionContext, IModelRepository modelRepository)
         {
             _option = option;
             _logger = logger;
-            _blobRepository = blobRepository;
             _executionContext = executionContext;
+            _modelRepository = modelRepository;
         }
 
-        public async Task<Stream> GetStream()
+        public async Task<Stream> GetStream(ModelId modelId)
         {
-            string zipFilePath = await GetZipFileIfRequired();
+            string zipFilePath = await GetZipFileIfRequired(modelId);
 
             return new FileStream(zipFilePath, FileMode.Open);
         }
 
-        private async Task<string> GetZipFileIfRequired()
+        private async Task<string> GetZipFileIfRequired(ModelId modelId)
         {
-
-            Directory.CreateDirectory(_option.Deployment.PackageFolder);
+            Directory.CreateDirectory(_option.Deployment!.PackageFolder);
 
             string zipFilePath = Path.Combine(_option.Deployment.PackageFolder, "ml-package.zip");
             if (File.Exists(zipFilePath) && !_option.ForceDeployment)
@@ -44,14 +45,10 @@ namespace MlHost.Services
             _logger.LogInformation($"Zip file {zipFilePath} does not exist, downloading from storage");
 
             var sw = Stopwatch.StartNew();
-
-            using Stream toStream = new FileStream(zipFilePath, FileMode.Create);
-            await _blobRepository.Download(_option.ZipFileUri, toStream, _executionContext.TokenSource.Token);
-
+            await _modelRepository.Download(modelId, zipFilePath, _executionContext.TokenSource.Token);
             sw.Stop();
 
             _logger.LogInformation($"Zip file {zipFilePath} has been downloaded from storage, {sw.ElapsedMilliseconds}ms");
-
             return zipFilePath;
         }
     }

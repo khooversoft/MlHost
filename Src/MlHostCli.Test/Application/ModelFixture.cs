@@ -35,6 +35,7 @@ namespace MlHostCli.Test.Application
 
         public IModelRepository ModelRepository { get; }
 
+        public ITelemetry Telemetry { get; } = new FakeTelemetry();
 
         public async Task<IReadOnlyList<string>> ListBlobs() => await _blobRepository.Search(string.Empty, x => true, CancellationToken.None);
 

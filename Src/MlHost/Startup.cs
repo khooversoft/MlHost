@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using MlHost.Application;
 using MlHost.Services;
 using MlHost.Tools;
+using MlHostApi.Option;
 using MlHostApi.Repository;
 
 namespace MlHost
@@ -34,7 +35,7 @@ namespace MlHost
             services.AddSingleton<IBlobRepository>(x =>
             {
                 IOption option = x.Resolve<IOption>();
-                return new BlobRepository(option.BlobStore.ContainerName, option.BlobStore.ConnectionString);
+                return new BlobRepository(option.BlobStore!.ContainerName!, option.BlobStore.CreateBlobConnectionString());
             });
 
             services.AddHostedService<PythonHostedService>();

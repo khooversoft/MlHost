@@ -6,6 +6,6 @@ namespace MlHost.Services
     {
         CancellationTokenSource TokenSource { get; }
 
-        bool Running { get; set; }
+        ExecutionState State { get; set; }
     }
 }

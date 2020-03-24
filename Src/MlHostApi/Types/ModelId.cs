@@ -59,8 +59,8 @@ namespace MlHostApi.Types
 
         public static implicit operator string(ModelId modelBlobPath) => modelBlobPath.ToString();
 
-        public static bool operator ==(ModelId left, ModelId right) => EqualityComparer<ModelId>.Default.Equals(left, right);
+        public static bool operator ==(ModelId? left, ModelId? right) => EqualityComparer<ModelId>.Default.Equals(left, right);
 
-        public static bool operator !=(ModelId left, ModelId right) => !(left == right);
+        public static bool operator !=(ModelId? left, ModelId? right) => !(left == right);
     }
 }

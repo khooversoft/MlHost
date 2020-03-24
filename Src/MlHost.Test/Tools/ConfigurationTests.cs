@@ -17,10 +17,11 @@ namespace MlHost.Test.Tools
             string[] args = new[]
             {
                 $"ServiceUri={uri}",
-                "ZipFileUri=fileUri",
+                "HostName=hostName",
                 "ForceDeployment=false",
                 "BlobStore:ContainerName=containerName",
-                "BlobStore:ConnectionString=connectionString",
+                "BlobStore:AccountName=accountName",
+                "BlobStore:AccountKey=accountKey",
                 "Deployment:DeploymentFolder=deploymentFolder",
                 "Deployment:PackageFolder=packageFolder",
             };
@@ -32,10 +33,11 @@ namespace MlHost.Test.Tools
             option.Should().NotBeNull();
             option.ServiceUri.Should().Be(uri);
             option.ForceDeployment.Should().BeFalse();
-            option.ZipFileUri.Should().Be("fileUri");
-            option.BlobStore.ContainerName.Should().Be("containerName");
-            option.BlobStore.ConnectionString.Should().Be("connectionString");
-            option.Deployment.DeploymentFolder.Should().Contain("deploymentFolder");
+            option.HostName.Should().Be("hostName");
+            option.BlobStore!.ContainerName.Should().Be("containerName");
+            option.BlobStore.AccountName.Should().Be("accountName");
+            option.BlobStore.AccountKey.Should().Be("accountKey");
+            option.Deployment!.DeploymentFolder.Should().Contain("deploymentFolder");
             option.Deployment.PackageFolder.Should().Contain("packageFolder");
         }
 

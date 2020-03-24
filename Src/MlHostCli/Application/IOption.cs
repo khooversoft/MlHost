@@ -1,4 +1,6 @@
-﻿namespace MlHostCli.Application
+﻿using MlHostApi.Option;
+
+namespace MlHostCli.Application
 {
     internal interface IOption
     {

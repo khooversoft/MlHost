@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using MlHostApi.Option;
 using MlHostApi.Repository;
 using MlHostApi.Services;
 using MlHostApi.Tools;
@@ -98,7 +99,7 @@ namespace MlHostCli
 
             if (option.BlobStore != null)
             {
-                builder.RegisterInstance(new BlobRepository(option.BlobStore.ContainerName!, option.CreateBlobConnectionString())).As<IBlobRepository>();
+                builder.RegisterInstance(new BlobRepository(option.BlobStore.ContainerName!, option.BlobStore.CreateBlobConnectionString())).As<IBlobRepository>();
                 builder.RegisterType<ModelRepository>().As<IModelRepository>().InstancePerLifetimeScope();
                 builder.RegisterType<Json>().As<IJson>().InstancePerLifetimeScope();
                 builder.RegisterType<ConsoleTelemetry>().As<ITelemetry>().InstancePerLifetimeScope();

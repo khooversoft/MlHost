@@ -129,5 +129,13 @@ namespace MlHostApi.Repository
                 .ToModel()
                 .Func(async x => await WriteConfiguration(x, token));
         }
+
+        public async Task<ModelId?> GetRegistration(string hostName, CancellationToken token)
+        {
+            IDictionary<string, ModelId> hostAssigments = (await ReadConfiguration(token)).ToDictionary();
+
+            if (hostAssigments.TryGetValue(hostName, out ModelId? value)) return value;
+            return null;
+        }
     }
 }

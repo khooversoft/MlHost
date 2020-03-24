@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using MlHost.Application;
 using MlHost.Tools;
+using MlHostApi.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,22 +30,22 @@ namespace MlHost.Services
             _packageSource = packageSource;
         }
 
-        public async Task Deploy()
+        public async Task Deploy(ModelId modelId)
         {
-            bool folderExist = Directory.Exists(_option.Deployment.DeploymentFolder);
+            bool folderExist = Directory.Exists(_option.Deployment!.DeploymentFolder);
 
             _logger.LogInformation($"Deploying ML code & model, deployment folder={_option.Deployment.DeploymentFolder}, exist={folderExist}, forceDelete={_option.ForceDeployment}");
             if (folderExist && _option.ForceDeployment) ResetDeploymentFolder();
 
             Directory.CreateDirectory(_option.Deployment.DeploymentFolder);
 
-            await UpdateToFolder();
+            await UpdateToFolder(modelId);
             _logger.LogInformation($"Deployed ML code & model");
         }
 
         private void ResetDeploymentFolder()
         {
-            _logger.LogInformation($"Deleting exiting deployment folder {_option.Deployment.DeploymentFolder}");
+            _logger.LogInformation($"Deleting exiting deployment folder {_option.Deployment!.DeploymentFolder}");
             Directory.Delete(_option.Deployment.DeploymentFolder, true);
 
             using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
@@ -54,9 +55,9 @@ namespace MlHost.Services
             }
         }
 
-        public async Task UpdateToFolder()
+        public async Task UpdateToFolder(ModelId modelId)
         {
-            using Stream zipStream = await _packageSource.GetStream();
+            using Stream zipStream = await _packageSource.GetStream(modelId);
             using ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read, false);
 
             ZipFile[] zipFiles = zipArchive.Entries
@@ -70,7 +71,7 @@ namespace MlHost.Services
 
         private void DeleteFileNotInZip(ZipFile[] zipFiles)
         {
-            string[] currentFiles = Directory.GetFiles(_option.Deployment.DeploymentFolder, "*.*", SearchOption.AllDirectories);
+            string[] currentFiles = Directory.GetFiles(_option.Deployment!.DeploymentFolder, "*.*", SearchOption.AllDirectories);
             if (currentFiles.Length == 0) return;
 
             string[] filesToDelete = currentFiles
@@ -92,7 +93,7 @@ namespace MlHost.Services
             {
                 if (_executionContext.TokenSource.Token.IsCancellationRequested) break;
 
-                string filePath = Path.Combine(_option.Deployment.DeploymentFolder, zipFile.FilePath);
+                string filePath = Path.Combine(_option.Deployment!.DeploymentFolder, zipFile.FilePath);
 
                 if (File.Exists(filePath) && IsFileCurrent(filePath, zipFile.ZipArchiveEntry))
                 {

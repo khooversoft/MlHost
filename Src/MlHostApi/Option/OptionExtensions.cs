@@ -21,5 +21,9 @@ namespace MlHostApi.Option
             keyVaultOption.KeyVaultName.VerifyNotEmpty($"{nameof(keyVaultOption.KeyVaultName)} is missing");
             keyVaultOption.KeyName.VerifyNotEmpty($"{nameof(keyVaultOption.KeyName)} is missing");
         }
+
+        public static string CreateBlobConnectionString(this BlobStoreOption blobStoreOption) =>
+            blobStoreOption.VerifyNotNull(nameof(blobStoreOption))
+            .Func(x => $"DefaultEndpointsProtocol=https;AccountName={x.AccountName};AccountKey={x.AccountKey};EndpointSuffix=core.windows.net");
     }
 }

@@ -36,14 +36,14 @@ namespace MlHostCli.Test
                 HostName = "hostName",
             };
 
-            await new UploadModelActivity(option, _modelFixture.ModelRepository).Upload(CancellationToken.None);
+            await new UploadModelActivity(option, _modelFixture.ModelRepository, _modelFixture.Telemetry).Upload(CancellationToken.None);
 
             HostConfigurationModel hostConfigurationModel = await _modelFixture.ModelRepository.ReadConfiguration(CancellationToken.None);
             hostConfigurationModel.Should().NotBeNull();
             hostConfigurationModel.HostAssignments.Should().NotBeNull();
             hostConfigurationModel.HostAssignments!.Count.Should().Be(0);
 
-            await new ActivateModelActivity(option, _modelFixture.ModelRepository).Activate(CancellationToken.None);
+            await new ActivateModelActivity(option, _modelFixture.ModelRepository, _modelFixture.Telemetry).Activate(CancellationToken.None);
 
             hostConfigurationModel = await _modelFixture.ModelRepository.ReadConfiguration(CancellationToken.None);
             hostConfigurationModel.Should().NotBeNull();
@@ -52,7 +52,7 @@ namespace MlHostCli.Test
             hostConfigurationModel.HostAssignments![0].HostName.Should().Be(option.HostName);
             hostConfigurationModel.HostAssignments![0].ModelId.Should().Be(new ModelId(option.ModelName!, option.VersionId!));
 
-            await new DeactivateModelActivity(option, _modelFixture.ModelRepository).Deactivate(CancellationToken.None);
+            await new DeactivateModelActivity(option, _modelFixture.ModelRepository, _modelFixture.Telemetry).Deactivate(CancellationToken.None);
 
             hostConfigurationModel = await _modelFixture.ModelRepository.ReadConfiguration(CancellationToken.None);
             hostConfigurationModel.Should().NotBeNull();

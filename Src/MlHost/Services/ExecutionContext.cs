@@ -12,6 +12,6 @@ namespace MlHost.Services
 
         public CancellationTokenSource TokenSource { get; } = new CancellationTokenSource();
 
-        public bool Running { get; set; }
+        public ExecutionState State { get; set; }
     }
 }

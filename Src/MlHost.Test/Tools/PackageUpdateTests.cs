@@ -4,6 +4,7 @@ using MlHost.Application;
 using MlHost.Services;
 using MlHost.Test.Application;
 using MlHost.Tools;
+using MlHostApi.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -45,10 +46,11 @@ namespace MlHost.Test.Tools
 
             string[] args = new[]
             {
-                "ZipFileUri=notValid",
+                "HostName=hostName",
                 "ForceDeployment=false",
                 "BlobStore:ContainerName=notValid",
-                "BlobStore:ConnectionString=notValid",
+                "BlobStore:AccountName=accountName",
+                "BlobStore:AccountKey=accountKey",
                 $"Deployment:DeploymentFolder={tempFolder}",
                 "Deployment:PackageFolder=notValid",
             };
@@ -59,7 +61,7 @@ namespace MlHost.Test.Tools
 
             IPackageSource originalPackageSource = new PackageSourceFromResource(typeof(PackageUpdateTests), "MlHost.Test.Package.TestZip.zip");
             IPackageDeployment originalDeployment = new PackageDeployment(memoryLogger, option, executionContext, originalPackageSource);
-            await originalDeployment.Deploy();
+            await originalDeployment.Deploy(new ModelId("test/test"));
 
             memoryLogger.Count().Should().BeGreaterThan(0);
 
@@ -75,7 +77,7 @@ namespace MlHost.Test.Tools
 
             IPackageSource updatePackageSource = new PackageSourceFromResource(typeof(PackageUpdateTests), "MlHost.Test.Package.TestZip-Update.zip");
             IPackageDeployment updateDeployment = new PackageDeployment(memoryLogger, option, executionContext, updatePackageSource);
-            await updateDeployment.Deploy();
+            await updateDeployment.Deploy(new ModelId("test/test"));
 
             memoryLogger.Count().Should().BeGreaterThan(0);
 

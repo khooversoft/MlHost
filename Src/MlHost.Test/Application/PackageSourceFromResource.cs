@@ -1,6 +1,7 @@
 ﻿using MlHost.Services;
 using MlHost.Tools;
 using MlHostApi.Tools;
+using MlHostApi.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +25,7 @@ namespace MlHost.Test.Application
             _resourceId = resourceId;
         }
 
-        public Task<Stream> GetStream()
+        public Task<Stream> GetStream(ModelId modelId)
         {
             Stream? packageStream = Assembly.GetAssembly(_type)!.GetManifestResourceStream(_resourceId);
             if (packageStream == null) throw new ArgumentException($"Resource ID {_resourceId} not located in assembly");
