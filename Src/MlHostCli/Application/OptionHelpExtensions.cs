@@ -1,6 +1,9 @@
 ﻿using MlHostApi.Tools;
+using MlHostCli.Tools;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace MlHostCli.Application
@@ -11,24 +14,22 @@ namespace MlHostCli.Application
         {
             return new[]
             {
-                "",
                 "ML Host command line interface commands",
-                "",
-               $"                      : Model name and version must match {VerifyExtensions.ValidPattern}.",
                 "",
                 "Help                  : Display help",
                 "List                  : List active models",
+                "Dump                  : Dump current configuration",
                 "",
                 "Upload a ML Model zip package to storage",
                 "  Upload              : Upload command",
-                "  ZipFile={file}      : Zip file to upload",
+                "  PackageFile={file}  : ML Model Package (Zip) file to upload",
                 "  ModelName={name}    : Model's name",
                 "  VersionId={name}    : Model's version",
                 "  Force               : (optional) Overwrite blob if already exist",
                 "",
                 "Download a ML Model zip package to storage",
-                "  Download              : Download command",
-                "  ZipFile={file}      : Zip file to upload",
+                "  Download            : Download command",
+                "  PackageFile={file}  : ML Model Package (Zip) file to upload",
                 "  ModelName={name}    : Model's name",
                 "  VersionId={name}    : Model's version",
                 "  Force               : (optional) Overwrite zip file if already exist",
@@ -46,15 +47,18 @@ namespace MlHostCli.Application
                 "",
                 "",
                 "Configuration for BlobStorage",
-                "",
                 "  SecretId={secretId}                       : Use .NET Core configuration secret json file.  SecretId indicates which secret file to use.",
                 "",
                 "  BlobStore:ContainerName={container name}  : Azure Blob Storage container name (required)",
                 "  BlobStore:AccountName={accountName}       : Azure Blob Storage account name (required)",
                 "  BlobStore:AccountKey={accountKey}         : Azure Blob Storage account key (required)",
-
-                "  KeyVault:KeyVaultName={keyVaultName}      : Name of the Azure key vault (required if 'BlobStore:AccountKey' is not specified",
-                "  KeyVault:KeyName={keyName}                : Name of the Azure key vault's key where the 'BlobStore:AcountKey' is stored",
+                "",
+                "  If 'BlobStore:AccountKey' is not specified then key vault will be used.",
+                "    KeyVault:KeyVaultName={keyVaultName}    : Name of the Azure key vault (required if 'BlobStore:AccountKey' is not specified",
+                "    KeyVault:KeyName={keyName}              : Name of the Azure key vault's key where the 'BlobStore:AcountKey' is stored",
+                "",
+                "Model ID",
+               $"  Model name and version must match {VerifyExtensions.ValidPattern}.",
             };
         }
     }

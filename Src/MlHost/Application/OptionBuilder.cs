@@ -48,9 +48,12 @@ namespace MlHost.Application
 
             Option tempOption = new ConfigurationBuilder()
                 .Func(x => JsonFile.ToNullIfEmpty() switch { string v => x.AddJsonFile(JsonFile), _ => x })
+                .Func(x => (SecretId.ToNullIfEmpty()) switch { string v => x.AddUserSecrets(v), _ => x })
                 .AddCommandLine(args)
                 .Build()
                 .Bind();
+
+            string? secret = SecretId ?? tempOption.SecretId;
 
             string accountKey = tempOption.BlobStore?.AccountKey switch
             {
@@ -70,7 +73,7 @@ namespace MlHost.Application
             Option option = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .Func(x => JsonFile.ToNullIfEmpty() switch { string v => x.AddJsonFile(v), _ => x })
-                .Func(x => (tempOption.SecretId.ToNullIfEmpty() ?? SecretId) switch { string v => x.AddUserSecrets(v), _ => x })
+                .Func(x => secret.ToNullIfEmpty() switch { string v => x.AddUserSecrets(v), _ => x })
                 .AddCommandLine(args)
                 .Build()
                 .Bind();

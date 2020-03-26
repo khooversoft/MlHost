@@ -7,18 +7,22 @@ using System;
 
 namespace MlHost.Test.Application
 {
-    public class StorageStoreFixture : TestWebsiteHost, IDisposable
+    public class TestHostWithStorage : TestWebsiteHost, IDisposable
     {
-        public StorageStoreFixture()
+        public TestHostWithStorage()
         {
             string[] args = new[]
             {
                 "ServiceUri=http://localhost:5003/predict",
                 "ForceDeployment=true",
-                "ZipFileUri=squad/ml-test-package.zip",
-                "BlobStore:ContainerName=mldatamodels",
+
+                "BlobStore:ContainerName=model-test",
+                "BlobStore:AccountName=mlteststoragev1",
+
                 "Deployment:DeploymentFolder=testDeploymentFolder",
                 "Deployment:PackageFolder=testPackageFolder",
+
+                "HostName=mlhost001",
             };
 
             IOption option = new OptionBuilder()

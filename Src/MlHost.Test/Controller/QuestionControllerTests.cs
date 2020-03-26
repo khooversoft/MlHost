@@ -2,6 +2,7 @@
 using MlHost.Services;
 using MlHost.Test.Application;
 using MlHostApi.Models;
+using MlHostApi.Services;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,11 +11,11 @@ using Xunit;
 namespace MlHost.Test.Controller
 {
     [Collection("WebsiteTest")]
-    public class QuestionControllerTests : IClassFixture<StorageStoreFixture>
+    public class QuestionControllerTests : IClassFixture<TestHostWithStorage>
     {
-        private readonly StorageStoreFixture _storageStoreFixture;
+        private readonly TestHostWithStorage _storageStoreFixture;
 
-        public QuestionControllerTests(StorageStoreFixture storageStoreFixture)
+        public QuestionControllerTests(TestHostWithStorage storageStoreFixture)
         {
             _storageStoreFixture = storageStoreFixture;
         }
@@ -39,10 +40,7 @@ namespace MlHost.Test.Controller
             AnswerResponse answerModel = jsonSerializer.Deserialize<AnswerResponse>(responseString);
 
             answerModel.Should().NotBeNull();
-            answerModel.Start.Should().NotBe(0);
-            answerModel.End.Should().NotBe(0);
-            answerModel.Answer.Should().NotBeNullOrEmpty();
-            answerModel.Score.Should().NotBe(0d);
+            answerModel.Answer.Should().Be("{label=2; score=0.999996602535248}");
         }
     }
 }

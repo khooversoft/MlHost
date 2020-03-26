@@ -36,15 +36,15 @@ namespace MlHostCli.Activity
         {
             var modelId = new ModelId(_option.ModelName!, _option.VersionId!);
 
-            _telemetry.WriteLine($"Uploading model {_option.ZipFile} to model {modelId}, force={_option.Force}");
+            _telemetry.WriteLine($"Uploading model {_option.PackageFile} to model {modelId}, force={_option.Force}");
 
             VerifyIsZip();
-            await _modelRepository.Upload(_option.ZipFile!, modelId, _option.Force, token);
+            await _modelRepository.Upload(_option.PackageFile!, modelId, _option.Force, token);
         }
 
         private void VerifyIsZip()
         {
-            using Stream zipStream = new FileStream(_option.ZipFile!, FileMode.Open);
+            using Stream zipStream = new FileStream(_option.PackageFile!, FileMode.Open);
             using ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read, false);
 
             Func<string, string?> getRootName = x => x.Split('/', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();

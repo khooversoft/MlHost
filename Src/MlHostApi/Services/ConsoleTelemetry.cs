@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MlHostApi.Tools;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,11 +7,15 @@ namespace MlHostApi.Services
 {
     public class ConsoleTelemetry : ITelemetry
     {
-        public ConsoleTelemetry() { }
+        private readonly ISecretFilter _secretFilter;
 
-        public void WriteLine(string message)
+        public ConsoleTelemetry(ISecretFilter secretFilter)
         {
-            Console.WriteLine(message);
+            secretFilter.VerifyNotNull(nameof(secretFilter));
+
+            _secretFilter = secretFilter;
         }
+
+        public void WriteLine(string? message) => Console.WriteLine(_secretFilter.FilterSecrets(message ?? string.Empty));
     }
 }

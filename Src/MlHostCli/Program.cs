@@ -5,6 +5,7 @@ using MlHostApi.Services;
 using MlHostApi.Tools;
 using MlHostCli.Activity;
 using MlHostCli.Application;
+using MlHostCli.Tools;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -57,6 +58,7 @@ namespace MlHostCli
             if (option.Help)
             {
                 option.GetHelp()
+                    .Append(string.Empty)
                     .ForEach(x => Console.WriteLine(x));
 
                 return _ok;
@@ -75,6 +77,7 @@ namespace MlHostCli
 
                 var activities = new Func<Task>[]
                 {
+                    () => option.Dump ? container.Resolve<DumpConfigurationActivity>().Dump() : Task.CompletedTask,
                     () => option.Upload ? container.Resolve<UploadModelActivity>().Upload(cancellationTokenSource.Token) : Task.CompletedTask,
                     () => option.Download ? container.Resolve<DownloadModelActivity>().Download(cancellationTokenSource.Token) : Task.CompletedTask,
                     () => option.Delete ? container.Resolve<DeleteModelActivity>().Delete(cancellationTokenSource.Token) : Task.CompletedTask,
@@ -85,10 +88,11 @@ namespace MlHostCli
 
                 await activities
                     .ForEachAsync(async x => await x());
-
-                Console.WriteLine("Completed");
-                return _ok;
             }
+
+            Console.WriteLine();
+            Console.WriteLine("Completed");
+            return _ok;
         }
 
         private IContainer CreateContainer(IOption option)
@@ -96,13 +100,17 @@ namespace MlHostCli
             var builder = new ContainerBuilder();
 
             builder.RegisterInstance(option).As<IOption>();
+            builder.RegisterInstance(option.SecretFilter ?? new SecretFilter()).As<ISecretFilter>();
+
+            builder.RegisterType<Json>().As<IJson>().InstancePerLifetimeScope();
+            builder.RegisterType<ConsoleTelemetry>().As<ITelemetry>().InstancePerLifetimeScope();
+            builder.RegisterType<DumpConfigurationActivity>();
 
             if (option.BlobStore != null)
             {
                 builder.RegisterInstance(new BlobRepository(option.BlobStore.ContainerName!, option.BlobStore.CreateBlobConnectionString())).As<IBlobRepository>();
                 builder.RegisterType<ModelRepository>().As<IModelRepository>().InstancePerLifetimeScope();
-                builder.RegisterType<Json>().As<IJson>().InstancePerLifetimeScope();
-                builder.RegisterType<ConsoleTelemetry>().As<ITelemetry>().InstancePerLifetimeScope();
+
                 builder.RegisterType<ActivateModelActivity>();
                 builder.RegisterType<DeleteModelActivity>();
                 builder.RegisterType<DownloadModelActivity>();

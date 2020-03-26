@@ -1,12 +1,11 @@
 {
-  "force": true,
   "upload": true,
-  "zipfile": "D:\\Work\\ML\\Albert\\squad.zip",
-  "Activate": true,
   "HostName": "mlhost001",
-  "ModelName": "Squad",
-  "VersionId": "v1000",
+  "Activate": true,
   "List": true,
+  "Dump": true,
+
+  "SecretId": "MlHostCli.exe",
 
   "KeyVault": {
     "KeyVaultName": "mltest-kv",
@@ -14,7 +13,8 @@
   },
 
   "BlobStore": {
-    "ContainerName": "mldatamodels",
+    //"ContainerName": "mldatamodels",
+    "ContainerName": "model-test",
     "AccountName": "mlteststoragev1"
   }
 }

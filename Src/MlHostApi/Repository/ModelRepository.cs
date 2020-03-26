@@ -43,7 +43,7 @@ namespace MlHostApi.Repository
             modelId.VerifyNotNull(nameof(modelId));
 
             using Stream fileStream = new FileStream(modelVersionFile, FileMode.Open);
-            await _blobRepository.Upload(fileStream, modelId, force, token);
+            await _blobRepository.Upload(fileStream, modelId.ToBlobPath(), force, token);
         }
 
         public async Task Download(ModelId modelId, string toFile, CancellationToken token)
@@ -52,7 +52,7 @@ namespace MlHostApi.Repository
             toFile.VerifyNotEmpty(nameof(toFile));
 
             using Stream fileStream = new FileStream(toFile, FileMode.Create);
-            await _blobRepository.Download(modelId, fileStream, token);
+            await _blobRepository.Download(modelId.ToBlobPath(), fileStream, token);
         }
 
         public async Task Delete(ModelId modelId, CancellationToken token)
@@ -60,13 +60,13 @@ namespace MlHostApi.Repository
             modelId.VerifyNotNull(nameof(modelId));
 
             await RemoveActivation(modelId, token);
-            await _blobRepository.Delete(modelId, token);
+            await _blobRepository.Delete(modelId.ToBlobPath(), token);
         }
 
         public async Task<bool> Exist(ModelId modelId, CancellationToken token)
         {
             modelId.VerifyNotNull(nameof(modelId));
-            IReadOnlyList<string> list = await Search(modelId, modelId.ToRegexPattern(), token);
+            IReadOnlyList<string> list = await Search(modelId.ToBlobPath(), modelId.ToRegexPattern(), token);
             return list.Count == 1;
         }
 

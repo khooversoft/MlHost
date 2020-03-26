@@ -16,7 +16,7 @@ namespace MlHostCli.Test.Option
             var args = new string[]
             {
                     "upload",
-                    "zipFile=zipFile1.zip-dkdkdk",
+                    "PackageFile=zipFile1.zip-dkdkdk",
                     "modelName=ml-model-temp",
                     "VersionId=v10-0-0-1",
             };
@@ -34,7 +34,7 @@ namespace MlHostCli.Test.Option
             var args = new string[]
             {
                 "DOWNLOAD",
-                "zipFile=c:\\zipfile2.zip",
+                "PackageFile=c:\\zipfile2.zip",
                 "modelName=mYmodel99",  // no upper case
                 "VersionId=x1000",
             };
@@ -52,7 +52,7 @@ namespace MlHostCli.Test.Option
             var args = new string[]
             {
                 "DOWNLOAD",
-                "zipFile=c:\\zipfile2.zip",
+                "PackageFile=c:\\zipfile2.zip",
                 "VersionId=x1000",
             };
 

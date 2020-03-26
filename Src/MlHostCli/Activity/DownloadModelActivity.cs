@@ -32,7 +32,7 @@ namespace MlHostCli.Activity
             var modelId = new ModelId(_option.ModelName!, _option.VersionId!);
 
             _telemetry.WriteLine($"Downloading model {modelId}");
-            return _modelRepository.Download(modelId, _option.ZipFile!, token);
+            return _modelRepository.Download(modelId, _option.PackageFile!, token);
         }
     }
 }

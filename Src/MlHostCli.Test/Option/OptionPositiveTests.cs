@@ -27,7 +27,7 @@ namespace MlHostCli.Test.Option
         [Fact]
         public void GivenValidUploadOption_WhenBuild_ShouldSucceed()
         {
-            var tempZipFile = Path.Combine(Path.GetTempPath(), "zipFile1.zip");
+            var tempZipFile = Path.Combine(Path.GetTempPath(), "zipFile1.mlPackage");
             File.WriteAllText(tempZipFile, "hello");
 
             try
@@ -35,7 +35,7 @@ namespace MlHostCli.Test.Option
                 var args = new string[]
                 {
                     "upload",
-                    $"zipFile={tempZipFile}",
+                    $"PackageFile={tempZipFile}",
                     "modelName=ml-model-temp",
                     "VersionId=v10-0-0-1",
                     "BlobStore:ContainerName=containerName",
@@ -48,7 +48,7 @@ namespace MlHostCli.Test.Option
                     .Build();
 
                 option.Upload.Should().BeTrue();
-                option.ZipFile.Should().Be(tempZipFile);
+                option.PackageFile.Should().Be(tempZipFile);
                 option.ModelName.Should().Be("ml-model-temp");
                 option.VersionId.Should().Be("v10-0-0-1");
 
@@ -74,7 +74,7 @@ namespace MlHostCli.Test.Option
             dynamic config = new
             {
                 Download = true,
-                zipFile = "c:\\zipfile2.zip",
+                PackageFile = "c:\\zipfile2.mlPackage",
                 ModelName = "ml-model-temp",
                 VersionID = "v10-0-0-1",
                 BlobStore = new
@@ -101,7 +101,7 @@ namespace MlHostCli.Test.Option
                     .Build();
 
                 option.Download.Should().BeTrue();
-                option.ZipFile.Should().Be("c:\\zipfile2.zip");
+                option.PackageFile.Should().Be("c:\\zipfile2.mlPackage");
                 option.ModelName.Should().Be("ml-model-temp-next-version");
                 option.VersionId.Should().Be("v10-0-0-1");
 
@@ -122,7 +122,7 @@ namespace MlHostCli.Test.Option
             var args = new string[]
             {
                 "DOWNLOAD",
-                "zipFile=c:\\zipfile2.zip",
+                "PackageFile=c:\\zipfile2.mlPackage",
                 "modelName=mymodel99",
                 "VersionId=x1000",
                 "BlobStore:ContainerName=containerName",
@@ -135,7 +135,7 @@ namespace MlHostCli.Test.Option
                 .Build();
 
             option.Download.Should().BeTrue();
-            option.ZipFile.Should().Be("c:\\zipfile2.zip");
+            option.PackageFile.Should().Be("c:\\zipfile2.mlPackage");
             option.ModelName.Should().Be("mymodel99");
             option.VersionId.Should().Be("x1000");
 

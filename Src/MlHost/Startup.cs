@@ -8,6 +8,7 @@ using MlHost.Services;
 using MlHost.Tools;
 using MlHostApi.Option;
 using MlHostApi.Repository;
+using MlHostApi.Services;
 
 namespace MlHost
 {

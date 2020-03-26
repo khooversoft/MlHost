@@ -12,7 +12,7 @@ namespace MlHostApi.Types
         public ModelId(string modelName, string versionId)
         {
             ModelName = modelName.ToLower().VerifyBlobVector(nameof(modelName));
-            VersionId = versionId.ToLower().VerifyBlobVector(nameof(VersionId));
+            VersionId = versionId.ToLower().VerifyBlobVector(nameof(versionId));
         }
 
         public ModelId(string root, string modelName, string versionId)

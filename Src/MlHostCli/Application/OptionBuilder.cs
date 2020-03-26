@@ -9,6 +9,8 @@ using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
 using MlHostApi.Option;
+using MlHostCli.Tools;
+using MlHostApi.Services;
 
 namespace MlHostCli.Application
 {
@@ -28,6 +30,8 @@ namespace MlHostCli.Application
 
         public IOption Build()
         {
+            if (Args == null || Args.Length == 0) return new Option { Help = true };
+
             // Look for switches in the model
             string[] switchNames = typeof(Option).GetProperties()
                 .Where(x => x.PropertyType == typeof(bool))
@@ -39,48 +43,59 @@ namespace MlHostCli.Application
                 .Select(x => switchNames.Contains(x, StringComparer.OrdinalIgnoreCase) ? x + "=true" : x)
                 .ToArray();
 
-            // Look for "ConfigFile={file}", if specified, to process
-            string? configFile = ConfigFile ?? args
-                .Select(x => x.Split('=', StringSplitOptions.RemoveEmptyEntries))
-                .Where(x => x.Length == 2 && x.First().Equals("ConfigFile", StringComparison.OrdinalIgnoreCase))
-                .Select(x => x[1])
-                .FirstOrDefault();
+            string? configFile = null;
+            string? secretId = null;
+            string? accountKey = null;
+            Option option = null!;
 
-            Option tempOption = new ConfigurationBuilder()
+            // Because ordering or placement on critical configuration can different, loop through a process
+            // of building the correct configuration.  Pattern cases below are in priority order.
+            while (true)
+            {
+                option = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
                     .Func(x => configFile.ToNullIfEmpty() switch { string v => x.AddJsonFile(configFile), _ => x })
-                    .AddCommandLine(args)
+                    .Func(x => secretId.ToNullIfEmpty() switch { string v => x.AddUserSecrets(v), _ => x })
+                    .AddCommandLine(args.Concat(accountKey switch { string v => new[] { accountKey }, _ => Enumerable.Empty<string>() }).ToArray())
                     .Build()
                     .Bind();
 
-            if (tempOption.Help)
-            {
-                return new Option { Help = true };
-            }
+                switch (option)
+                {
+                    case Option v when v.Help:
+                        return new Option { Help = true };
 
-            string accountKey = tempOption.BlobStore?.AccountKey switch
-            {
-                string v => v,
+                    case Option v when v.ConfigFile.ToNullIfEmpty() != null && configFile == null:
+                        configFile = v.ConfigFile;
+                        continue;
 
-                _ => new ConfigurationBuilder()
-                    .Func(x =>
-                    {
-                        tempOption.KeyVault!.Verify();
+                    case Option v when v.BlobStore?.AccountKey == null && v.SecretId.ToNullIfEmpty() != null && secretId == null:
+                        secretId = v.SecretId;
+                        continue;
+
+                    case Option v when v.BlobStore?.AccountKey.ToNullIfEmpty() == null && accountKey == null:
+                        Console.WriteLine("Getting secret from Key Vault");
+                        option.KeyVault!.Verify();
 
                         var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback));
-                        x.AddAzureKeyVault($"https://{tempOption.KeyVault!.KeyVaultName}.vault.azure.net/", keyVaultClient, new DefaultKeyVaultSecretManager());
-                        return x.Build()[tempOption.KeyVault!.KeyName];
-                    }),
+
+                        accountKey = new ConfigurationBuilder()
+                            .AddAzureKeyVault($"https://{option.KeyVault!.KeyVaultName}.vault.azure.net/", keyVaultClient, new DefaultKeyVaultSecretManager())
+                            .Build()[option.KeyVault!.KeyName];
+
+                        if (accountKey != null) continue;
+                        break;
+                }
+
+                break;
             };
 
-            return new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .Func(x => configFile.ToNullIfEmpty() switch { string v => x.AddJsonFile(v), _ => x })
-                .Func(x => tempOption.SecretId.ToNullIfEmpty() switch { string v => x.AddUserSecrets(v), _ => x })
-                .AddCommandLine(args
-                    .Append($"{nameof(Option.BlobStore)}:{nameof(Option.BlobStore.AccountKey)}={accountKey}")
-                    .ToArray())
-                .Build()
-                .Bind()
+            if (option.BlobStore?.AccountKey != null)
+            {
+                option.SecretFilter = new SecretFilter(new[] { option.BlobStore.AccountKey });
+            }
+
+            return option
                 .Verify();
         }
     }

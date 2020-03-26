@@ -33,7 +33,7 @@ namespace MlHostCli.Test
 
             IOption option = new TestOption
             {
-                ZipFile= tempZipFile,
+                PackageFile= tempZipFile,
                 ModelName = modelId.ModelName,
                 VersionId = modelId.VersionId,
             };
@@ -56,7 +56,7 @@ namespace MlHostCli.Test
 
             IOption option = new TestOption
             {
-                ZipFile = tempZipFile,
+                PackageFile = tempZipFile,
                 ModelName = modelId.ModelName,
                 VersionId = modelId.VersionId,
             };
@@ -67,7 +67,7 @@ namespace MlHostCli.Test
 
             IOption downloadOption = new TestOption
             {
-                ZipFile = toZipFile,
+                PackageFile = toZipFile,
                 ModelName = option.ModelName,
                 VersionId = option.VersionId,
             };

@@ -30,7 +30,7 @@ namespace MlHostCli.Test
 
             IOption option = new TestOption
             {
-                ZipFile = tempZipFile,
+                PackageFile = tempZipFile,
                 ModelName = $"test-zip-{Guid.NewGuid()}",
                 VersionId = "v100",
                 HostName = "hostName",

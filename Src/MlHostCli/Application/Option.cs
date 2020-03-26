@@ -1,4 +1,5 @@
 ﻿using MlHostApi.Option;
+using MlHostApi.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,6 +9,9 @@ namespace MlHostCli.Application
     internal class Option : IOption
     {
         public bool Help { get; set; }
+        public bool Dump { get; set; }
+
+        public string? ConfigFile { get; set; }
 
         public bool Upload { get; set; }
         public bool Download { get; set; }
@@ -26,10 +30,12 @@ namespace MlHostCli.Application
 
         public string? SecretId { get; set; }
 
-        public string? ZipFile { get; set; }
+        public string? PackageFile { get; set; }
 
         public BlobStoreOption? BlobStore { get; set; }
 
         public KeyVaultOption? KeyVault { get; set; }
+
+        public ISecretFilter? SecretFilter { get; set; }
     }
 }

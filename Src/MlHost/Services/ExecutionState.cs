@@ -7,7 +7,7 @@ namespace MlHost.Services
 {
     public enum ExecutionState
     {
-        None,
+        Booting,
         Starting,
         Deploying,
         Running,

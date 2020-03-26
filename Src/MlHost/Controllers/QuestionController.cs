@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using MlHost.Services;
 using MlHostApi.Models;
+using MlHostApi.Tools;
 using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
@@ -24,8 +25,10 @@ namespace MlHost.Controllers
         }
 
         [HttpPost("predict")]
-        public async Task<IActionResult> Predict([FromBody] QuestionRequest questionModel)
+        public async Task<IActionResult> Predict([FromBody] QuestionRequest questionRequest)
         {
+            if (questionRequest == null || questionRequest.Question.ToNullIfEmpty() == null) return StatusCode((int)HttpStatusCode.BadRequest);
+
             if (_executionContext.State != ExecutionState.Running)
             {
                 _logger.LogInformation($"Predict is starting up");
@@ -34,13 +37,13 @@ namespace MlHost.Controllers
 
             var sw = Stopwatch.StartNew();
 
-            _logger.LogInformation($"Question: {questionModel.Question}");
-            AnswerResponse value = await _question.Ask(questionModel);
+            _logger.LogInformation($"Question: {questionRequest.Question}");
+            AnswerResponse value = await _question.Ask(questionRequest);
 
             sw.Stop();
-            _logger.LogInformation($"Question: {questionModel.Question}, completed: {sw.ElapsedMilliseconds}ms");
+            _logger.LogInformation($"Question: {questionRequest.Question}, completed: {sw.ElapsedMilliseconds}ms");
 
-            return base.Ok(value);
+            return Ok(value);
         }
     }
 }

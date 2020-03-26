@@ -29,16 +29,16 @@ namespace MlHostCli.Application
                 && _verifyBlob(option),
 
             option => option.Upload
-                && option.ZipFile.VerifyNotEmpty($"{nameof(option.ZipFile)} file is required for {nameof(option.Upload)}") != null
-                && option.ZipFile.VerifyAssert(x => File.Exists(x), $"{nameof(option.ZipFile)} file does not exist") != null
-                && option.ZipFile.VerifyAssert(x => Path.GetExtension(x)?.Equals(".zip", StringComparison.OrdinalIgnoreCase) == true, $"{nameof(option.ZipFile)} is not a zip file") != null
+                && option.PackageFile.VerifyNotEmpty($"{nameof(option.PackageFile)} file is required for {nameof(option.Upload)}") != null
+                && option.PackageFile.VerifyAssert(x => File.Exists(x), $"{nameof(option.PackageFile)} file does not exist") != null
+                && option.PackageFile.VerifyAssert(x => Path.GetExtension(x)?.Equals(".mlPackage", StringComparison.OrdinalIgnoreCase) == true, $"{nameof(option.PackageFile)} is not a 'mlPackage' file") != null
                 && _verifyModelId(option)
                 && _verifyBlob(option),
 
             option => option.Download
-                && option.ZipFile.VerifyNotEmpty(nameof(option.ZipFile)) != null
-                && option.ZipFile.VerifyAssert(x => option.Force || !File.Exists(x), $"{nameof(option.ZipFile)} file exist.  To overwrite use the 'Force' option") != null
-                && option.ZipFile.VerifyAssert(x => Path.GetExtension(x)?.Equals(".zip", StringComparison.OrdinalIgnoreCase) == true, $"{nameof(option.ZipFile)} is not a zip file") != null
+                && option.PackageFile.VerifyNotEmpty($"{nameof(option.PackageFile)} is required for {nameof(option.Download)}") != null
+                && option.PackageFile.VerifyAssert(x => option.Force || !File.Exists(x), $"{nameof(option.PackageFile)} file exist.  To overwrite use the 'Force' option") != null
+                && option.PackageFile.VerifyAssert(x => Path.GetExtension(x)?.Equals(".mlPackage", StringComparison.OrdinalIgnoreCase) == true, $"{nameof(option.PackageFile)} is not a 'mlPackage' file") != null
                 && _verifyModelId(option)
                 && _verifyBlob(option),
 

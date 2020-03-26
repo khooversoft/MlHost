@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MlHost.Services;
 using MlHostApi.Models;
+using MlHostApi.Services;
 using System;
 using System.Net.Http;
 using System.Threading;
@@ -21,7 +22,7 @@ namespace MlHost.Test.Application
 
         public async Task WaitForStartup()
         {
-            var token = new CancellationTokenSource(TimeSpan.FromMinutes(2));
+            var token = new CancellationTokenSource(TimeSpan.FromMinutes(5));
             while (!token.IsCancellationRequested)
             {
                 var response = await Client.GetAsync("api/ping");
@@ -29,10 +30,12 @@ namespace MlHost.Test.Application
                 var responseString = await response.Content.ReadAsStringAsync();
                 PingResponse result = Resolve<IJson>().Deserialize<PingResponse>(responseString);
 
-                if (result.Status == "Running") return;
+                if (result.Status == ExecutionState.Running.ToString()) return;
 
                 await Task.Delay(TimeSpan.FromSeconds(1));
             }
+
+            throw new TimeoutException("Server has not started");
         }
 
         public void Dispose()

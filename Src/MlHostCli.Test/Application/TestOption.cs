@@ -1,4 +1,5 @@
 ﻿using MlHostApi.Option;
+using MlHostApi.Services;
 using MlHostCli.Application;
 using System;
 using System.Collections.Generic;
@@ -32,8 +33,12 @@ namespace MlHostCli.Test.Application
 
         public string? VersionId { get; set; }
 
-        public string? ZipFile { get; set; }
+        public string? PackageFile { get; set; }
 
         public bool Deactivate { get; set; }
+
+        public bool Dump { get; set; }
+
+        public ISecretFilter? SecretFilter { get; set; }
     }
 }

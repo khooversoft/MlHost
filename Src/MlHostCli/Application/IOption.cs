@@ -1,10 +1,12 @@
 ﻿using MlHostApi.Option;
+using MlHostApi.Services;
 
 namespace MlHostCli.Application
 {
     internal interface IOption
     {
         bool Help { get; }
+        bool Dump { get; }
 
         bool Upload { get; }
         bool Download { get; }
@@ -22,8 +24,10 @@ namespace MlHostCli.Application
 
         string? SecretId { get; }
 
-        string? ZipFile { get; }
+        string? PackageFile { get; }
 
         BlobStoreOption? BlobStore { get; }
+
+        ISecretFilter? SecretFilter { get; }
     }
 }
