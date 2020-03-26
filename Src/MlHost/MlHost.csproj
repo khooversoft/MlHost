@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Nullable>enable</Nullable>
+    <!--<AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>-->
     <UserSecretsId>MlHost.exe</UserSecretsId>
     <ApplicationInsightsResourceId>/subscriptions/d112ae79-d3aa-466b-a806-ea425147b8be/resourcegroups/MlTest-rg/providers/microsoft.insights/components/MlHost</ApplicationInsightsResourceId>
   </PropertyGroup>
@@ -25,6 +26,7 @@
 
   <ItemGroup>
     <Folder Include="Package\" />
+    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 
   <ItemGroup>

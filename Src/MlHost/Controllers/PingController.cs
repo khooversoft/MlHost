@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MlHost.Application;
 using MlHost.Services;
 using MlHostApi.Models;
+using MlHostApi.Types;
 
 namespace MlHost.Controllers
 {
@@ -9,10 +11,12 @@ namespace MlHost.Controllers
     public class PingController : ControllerBase
     {
         private readonly IExecutionContext _executionContext;
+        private readonly IOption _option;
 
-        public PingController(IExecutionContext executionContext)
+        public PingController(IExecutionContext executionContext, IOption option)
         {
             _executionContext = executionContext;
+            _option = option;
         }
 
         [HttpGet]
@@ -21,6 +25,8 @@ namespace MlHost.Controllers
             var response = new PingResponse
             {
                 Status = _executionContext.State.ToString(),
+                ModelId = _executionContext?.ModelId?.ToString(),
+                HostName = _option.HostName,
             };
 
             return Ok(response);

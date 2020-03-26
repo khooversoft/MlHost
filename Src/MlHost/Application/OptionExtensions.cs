@@ -17,13 +17,13 @@ namespace MlHost.Application
             option.ServiceUri.VerifyNotEmpty($"{nameof(option.ServiceUri)} is missing");
             option.HostName.VerifyNotEmpty($"{nameof(option.HostName)} is missing");
 
-            option.BlobStore!.Verify();
-            option.Deployment!.Verify();
+            //option.BlobStore!.Verify();
+            //option.Deployment!.Verify();
 
-            if (option.BlobStore!.AccountKey.ToNullIfEmpty() == null)
-            {
-                option.KeyVault!.Verify();
-            }
+            //if (option.BlobStore!.AccountKey.ToNullIfEmpty() == null)
+            //{
+            //    option.KeyVault!.Verify();
+            //}
         }
 
         public static void Verify(this DeploymentOption deploymentOption)

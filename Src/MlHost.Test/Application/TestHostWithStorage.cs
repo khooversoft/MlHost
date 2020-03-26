@@ -19,9 +19,6 @@ namespace MlHost.Test.Application
                 "BlobStore:ContainerName=model-test",
                 "BlobStore:AccountName=mlteststoragev1",
 
-                "Deployment:DeploymentFolder=testDeploymentFolder",
-                "Deployment:PackageFolder=testPackageFolder",
-
                 "HostName=mlhost001",
             };
 

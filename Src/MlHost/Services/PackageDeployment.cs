@@ -34,13 +34,13 @@ namespace MlHost.Services
         {
             bool folderExist = Directory.Exists(_option.Deployment!.DeploymentFolder);
 
-            _logger.LogInformation($"Deploying ML code & model, deployment folder={_option.Deployment.DeploymentFolder}, exist={folderExist}, forceDelete={_option.ForceDeployment}");
+            _logger.LogInformation($"Deploying ML model {modelId}, deployment folder={_option.Deployment.DeploymentFolder}, exist={folderExist}, forceDelete={_option.ForceDeployment}");
             if (folderExist && _option.ForceDeployment) ResetDeploymentFolder();
 
             Directory.CreateDirectory(_option.Deployment.DeploymentFolder);
 
             await UpdateToFolder(modelId);
-            _logger.LogInformation($"Deployed ML code & model");
+            _logger.LogInformation($"Deploying ML model {modelId}");
         }
 
         private void ResetDeploymentFolder()

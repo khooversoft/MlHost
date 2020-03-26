@@ -37,7 +37,7 @@ namespace MlHost.Test.Tools
             option.BlobStore!.ContainerName.Should().Be("containerName");
             option.BlobStore.AccountName.Should().Be("accountName");
             option.BlobStore.AccountKey.Should().Be("accountKey");
-            option.Deployment!.DeploymentFolder.Should().Contain("deploymentFolder");
+            option.Deployment.DeploymentFolder.Should().Contain("deploymentFolder");
             option.Deployment.PackageFolder.Should().Contain("packageFolder");
         }
 

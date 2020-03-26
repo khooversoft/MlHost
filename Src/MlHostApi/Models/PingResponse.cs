@@ -8,5 +8,9 @@ namespace MlHostApi.Models
     public class PingResponse
     {
         public string? Status { get; set; }
+
+        public string? ModelId { get; set; }
+
+        public string? HostName { get; set; }
     }
 }

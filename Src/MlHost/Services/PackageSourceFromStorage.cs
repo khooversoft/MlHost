@@ -38,17 +38,17 @@ namespace MlHost.Services
             string zipFilePath = Path.Combine(_option.Deployment.PackageFolder, "ml-package.zip");
             if (File.Exists(zipFilePath) && !_option.ForceDeployment)
             {
-                _logger.LogInformation($"Zip file {zipFilePath} exist, no download is required");
+                _logger.LogInformation($"Package file {zipFilePath} exist, no download is required");
                 return zipFilePath;
             }
 
-            _logger.LogInformation($"Zip file {zipFilePath} does not exist, downloading from storage");
+            _logger.LogInformation($"Package file {zipFilePath} does not exist, downloading from storage");
 
             var sw = Stopwatch.StartNew();
             await _modelRepository.Download(modelId, zipFilePath, _executionContext.TokenSource.Token);
             sw.Stop();
 
-            _logger.LogInformation($"Zip file {zipFilePath} has been downloaded from storage, {sw.ElapsedMilliseconds}ms");
+            _logger.LogInformation($"Package file {zipFilePath} has been downloaded from storage, {sw.ElapsedMilliseconds}ms");
             return zipFilePath;
         }
     }

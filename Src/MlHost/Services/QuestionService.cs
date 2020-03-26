@@ -29,19 +29,22 @@ namespace MlHost.Services
             questionModel = questionModel ?? throw new AggregateException(nameof(questionModel));
             if (string.IsNullOrWhiteSpace(questionModel.Question)) throw new ArgumentException(nameof(questionModel.Question));
 
-            _logging.LogTrace($"Question: {questionModel.Question}");
+            _logging.LogTrace($"Sending question '{questionModel.Question}' to model.");
 
             dynamic request = new
             {
                 sentence = questionModel.Question,
             };
 
-            var response = await _httpClient.PostAsync(_option.ServiceUri, new StringContent(_json.Serialize(request), Encoding.UTF8, "application/json"));
+            HttpResponseMessage response = await _httpClient.PostAsync(_option.ServiceUri, new StringContent(_json.Serialize(request), Encoding.UTF8, "application/json"));
             response.EnsureSuccessStatusCode();
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+            _logging.LogInformation($"Receive answer '{responseContent}' from model for question '{questionModel.Question}'");
 
             return new AnswerResponse
             {
-                Answer = await response.Content.ReadAsStringAsync(),
+                Answer = responseContent,
             };
         }
 

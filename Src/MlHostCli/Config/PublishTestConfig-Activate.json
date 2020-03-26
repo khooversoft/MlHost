@@ -13,8 +13,8 @@
   },
 
   "BlobStore": {
-    //"ContainerName": "mldatamodels",
-    "ContainerName": "model-test",
+    "ContainerName": "mldatamodels",
+    //"ContainerName": "model-test",
     "AccountName": "mlteststoragev1"
   }
 }

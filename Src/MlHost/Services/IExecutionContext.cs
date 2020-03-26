@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using MlHostApi.Types;
+using System.Threading;
 
 namespace MlHost.Services
 {
@@ -7,5 +8,7 @@ namespace MlHost.Services
         CancellationTokenSource TokenSource { get; }
 
         ExecutionState State { get; set; }
+
+        ModelId? ModelId { get; set; }
     }
 }

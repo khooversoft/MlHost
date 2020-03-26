@@ -18,7 +18,7 @@ namespace MlHost.Application
 
         public BlobStoreOption? BlobStore { get; set; }
 
-        public DeploymentOption? Deployment { get; set; }
+        public DeploymentOption Deployment { get; set; } = new DeploymentOption();
 
         public KeyVaultOption? KeyVault { get; set; }
 

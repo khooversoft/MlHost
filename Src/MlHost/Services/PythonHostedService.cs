@@ -42,10 +42,10 @@ namespace MlHost.Services
                 // Run in the background and set running state to run when completed
                 _executePython.KillAnyRunningProcesses();
 
-                ModelId? modelId = await GetRegistration();
-                if (modelId == null) return;
+                _executionContext.ModelId = await GetRegistration();
+                if (_executionContext.ModelId == null) return;
 
-                await _packageDeployment.Deploy(modelId);
+                await _packageDeployment.Deploy(_executionContext.ModelId);
                 _executeTask = _executePython.Run();
             }, cancellationToken);
 

@@ -46,47 +46,52 @@ namespace MlHost.Application
         {
             string[] args = Args ?? Array.Empty<string>();
 
-            Option tempOption = new ConfigurationBuilder()
-                .Func(x => JsonFile.ToNullIfEmpty() switch { string v => x.AddJsonFile(JsonFile), _ => x })
-                .Func(x => (SecretId.ToNullIfEmpty()) switch { string v => x.AddUserSecrets(v), _ => x })
-                .AddCommandLine(args)
-                .Build()
-                .Bind();
+            string? secretId = SecretId;
+            string? accountKey = null;
+            Option option;
 
-            string? secret = SecretId ?? tempOption.SecretId;
+            Func<string, string> createAccountKeyCommand = x => $"{nameof(option.BlobStore)}:{nameof(option.BlobStore.AccountKey)}=" + x;
 
-            string accountKey = tempOption.BlobStore?.AccountKey switch
+            while (true)
             {
-                string v => v,
+                option = new ConfigurationBuilder()
+                    .Func(x => JsonFile.ToNullIfEmpty() switch { string v => x.AddJsonFile(JsonFile), _ => x })
+                    .Func(x => (secretId.ToNullIfEmpty()) switch { string v => x.AddUserSecrets(v), _ => x })
+                    .AddCommandLine(args.Concat(accountKey switch { string v => new[] { createAccountKeyCommand(accountKey) }, _ => Enumerable.Empty<string>() }).ToArray())
+                    .Build()
+                    .Bind();
 
-                _ => new ConfigurationBuilder()
-                    .Func(x =>
-                    {
-                        tempOption.KeyVault!.Verify();
+                switch (option)
+                {
+                    case Option v when v.SecretId.ToNullIfEmpty() != null && secretId == null:
+                        secretId = v.SecretId;
+                        continue;
+
+                    case Option v when v.BlobStore?.AccountKey == null && accountKey == null:
+                        v.KeyVault!.Verify();
 
                         var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback));
-                        x.AddAzureKeyVault($"https://{tempOption.KeyVault!.KeyVaultName}.vault.azure.net/", keyVaultClient, new DefaultKeyVaultSecretManager());
-                        return x.Build()[tempOption.KeyVault!.KeyName];
-                    }),
-            };
 
-            Option option = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .Func(x => JsonFile.ToNullIfEmpty() switch { string v => x.AddJsonFile(v), _ => x })
-                .Func(x => secret.ToNullIfEmpty() switch { string v => x.AddUserSecrets(v), _ => x })
-                .AddCommandLine(args)
-                .Build()
-                .Bind();
+                        accountKey = new ConfigurationBuilder()
+                            .AddAzureKeyVault($"https://{option.KeyVault!.KeyVaultName}.vault.azure.net/", keyVaultClient, new DefaultKeyVaultSecretManager())
+                            .Build()[option.KeyVault!.KeyName];
+
+                        if (accountKey != null) continue;
+                        break;
+                }
+
+                break;
+            }
 
             option.Verify();
 
-            option.Deployment!.DeploymentFolder = BuildPathRelativeFromExceutingAssembly(option.Deployment.DeploymentFolder);
-            option.Deployment!.PackageFolder = BuildPathRelativeFromExceutingAssembly(option.Deployment.PackageFolder);
+            option.Deployment.DeploymentFolder = BuildPathRelativeFromExceutingAssembly(option.Deployment.DeploymentFolder);
+            option.Deployment.PackageFolder = BuildPathRelativeFromExceutingAssembly(option.Deployment.PackageFolder);
 
             return option;
         }
 
-        public static string BuildPathRelativeFromExceutingAssembly(string folder)
+        private static string BuildPathRelativeFromExceutingAssembly(string folder)
         {
             if (Path.GetDirectoryName(folder).ToNullIfEmpty() != null) return folder;
 

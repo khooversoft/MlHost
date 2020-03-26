@@ -2,7 +2,7 @@
 
 namespace MlHost.Application
 {
-    internal interface IOption
+    public interface IOption
     {
         string? ServiceUri { get; }
 
@@ -10,7 +10,7 @@ namespace MlHost.Application
 
         BlobStoreOption? BlobStore { get; }
 
-        DeploymentOption? Deployment { get; }
+        DeploymentOption Deployment { get; }
 
         string? HostName { get; }
     }

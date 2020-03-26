@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace MlHost.Application
 {
-    internal class DeploymentOption
+    public class DeploymentOption
     {
-        public string DeploymentFolder { get; set; } = OptionBuilder.BuildPathRelativeFromExceutingAssembly("MlStorageDeploy");
+        public string DeploymentFolder { get; set; } = "MlStorageDeploy";
 
-        public string PackageFolder { get; set; } = OptionBuilder.BuildPathRelativeFromExceutingAssembly("MlStorageZip");
+        public string PackageFolder { get; set; } = "MlStorageZip";
     }
 }

@@ -48,6 +48,8 @@ namespace MlHostCli.Application
             string? accountKey = null;
             Option option = null!;
 
+            Func<string, string> createAccountKeyCommand = x => $"{nameof(option.BlobStore)}:{nameof(option.BlobStore.AccountKey)}=" + x;
+
             // Because ordering or placement on critical configuration can different, loop through a process
             // of building the correct configuration.  Pattern cases below are in priority order.
             while (true)
@@ -56,7 +58,7 @@ namespace MlHostCli.Application
                     .SetBasePath(Directory.GetCurrentDirectory())
                     .Func(x => configFile.ToNullIfEmpty() switch { string v => x.AddJsonFile(configFile), _ => x })
                     .Func(x => secretId.ToNullIfEmpty() switch { string v => x.AddUserSecrets(v), _ => x })
-                    .AddCommandLine(args.Concat(accountKey switch { string v => new[] { accountKey }, _ => Enumerable.Empty<string>() }).ToArray())
+                    .AddCommandLine(args.Concat(accountKey switch { string v => new[] { createAccountKeyCommand(accountKey) }, _ => Enumerable.Empty<string>() }).ToArray())
                     .Build()
                     .Bind();
 
