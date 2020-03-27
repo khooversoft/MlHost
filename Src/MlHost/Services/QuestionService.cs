@@ -3,6 +3,7 @@ using MlHost.Application;
 using MlHostApi.Models;
 using MlHostApi.Services;
 using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -13,39 +14,32 @@ namespace MlHost.Services
     internal class QuestionService : IQuestion, IDisposable
     {
         private readonly IOption _option;
-        private readonly ILogger<QuestionService> _logging;
+        private readonly ILogger<QuestionService> _logger;
         private readonly IJson _json;
         private HttpClient _httpClient = new HttpClient();
 
-        public QuestionService(IOption option, ILogger<QuestionService> logging, IJson json)
+        public QuestionService(IOption option, ILogger<QuestionService> logger, IJson json)
         {
             _option = option;
-            _logging = logging;
+            _logger = logger;
             _json = json;
         }
 
-        public async Task<AnswerResponse> Ask(QuestionRequest questionModel)
+        public async Task<dynamic> Ask(dynamic request)
         {
-            questionModel = questionModel ?? throw new AggregateException(nameof(questionModel));
-            if (string.IsNullOrWhiteSpace(questionModel.Question)) throw new ArgumentException(nameof(questionModel.Question));
+            string json = _json.Serialize(request);
 
-            _logging.LogTrace($"Sending question '{questionModel.Question}' to model.");
+            _logger.LogTrace($"Sending question '{json}' to model.");
 
-            dynamic request = new
-            {
-                sentence = questionModel.Question,
-            };
-
-            HttpResponseMessage response = await _httpClient.PostAsync(_option.ServiceUri, new StringContent(_json.Serialize(request), Encoding.UTF8, "application/json"));
+            var sw = Stopwatch.StartNew();
+            HttpResponseMessage response = await _httpClient.PostAsync(_option.ServiceUri, new StringContent(json, Encoding.UTF8, "application/json"));
             response.EnsureSuccessStatusCode();
+            sw.Stop();
 
             string responseContent = await response.Content.ReadAsStringAsync();
-            _logging.LogInformation($"Receive answer '{responseContent}' from model for question '{questionModel.Question}'");
+            _logger.LogInformation($"Receive answer '{json}' from model for question '{responseContent}', ms={sw.ElapsedMilliseconds}");
 
-            return new AnswerResponse
-            {
-                Answer = responseContent,
-            };
+            return _json.Deserialize<dynamic>(responseContent);
         }
 
         public void Dispose() => Interlocked.Exchange(ref _httpClient, null!)?.Dispose();

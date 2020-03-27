@@ -2,11 +2,9 @@
 using Microsoft.Extensions.Logging;
 using MlHost.Application;
 using MlHost.Services;
+using MlHost.Tools;
 using MlHostApi.Models;
-using MlHostApi.Services;
 using MlHostApi.Tools;
-using System;
-using System.Diagnostics;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -30,20 +28,16 @@ namespace MlHost.Controllers
         }
 
         [HttpPost("predict")]
-        public async Task<IActionResult> Predict([FromBody] QuestionRequest questionRequest)
+        public async Task<IActionResult> Predict([FromBody] dynamic request)
         {
-            if (questionRequest == null || questionRequest.Question.ToNullIfEmpty() == null) return StatusCode((int)HttpStatusCode.BadRequest);
+            bool requestIsValid = ((object)request).ToDictionary()
+                ?.Func(x => x.Count > 0) ?? false;
+
+            if (!requestIsValid) return StatusCode((int)HttpStatusCode.BadRequest);
 
             if (_executionContext.State != ExecutionState.Running) return ReturnNotAvailable();
 
-            var sw = Stopwatch.StartNew();
-
-            _logger.LogInformation($"Question: {questionRequest.Question}");
-            AnswerResponse value = await _question.Ask(questionRequest);
-
-            sw.Stop();
-            _logger.LogInformation($"Answer: Question={questionRequest.Question}, Answer={value.Answer}, completed: {sw.ElapsedMilliseconds}ms");
-
+            dynamic value = await _question.Ask(request);
             return Ok(value);
         }
 

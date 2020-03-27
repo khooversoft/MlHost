@@ -6,6 +6,6 @@ namespace MlHost.Services
     {
         Task Run();
 
-        void KillAnyRunningProcesses();
+        Task<bool> KillAnyRunningProcesses();
     }
 }

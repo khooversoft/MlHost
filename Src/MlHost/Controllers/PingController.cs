@@ -25,8 +25,9 @@ namespace MlHost.Controllers
             var response = new PingResponse
             {
                 Status = _executionContext.State.ToString(),
-                ModelId = _executionContext?.ModelId?.ToString(),
+                ModelId = _executionContext.ModelId?.ToString(),
                 HostName = _option.HostName,
+                LastException = _executionContext.LastException,
             };
 
             return Ok(response);

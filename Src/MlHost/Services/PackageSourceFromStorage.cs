@@ -15,6 +15,7 @@ namespace MlHost.Services
         private readonly ILogger<PackageSourceFromStorage> _logger;
         private readonly IExecutionContext _executionContext;
         private readonly IModelRepository _modelRepository;
+        private readonly string _zipFilePath;
 
         public PackageSourceFromStorage(IOption option, ILogger<PackageSourceFromStorage> logger, IExecutionContext executionContext, IModelRepository modelRepository)
         {
@@ -22,34 +23,35 @@ namespace MlHost.Services
             _logger = logger;
             _executionContext = executionContext;
             _modelRepository = modelRepository;
+
+            _zipFilePath = Path.Combine(_option.Deployment.PackageFolder, "ml-package.zip");
         }
 
-        public async Task<Stream> GetStream(ModelId modelId)
-        {
-            string zipFilePath = await GetZipFileIfRequired(modelId);
-
-            return new FileStream(zipFilePath, FileMode.Open);
-        }
-
-        private async Task<string> GetZipFileIfRequired(ModelId modelId)
+        public async Task<bool> GetPackageIfRequired(bool overwrite)
         {
             Directory.CreateDirectory(_option.Deployment!.PackageFolder);
 
-            string zipFilePath = Path.Combine(_option.Deployment.PackageFolder, "ml-package.zip");
-            if (File.Exists(zipFilePath) && !_option.ForceDeployment)
+            if (File.Exists(_zipFilePath) && !overwrite)
             {
-                _logger.LogInformation($"Package file {zipFilePath} exist, no download is required");
-                return zipFilePath;
+                _logger.LogInformation($"Package file {_zipFilePath} exist, no download is required");
+                return true;
             }
 
-            _logger.LogInformation($"Package file {zipFilePath} does not exist, downloading from storage");
+            _logger.LogInformation($"Package file {_zipFilePath} does not exist, downloading from storage");
 
             var sw = Stopwatch.StartNew();
-            await _modelRepository.Download(modelId, zipFilePath, _executionContext.TokenSource.Token);
+            await _modelRepository.Download(_executionContext.ModelId!, _zipFilePath, _executionContext.TokenSource.Token);
             sw.Stop();
 
-            _logger.LogInformation($"Package file {zipFilePath} has been downloaded from storage, {sw.ElapsedMilliseconds}ms");
-            return zipFilePath;
+            _logger.LogInformation($"Package file {_zipFilePath} has been downloaded from storage, {sw.ElapsedMilliseconds}ms");
+            return true;
+        }
+
+        public async Task<Stream> GetStream()
+        {
+            await GetPackageIfRequired(false);
+
+            return new FileStream(_zipFilePath, FileMode.Open);
         }
     }
 }

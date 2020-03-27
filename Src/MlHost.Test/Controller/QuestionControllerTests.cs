@@ -25,9 +25,9 @@ namespace MlHost.Test.Controller
         {
             await _storageStoreFixture.WaitForStartup();
 
-            var question = new QuestionRequest
+            dynamic question = new
             {
-                Question = "what is my deductible",
+                sentence = "what is my deductible",
             };
 
             IJson jsonSerializer = _storageStoreFixture.Resolve<IJson>();
@@ -37,10 +37,9 @@ namespace MlHost.Test.Controller
             response.EnsureSuccessStatusCode();
 
             var responseString = await response.Content.ReadAsStringAsync();
-            AnswerResponse answerModel = jsonSerializer.Deserialize<AnswerResponse>(responseString);
 
-            answerModel.Should().NotBeNull();
-            answerModel.Answer.Should().Be("{label=2; score=0.999996602535248}");
+            responseString.Should().NotBeNullOrEmpty();
+            responseString.Should().Be("{\"label\":\"2\",\"score\":\"0.999996602535248\"}");
         }
     }
 }

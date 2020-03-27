@@ -42,7 +42,10 @@ namespace MlHost.Test.Tools
             if (Directory.Exists(tempFolder)) Directory.Delete(tempFolder, true);
 
             var memoryLogger = new MemoryLogger<PackageDeployment>();
-            IExecutionContext executionContext = new Services.ExecutionContext();
+            IExecutionContext executionContext = new Services.ExecutionContext()
+            {
+                ModelId = new ModelId("test/test"),
+            };
 
             string[] args = new[]
             {
@@ -61,7 +64,7 @@ namespace MlHost.Test.Tools
 
             IPackageSource originalPackageSource = new PackageSourceFromResource(typeof(PackageUpdateTests), "MlHost.Test.Package.TestZip.zip");
             IPackageDeployment originalDeployment = new PackageDeployment(memoryLogger, option, executionContext, originalPackageSource);
-            await originalDeployment.Deploy(new ModelId("test/test"));
+            await originalDeployment.Deploy();
 
             memoryLogger.Count().Should().BeGreaterThan(0);
 
@@ -77,7 +80,7 @@ namespace MlHost.Test.Tools
 
             IPackageSource updatePackageSource = new PackageSourceFromResource(typeof(PackageUpdateTests), "MlHost.Test.Package.TestZip-Update.zip");
             IPackageDeployment updateDeployment = new PackageDeployment(memoryLogger, option, executionContext, updatePackageSource);
-            await updateDeployment.Deploy(new ModelId("test/test"));
+            await updateDeployment.Deploy();
 
             memoryLogger.Count().Should().BeGreaterThan(0);
 

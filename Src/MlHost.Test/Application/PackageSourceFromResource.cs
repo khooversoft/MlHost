@@ -25,7 +25,9 @@ namespace MlHost.Test.Application
             _resourceId = resourceId;
         }
 
-        public Task<Stream> GetStream(ModelId modelId)
+        public Task<bool> GetPackageIfRequired(bool overwrite) => throw new NotImplementedException();
+
+        public Task<Stream> GetStream()
         {
             Stream? packageStream = Assembly.GetAssembly(_type)!.GetManifestResourceStream(_resourceId);
             if (packageStream == null) throw new ArgumentException($"Resource ID {_resourceId} not located in assembly");

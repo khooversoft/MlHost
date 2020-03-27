@@ -78,7 +78,7 @@ namespace MlHost.Services
             }
         }
 
-        public void KillAnyRunningProcesses()
+        public Task<bool> KillAnyRunningProcesses()
         {
             foreach(var process in Process.GetProcessesByName("python"))
             {
@@ -91,8 +91,11 @@ namespace MlHost.Services
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, $"Cannot kill process {process.ProcessName}");
+                    return Task.FromResult(false);
                 }
             }
+
+            return Task.FromResult(true);
         }
     }
 }

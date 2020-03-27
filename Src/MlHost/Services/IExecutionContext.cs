@@ -10,5 +10,9 @@ namespace MlHost.Services
         ExecutionState State { get; set; }
 
         ModelId? ModelId { get; set; }
+
+        public string? LastException { get; set; }
+
+        public bool ForceDeployment { get; set; }
     }
 }

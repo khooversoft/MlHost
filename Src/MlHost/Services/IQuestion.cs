@@ -5,6 +5,6 @@ namespace MlHost.Services
 {
     public interface IQuestion
     {
-        Task<AnswerResponse> Ask(QuestionRequest questionModel);
+        Task<dynamic> Ask(dynamic request);
     }
 }

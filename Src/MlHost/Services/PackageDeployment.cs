@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using MlHost.Application;
 using MlHost.Tools;
+using MlHostApi.Tools;
 using MlHostApi.Types;
 using System;
 using System.Collections.Generic;
@@ -30,17 +31,20 @@ namespace MlHost.Services
             _packageSource = packageSource;
         }
 
-        public async Task Deploy(ModelId modelId)
+        public async Task Deploy()
         {
+            _executionContext.ModelId.VerifyNotNull(nameof(_executionContext.ModelId));
+            _executionContext.State = ExecutionState.Deploying;
+
             bool folderExist = Directory.Exists(_option.Deployment!.DeploymentFolder);
 
-            _logger.LogInformation($"Deploying ML model {modelId}, deployment folder={_option.Deployment.DeploymentFolder}, exist={folderExist}, forceDelete={_option.ForceDeployment}");
-            if (folderExist && _option.ForceDeployment) ResetDeploymentFolder();
+            _logger.LogInformation($"Deploying ML model {_executionContext.ModelId!}, deployment folder={_option.Deployment.DeploymentFolder}, exist={folderExist}, forceDelete={_executionContext.ForceDeployment}");
+            if (folderExist && _executionContext.ForceDeployment) ResetDeploymentFolder();
 
             Directory.CreateDirectory(_option.Deployment.DeploymentFolder);
 
-            await UpdateToFolder(modelId);
-            _logger.LogInformation($"Deploying ML model {modelId}");
+            await UpdateToFolder();
+            _logger.LogInformation($"Deploying ML model {_executionContext.ModelId}");
         }
 
         private void ResetDeploymentFolder()
@@ -55,9 +59,9 @@ namespace MlHost.Services
             }
         }
 
-        public async Task UpdateToFolder(ModelId modelId)
+        public async Task UpdateToFolder()
         {
-            using Stream zipStream = await _packageSource.GetStream(modelId);
+            using Stream zipStream = await _packageSource.GetStream();
             using ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read, false);
 
             ZipFile[] zipFiles = zipArchive.Entries

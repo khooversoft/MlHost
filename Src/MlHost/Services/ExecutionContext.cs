@@ -1,4 +1,5 @@
-﻿using MlHostApi.Types;
+﻿using MlHost.Application;
+using MlHostApi.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,9 @@ namespace MlHost.Services
         public ExecutionState State { get; set; }
 
         public ModelId? ModelId { get; set; }
+
+        public string? LastException { get; set; }
+
+        public bool ForceDeployment { get; set; }
     }
 }

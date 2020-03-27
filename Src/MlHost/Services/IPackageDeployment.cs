@@ -6,6 +6,6 @@ namespace MlHost.Services
 {
     internal interface IPackageDeployment
     {
-        Task Deploy(ModelId modelId);
+        Task Deploy();
     }
 }

@@ -12,5 +12,7 @@ namespace MlHostApi.Models
         public string? ModelId { get; set; }
 
         public string? HostName { get; set; }
+
+        public string? LastException { get; set; }
     }
 }

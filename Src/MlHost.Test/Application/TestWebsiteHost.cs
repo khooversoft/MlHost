@@ -30,7 +30,14 @@ namespace MlHost.Test.Application
                 var responseString = await response.Content.ReadAsStringAsync();
                 PingResponse result = Resolve<IJson>().Deserialize<PingResponse>(responseString);
 
-                if (result.Status == ExecutionState.Running.ToString()) return;
+                switch(result.Status)
+                {
+                    case string v when v == ExecutionState.Running.ToString():
+                        return;
+
+                    case string v when v == ExecutionState.Failed.ToString():
+                        throw new InvalidOperationException("Service failed to start");
+                }
 
                 await Task.Delay(TimeSpan.FromSeconds(1));
             }

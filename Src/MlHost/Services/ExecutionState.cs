@@ -11,5 +11,7 @@ namespace MlHost.Services
         Starting,
         Deploying,
         Running,
+        Failed,
+        NoModelRegisteredForHost
     }
 }

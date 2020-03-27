@@ -6,6 +6,8 @@ namespace MlHost.Services
 {
     internal interface IPackageSource
     {
-        Task<Stream> GetStream(ModelId modelId);
+        Task<bool> GetPackageIfRequired(bool overwrite);
+
+        Task<Stream> GetStream();
     }
 }
