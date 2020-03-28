@@ -1,10 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using MlHost.Application;
 using MlHostApi.Repository;
+using MlHostApi.Tools;
 using MlHostApi.Types;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace MlHost.Services
@@ -27,11 +30,16 @@ namespace MlHost.Services
             _zipFilePath = Path.Combine(_option.Deployment.PackageFolder, "ml-package.zip");
         }
 
+        public Task<Stream> GetStream()
+        {
+            return Task.FromResult<Stream>(new FileStream(_zipFilePath, FileMode.Open));
+        }
+
         public async Task<bool> GetPackageIfRequired(bool overwrite)
         {
             Directory.CreateDirectory(_option.Deployment!.PackageFolder);
 
-            if (File.Exists(_zipFilePath) && !overwrite)
+            if (!overwrite && (await IsPackageCurrent()))
             {
                 _logger.LogInformation($"Package file {_zipFilePath} exist, no download is required");
                 return true;
@@ -47,11 +55,20 @@ namespace MlHost.Services
             return true;
         }
 
-        public async Task<Stream> GetStream()
+        private async Task<bool> IsPackageCurrent()
         {
-            await GetPackageIfRequired(false);
+            BlobInfo? blobInfo = await _modelRepository.GetBlobInfo(_executionContext.ModelId!, _executionContext.TokenSource.Token);
+            if (blobInfo == null) throw new InvalidOperationException($"Blob for model id {_executionContext.ModelId} does not exist");
 
-            return new FileStream(_zipFilePath, FileMode.Open);
+            if (!File.Exists(_zipFilePath)) return false;
+
+            using Stream fileStream = new FileStream(_zipFilePath, FileMode.Open);
+            byte[] fileHash = MD5.Create().ComputeHash(fileStream);
+
+            bool isCurrent = Enumerable.SequenceEqual(blobInfo.ContentHash, fileHash);
+            _logger.LogInformation($"Package file '{_zipFilePath}' is {(isCurrent ? "current" : "not current will be updated")}");
+
+            return isCurrent;
         }
     }
 }

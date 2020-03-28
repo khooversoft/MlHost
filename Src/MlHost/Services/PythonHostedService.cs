@@ -24,8 +24,8 @@ namespace MlHost.Services
         private readonly IModelRepository _modelRepository;
         private readonly IPackageSource _packageSource;
 
-        private readonly Activity[] _startupActivities;
-        private readonly Activity[] _restartActivities;
+        private readonly Activity[] _startupStrategy;
+        private readonly Activity[] _restartStrategy;
 
         private Task? _executeTask;
 
@@ -45,7 +45,7 @@ namespace MlHost.Services
             _modelRepository = modelRepository;
             _packageSource = packageSource;
 
-            _startupActivities = new Activity[]
+            _startupStrategy = new Activity[]
             {
                 new Activity("Resetting execution state to running", () => { _executionContext.State = ExecutionState.Starting; return Task.FromResult(true); }),
                 new Activity("Kill running processes", () => _executePython.KillAnyRunningProcesses()),
@@ -70,8 +70,8 @@ namespace MlHost.Services
                 })
             };
 
-            _restartActivities = _startupActivities
-                .Prepend(new Activity("Pausing...", async () => { await Task.Delay(TimeSpan.FromSeconds(3)); return true; }))
+            _restartStrategy = _startupStrategy
+                .Prepend(new Activity("Pausing...", async () => { await Task.Delay(TimeSpan.FromSeconds(30)); return true; }))
                 .ToArray();
         }
 
@@ -96,7 +96,7 @@ namespace MlHost.Services
 
         private async Task Startup()
         {
-            Activity[] activities = _startupActivities;
+            Activity[] activities = _startupStrategy;
             var range = new RangeLimit(0, 1);
 
             while (!_executionContext.TokenSource.Token.IsCancellationRequested && range.Increment())
@@ -110,15 +110,15 @@ namespace MlHost.Services
                 {
                     case ExecutionState.NoModelRegisteredForHost:
 
-                        activities = _restartActivities
-                            .Prepend(new Activity("No ModelId assigned to this host, waiting...", async () => { await Task.Delay(TimeSpan.FromSeconds(3)); return true; }))
+                        activities = _restartStrategy
+                            .Prepend(new Activity("No ModelId assigned to this host, waiting...", async () => { await Task.Delay(TimeSpan.FromMinutes(5)); return true; }))
                             .ToArray();
 
                         range.Reset();
                         break;
 
                     default:
-                        activities = _restartActivities;
+                        activities = _restartStrategy;
                         break;
                 }
             }
@@ -152,15 +152,15 @@ namespace MlHost.Services
             {
                 try
                 {
-                    _logging.LogInformation($"Starting activity {activity.Description}");
+                    _logging.LogInformation($"[Startup Activity] Starting {activity.Description}");
                     bool success = await activity.Func();
 
-                    _logging.LogInformation($"Completed activity {activity.Description}, status={success}");
+                    _logging.LogInformation($"[Startup Activity] Completed {activity.Description}, status={success}");
                     return success;
                 }
                 catch (Exception ex)
                 {
-                    _logging.LogError(ex, $"Activity {activity.Description} failed");
+                    _logging.LogError(ex, $"[Startup Activity] {activity.Description} failed");
                     return false;
                 }
             }

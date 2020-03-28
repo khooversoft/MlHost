@@ -70,6 +70,11 @@ namespace MlHostApi.Repository
             return list.Count == 1;
         }
 
+        public Task<BlobInfo?> GetBlobInfo(ModelId modelId, CancellationToken token)
+        {
+            return _blobRepository.GetBlobInfo(modelId.ToBlobPath(), token);
+        }
+
         public async Task<HostConfigurationModel> ReadConfiguration(CancellationToken token)
         {
             bool exist = await _blobRepository.Exist(_hostConfiguratonPath, token);

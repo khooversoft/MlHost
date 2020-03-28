@@ -14,6 +14,8 @@ namespace MlHostApi.Repository
 
         Task<bool> Exist(string path, CancellationToken token);
 
+        Task<BlobInfo?> GetBlobInfo(string path, CancellationToken token);
+
         Task<byte[]> Read(string path, CancellationToken token);
 
         Task<IReadOnlyList<string>> Search(string prefix, Func<string, bool> filter, CancellationToken token);

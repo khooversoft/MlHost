@@ -16,6 +16,8 @@ namespace MlHostApi.Repository
 
         Task<bool> Exist(ModelId modelId, CancellationToken token);
 
+        Task<BlobInfo?> GetBlobInfo(ModelId modelId, CancellationToken token);
+
         Task<HostConfigurationModel> ReadConfiguration(CancellationToken token);
 
         Task WriteConfiguration(HostConfigurationModel hostConfigurationModel, CancellationToken token);

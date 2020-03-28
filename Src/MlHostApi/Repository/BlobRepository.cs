@@ -60,14 +60,16 @@ namespace MlHostApi.Repository
             await _containerClient.UploadBlobAsync(toPath, fromStream, token);
         }
 
-        public async Task<bool> Exist(string path, CancellationToken token)
+        public async Task<bool> Exist(string path, CancellationToken token) => (await GetBlobInfo(path, token)) != null;
+
+        public async Task<BlobInfo?> GetBlobInfo(string path, CancellationToken token)
         {
-            await foreach (BlobItem _ in _containerClient.GetBlobsAsync(prefix: path, cancellationToken: token))
+            await foreach (BlobItem blobItem in _containerClient.GetBlobsAsync(prefix: path, cancellationToken: token))
             {
-                return true;
+                return blobItem.ConvertTo();
             }
 
-            return false;
+            return null;
         }
 
         public async Task<byte[]> Read(string path, CancellationToken token)
