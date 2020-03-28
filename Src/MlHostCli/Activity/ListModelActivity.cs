@@ -31,11 +31,10 @@ namespace MlHostCli.Activity
             HostConfigurationModel model = await _modelRepository.ReadConfiguration(token);
 
             const string fmt = "{0,-20} {1}";
-            string line = new string('=', 20);
 
             _telemetry.WriteLine("");
             _telemetry.WriteLine(string.Format(fmt, "Host name", "Model ID"));
-            _telemetry.WriteLine(string.Format(fmt, line, line));
+            _telemetry.WriteLine(string.Format(fmt, new string('=', 20), new string('=', 50)));
 
             model.HostAssignments
                 ?.ForEach(x => _telemetry.WriteLine(string.Format(fmt, x.HostName, x.ModelId)));
