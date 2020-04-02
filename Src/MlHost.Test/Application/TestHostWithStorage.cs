@@ -17,10 +17,10 @@ namespace MlHost.Test.Application
             string[] args = new[]
             {
                 "ServiceUri=http://localhost:5003/predict",
-                //"ForceDeployment=true",
+                "ForceDeployment=true",
 
-                "BlobStore:ContainerName=model-test",
-                "BlobStore:AccountName=mlteststoragev1",
+                "Store:ContainerName=model-test",
+                "Store:AccountName=mlteststoragev1",
 
                 "HostName=mlhost001",
             };

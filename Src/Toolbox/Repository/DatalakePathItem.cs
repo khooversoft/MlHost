@@ -21,7 +21,5 @@ namespace Toolbox.Repository
         public string? Group { get; set; }
 
         public string? Permissions { get; set; }
-
-        public BlobInfo? BlobInfo { get; set; }
     }
 }

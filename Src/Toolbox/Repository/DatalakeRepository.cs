@@ -17,7 +17,7 @@ namespace Toolbox.Repository
         private readonly DataLakeServiceClient _serviceClient;
         private readonly DataLakeFileSystemClient _fileSystem;
 
-        public DatalakeRepository(BlobStoreOption blobStoreOption)
+        public DatalakeRepository(StoreOption blobStoreOption)
         {
             blobStoreOption.VerifyNotNull(nameof(blobStoreOption)).Verify();
 

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Toolbox.Repository;
 using Toolbox.Tools;
 
 namespace MlHost.Application
@@ -17,21 +18,20 @@ namespace MlHost.Application
 
             option.ServiceUri.VerifyNotEmpty($"{nameof(option.ServiceUri)} is missing");
             option.HostName.VerifyNotEmpty($"{nameof(option.HostName)} is missing");
+            option.Store.Verify();
+            option.Deployment.Verify();
 
-            //option.BlobStore!.Verify();
-            //option.Deployment!.Verify();
-
-            //if (option.BlobStore!.AccountKey.ToNullIfEmpty() == null)
-            //{
-            //    option.KeyVault!.Verify();
-            //}
+            if (option.Store!.AccountKey.ToNullIfEmpty() == null)
+            {
+                option.KeyVault!.Verify();
+            }
         }
 
-        public static void Verify(this DeploymentOption deploymentOption)
+        public static void Verify(this DeploymentOption? deploymentOption)
         {
             deploymentOption.VerifyNotNull("Deployment option is required");
-            deploymentOption.DeploymentFolder.VerifyNotEmpty($"{nameof(deploymentOption.DeploymentFolder)} is missing");
-            deploymentOption.PackageFolder.VerifyNotEmpty($"{nameof(deploymentOption.PackageFolder)} is missing");
+            deploymentOption!.DeploymentFolder.VerifyNotEmpty($"{nameof(deploymentOption.DeploymentFolder)} is missing");
+            deploymentOption!.PackageFolder.VerifyNotEmpty($"{nameof(deploymentOption.PackageFolder)} is missing");
         }
 
         public static Option Bind(this IConfiguration configuration)

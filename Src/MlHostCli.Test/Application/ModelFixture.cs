@@ -2,6 +2,7 @@
 using MlHostApi.Repository;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,8 +14,9 @@ namespace MlHostCli.Test.Application
 {
     public class ModelFixture
     {
+        internal const string _resourceId = "MlHostCli.Test.Application.TestConfig.json";
         private static ModelFixture? _current;
-        private static readonly SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
+        private static object _lock = new object();
 
         private const string _secretId = "MlHostCli.Test";
 
@@ -27,67 +29,31 @@ namespace MlHostCli.Test.Application
 
         public ITelemetry Telemetry { get; } = new FakeTelemetry();
 
-        public async Task<IReadOnlyList<BlobInfo>> ListBlobs() => await _blobRepository.Search(string.Empty, x => true, CancellationToken.None);
-
-        private async Task ClearAllBlob()
-        {
-            IReadOnlyList<BlobInfo> blobInfos = await ListBlobs();
-
-            IReadOnlyList<(bool folder, BlobInfo blobInfo)> blobs = blobInfos
-                .Select(x => x switch
-                {
-                    BlobInfo v when v.ContentLength == 0 && x.ContentType.ToNullIfEmpty() == null => (true, x),
-                    _ => (false, x)
-                })
-                .ToList();
-
-            // Delete files first
-            await blobs
-                .Where(x => !x.folder)
-                .ForEachAsync(async x => await _blobRepository.Delete(x.blobInfo.Name!, CancellationToken.None));
-
-            // then folders
-            var folderList = blobs
-                .Where(x => x.folder)
-                .OrderByDescending(x => x.blobInfo.Name!.Split('/').Length)
-                .ToList();
-
-            foreach(var item in folderList)
-            {
-                await _blobRepository.Delete(item.blobInfo.Name!, CancellationToken.None);
-            }
-        }
+        public async Task<IReadOnlyList<DatalakePathItem>> ListFiles() => await ModelRepository.Search(null, "*", CancellationToken.None);
 
         /// <summary>
         /// Global singleton constructor required because MS Test does not support test fixtures
         /// </summary>
-        public static async Task<ModelFixture> GetModelFixture()
+        public static ModelFixture GetModelFixture()
         {
-            await _lock.WaitAsync();
-
-            try
+            lock(_lock)
             {
                 if (_current != null) return _current;
 
+                using Stream configStream = FileTools.GetResourceStream(typeof(TestOption), _resourceId);
+
                 IConfiguration config = new ConfigurationBuilder()
+                    .AddJsonStream(configStream)
                     .AddUserSecrets(_secretId)
                     .AddEnvironmentVariables("mlhostcli")
                     .Build();
 
-                var blobStoreOption = new BlobStoreOption();
+                var blobStoreOption = new StoreOption();
                 config.Bind(blobStoreOption, x => x.BindNonPublicProperties = true);
                 blobStoreOption.Verify();
 
-                //_current = new ModelFixture(blobRepository, modelRepository);
-
-                await _current!.ClearAllBlob();
+                return _current = new ModelFixture(new ModelRepository(new DatalakeRepository(blobStoreOption), new Json()));
             }
-            finally
-            {
-                _lock.Release();
-            }
-
-            return _current;
         }
     }
 }

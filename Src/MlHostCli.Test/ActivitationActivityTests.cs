@@ -18,7 +18,7 @@ namespace MlHostCli.Test
         [TestMethod]
         public async Task GivenModel_WhenActivatedThenDeactivate_ShouldPass()
         {
-            ModelFixture modelFixture = await ModelFixture.GetModelFixture();
+            ModelFixture modelFixture = ModelFixture.GetModelFixture();
 
             await modelFixture.ModelRepository.WriteConfiguration(new HostConfigurationModel(), CancellationToken.None);
 

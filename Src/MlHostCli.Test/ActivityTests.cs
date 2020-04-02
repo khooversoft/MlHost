@@ -21,7 +21,7 @@ namespace MlHostCli.Test
         [TestMethod]
         public async Task GivenZipModel_WhenUploaded_ShouldPass()
         {
-            ModelFixture modelFixture = await ModelFixture.GetModelFixture();
+            ModelFixture modelFixture = ModelFixture.GetModelFixture();
 
             string tempZipFile = FileTools.WriteResourceToTempFile("TestZip.Zip", typeof(ActivityTests), "MlHostCli.Test.TestConfig.TestZip.zip");
 
@@ -36,9 +36,7 @@ namespace MlHostCli.Test
 
             await new UploadModelActivity(option, modelFixture.ModelRepository, modelFixture.Telemetry).Upload(CancellationToken.None);
 
-            IReadOnlyList<BlobInfo> blobList = await modelFixture.ModelRepository.Search(modelId, "*", CancellationToken.None);
-            blobList.Should().NotBeNull();
-            blobList.Count.Should().Be(1);
+            (await modelFixture.ModelRepository.Exist(modelId, CancellationToken.None)).Should().BeTrue();
 
             File.Delete(tempZipFile);
         }
@@ -46,7 +44,7 @@ namespace MlHostCli.Test
         [TestMethod]
         public async Task GiveZipModelWhenUploaded_WhenDownloadAndDeleted_ShouldVerify()
         {
-            ModelFixture modelFixture = await ModelFixture.GetModelFixture();
+            ModelFixture modelFixture = ModelFixture.GetModelFixture();
 
             string tempZipFile = FileTools.WriteResourceToTempFile("TestZip.Zip", typeof(ActivityTests), "MlHostCli.Test.TestConfig.TestZip.zip");
 
@@ -79,9 +77,7 @@ namespace MlHostCli.Test
             DeleteModelActivity uploadDeleteActivity = new DeleteModelActivity(option, modelFixture.ModelRepository, modelFixture.Telemetry);
             await uploadDeleteActivity.Delete(CancellationToken.None);
 
-            IReadOnlyList<BlobInfo> blobList = await modelFixture.ModelRepository.Search(modelId, "*", CancellationToken.None);
-            blobList.Should().NotBeNull();
-            blobList.Count.Should().Be(0);
+            (await modelFixture.ModelRepository.Exist(modelId, CancellationToken.None)).Should().BeFalse();
 
             File.Delete(tempZipFile);
             File.Delete(toZipFile);

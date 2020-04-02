@@ -8,7 +8,7 @@ namespace MlHost.Application
 
         bool ForceDeployment { get; }
 
-        BlobStoreOption? BlobStore { get; }
+        StoreOption? Store { get; }
 
         DeploymentOption Deployment { get; }
 

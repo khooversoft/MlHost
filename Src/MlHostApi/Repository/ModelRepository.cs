@@ -100,7 +100,7 @@ namespace MlHostApi.Repository
         {
             if (pattern == "*" || pattern.ToNullIfEmpty() == null)
             {
-                return _datalakeRepository.Search(null, x => true, true, token);
+                return _datalakeRepository.Search(prefix, x => true, true, token);
             }
 
             Regex regex = new Regex(pattern, RegexOptions.Compiled);

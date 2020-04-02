@@ -9,7 +9,7 @@ namespace MlHostCli.Test.Application
     {
         public bool Activate { get; set; }
 
-        public BlobStoreOption? BlobStore { get; set; }
+        public StoreOption? BlobStore { get; set; }
 
         public bool Delete { get; set; }
 

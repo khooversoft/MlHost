@@ -30,7 +30,7 @@ namespace MlHostCli.Application
 
         public string? PackageFile { get; set; }
 
-        public BlobStoreOption? BlobStore { get; set; }
+        public StoreOption? BlobStore { get; set; }
 
         public KeyVaultOption? KeyVault { get; set; }
 

@@ -2,7 +2,7 @@
 
 namespace Toolbox.Repository
 {
-    public class BlobStoreOption
+    public class StoreOption
     {       
         public string? ContainerName { get; set; }
 

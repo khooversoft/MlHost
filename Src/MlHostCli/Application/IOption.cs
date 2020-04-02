@@ -26,7 +26,7 @@ namespace MlHostCli.Application
 
         string? PackageFile { get; }
 
-        BlobStoreOption? BlobStore { get; }
+        StoreOption? BlobStore { get; }
 
         ISecretFilter? SecretFilter { get; }
     }

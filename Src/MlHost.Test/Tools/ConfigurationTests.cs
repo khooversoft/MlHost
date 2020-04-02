@@ -18,9 +18,9 @@ namespace MlHost.Test.Tools
                 $"ServiceUri={uri}",
                 "HostName=hostName",
                 "ForceDeployment=false",
-                "BlobStore:ContainerName=containerName",
-                "BlobStore:AccountName=accountName",
-                "BlobStore:AccountKey=accountKey",
+                "Store:AccountName=accountName",
+                "Store:AccountKey=accountKey",
+                "Store:ContainerName=containerName",
                 "Deployment:DeploymentFolder=deploymentFolder",
                 "Deployment:PackageFolder=packageFolder",
             };
@@ -33,9 +33,9 @@ namespace MlHost.Test.Tools
             option.ServiceUri.Should().Be(uri);
             option.ForceDeployment.Should().BeFalse();
             option.HostName.Should().Be("hostName");
-            option.BlobStore!.ContainerName.Should().Be("containerName");
-            option.BlobStore.AccountName.Should().Be("accountName");
-            option.BlobStore.AccountKey.Should().Be("accountKey");
+            option.Store!.ContainerName.Should().Be("containerName");
+            option.Store.AccountName.Should().Be("accountName");
+            option.Store.AccountKey.Should().Be("accountKey");
             option.Deployment.DeploymentFolder.Should().Contain("deploymentFolder");
             option.Deployment.PackageFolder.Should().Contain("packageFolder");
         }

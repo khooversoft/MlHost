@@ -39,7 +39,7 @@ namespace MlHost.Test.Tools
             if (Directory.Exists(tempFolder)) Directory.Delete(tempFolder, true);
 
             var memoryLogger = new MemoryLogger<PackageDeployment>();
-            IExecutionContext executionContext = new Services.ExecutionContext()
+            IExecutionContext executionContext = new ExecutionContext()
             {
                 ModelId = new ModelId("test/test"),
             };
@@ -48,9 +48,9 @@ namespace MlHost.Test.Tools
             {
                 "HostName=hostName",
                 "ForceDeployment=false",
-                "BlobStore:ContainerName=notValid",
-                "BlobStore:AccountName=accountName",
-                "BlobStore:AccountKey=accountKey",
+                "Store:ContainerName=notValid",
+                "Store:AccountName=accountName",
+                "Store:AccountKey=accountKey",
                 $"Deployment:DeploymentFolder={tempFolder}",
                 "Deployment:PackageFolder=notValid",
             };

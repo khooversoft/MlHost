@@ -8,10 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Application\TestConfig.json" />
     <None Remove="TestConfig\TestZip.zip" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Application\TestConfig.json" />
     <EmbeddedResource Include="TestConfig\TestZip.zip" />
   </ItemGroup>
 

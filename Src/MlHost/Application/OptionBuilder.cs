@@ -47,7 +47,7 @@ namespace MlHost.Application
             string? accountKey = null;
             Option option;
 
-            Func<string, string> createAccountKeyCommand = x => $"{nameof(option.BlobStore)}:{nameof(option.BlobStore.AccountKey)}=" + x;
+            Func<string, string> createAccountKeyCommand = x => $"{nameof(option.Store)}:{nameof(option.Store.AccountKey)}=" + x;
 
             while (true)
             {
@@ -64,7 +64,7 @@ namespace MlHost.Application
                         secretId = v.SecretId;
                         continue;
 
-                    case Option v when v.BlobStore?.AccountKey == null && accountKey == null:
+                    case Option v when v.Store?.AccountKey == null && accountKey == null:
                         v.KeyVault!.Verify();
 
                         var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback));

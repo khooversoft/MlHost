@@ -10,22 +10,6 @@ namespace Toolbox.Repository
 {
     public static class RepositoryExtensions
     {
-        public static BlobInfo ConvertTo(this BlobItem subject)
-        {
-            subject.VerifyNotNull(nameof(subject));
-
-            return new BlobInfo
-            {
-                Name = subject.Name,
-                LastModified = subject.Properties.LastModified,
-                CreatedOn = subject.Properties.CreatedOn,
-                ETag = subject.Properties.ETag?.ToString(),
-                ContentHash = subject.Properties.ContentHash,
-                ContentType = subject.Properties.ContentType,
-                ContentLength = subject.Properties.ContentLength,
-            };
-        }
-
         public static DatalakePathItem ConvertTo(this PathItem subject)
         {
             return new DatalakePathItem
@@ -54,11 +38,12 @@ namespace Toolbox.Repository
             };
         }
 
-        public static void Verify(this BlobStoreOption subject)
+        public static void Verify(this StoreOption? storeOption)
         {
-            subject.AccountName.VerifyNotNull(nameof(subject.AccountName));
-            subject.AccountKey.VerifyNotNull(nameof(subject.AccountKey));
-            subject.ContainerName.VerifyNotNull(nameof(subject.ContainerName));
+            storeOption.VerifyNotNull("BlobStore is required");
+            storeOption!.ContainerName.VerifyNotEmpty($"{nameof(storeOption.ContainerName)} is missing");
+            storeOption!.AccountName.VerifyNotEmpty($"{nameof(storeOption.AccountName)} is missing");
+            storeOption!.AccountKey.VerifyNotEmpty($"{nameof(storeOption.AccountKey)} is missing");
         }
     }
 }
