@@ -1,22 +1,19 @@
 ﻿using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MlHost.Services;
 using MlHost.Test.Application;
 using MlHostApi.Models;
-using MlHostApi.Services;
-using MlHostApi.Tools;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using Xunit;
+using Toolbox.Services;
+using Toolbox.Tools;
 
 namespace MlHost.Test.Controller
 {
-    [Collection("WebsiteTest")]
-    public class PingControllerTests : IClassFixture<TestHostWithStorage>
+    [TestClass]
+    public class PingControllerTests
     {
-        private readonly TestHostWithStorage _storageStoreFixture;
-
         private static HashSet<string> _validResponses = new HashSet<string>
         {
             ExecutionState.Booting.ToString(),
@@ -25,17 +22,14 @@ namespace MlHost.Test.Controller
             ExecutionState.Running.ToString(),
         };
 
-        public PingControllerTests(TestHostWithStorage storageStoreFixture)
-        {
-            _storageStoreFixture = storageStoreFixture;
-        }
-
-        [Fact]
+        [TestMethod]
         public async Task GivenMlHost_WhenPing_ShouldResponed()
         {
-            IJson jsonSerializer = _storageStoreFixture.Resolve<IJson>();
+            var host = TestHostWithStorage.GetHost();
 
-            var response = await _storageStoreFixture.Client.GetAsync("api/ping");
+            IJson jsonSerializer = host.Resolve<IJson>();
+
+            var response = await host.Client.GetAsync("api/ping");
             response.EnsureSuccessStatusCode();
 
             var responseString = await response.Content.ReadAsStringAsync();

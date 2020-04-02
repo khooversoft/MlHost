@@ -1,0 +1,11 @@
+{
+  "BlobStore": {
+    "AccountName": "mlteststoragev1",
+    "ContainerName": "model-test"
+  },
+
+  "DatalakeStore": {
+    "AccountName": "mltestadlsv1",
+    "ContainerName": "model-test"
+  }
+}

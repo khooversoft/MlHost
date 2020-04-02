@@ -1,15 +1,15 @@
 using FluentAssertions;
-using MlHostApi.Services;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MlHostCli.Application;
-using System;
 using System.IO;
-using Xunit;
+using Toolbox.Services;
 
 namespace MlHostCli.Test.Option
 {
+    [TestClass]
     public class OptionPositiveTests
     {
-        [Fact]
+        [TestMethod]
         public void GivenValidHelpOption_WhenBuild_ShouldSucceed()
         {
             var args = new string[]
@@ -24,7 +24,7 @@ namespace MlHostCli.Test.Option
             option.Help.Should().BeTrue();
         }
 
-        [Fact]
+        [TestMethod]
         public void GivenValidUploadOption_WhenBuild_ShouldSucceed()
         {
             var tempZipFile = Path.Combine(Path.GetTempPath(), "zipFile1.mlPackage");
@@ -63,8 +63,7 @@ namespace MlHostCli.Test.Option
             }
         }
 
-
-        [Fact]
+        [TestMethod]
         public void GivenValidDownloadOptionWithConfigFile_WhenBuild_ShouldSucceed()
         {
             var tempConfigFile = Path.Combine(Path.GetTempPath(), "test-configfile.json");
@@ -116,7 +115,7 @@ namespace MlHostCli.Test.Option
             }
         }
 
-        [Fact]
+        [TestMethod]
         public void GivenValidDownloadOption_WhenBuild_ShouldSucceed()
         {
             var args = new string[]
@@ -145,7 +144,7 @@ namespace MlHostCli.Test.Option
             option.BlobStore!.AccountKey.Should().Be("dummyKey");
         }
 
-        [Fact]
+        [TestMethod]
         public void GivenValidDeleteOption_WhenBuild_ShouldSucceed()
         {
             var args = new string[]
@@ -172,7 +171,7 @@ namespace MlHostCli.Test.Option
             option.BlobStore!.AccountKey.Should().Be("dummyKey");
         }
 
-        [Fact]
+        [TestMethod]
         public void GivenValidActivateOption_WhenBuild_ShouldSucceed()
         {
             var args = new string[]

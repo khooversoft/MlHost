@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MlHostApi.Models;
 using MlHostApi.Types;
 using MlHostCli.Activity;
@@ -7,26 +8,21 @@ using MlHostCli.Test.Application;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
-using static MlHostCli.Test.Application.Function;
+using Toolbox.Tools;
 
 namespace MlHostCli.Test
 {
-    public class ActivitationActivityTests : IClassFixture<ModelFixture>
+    [TestClass]
+    public class ActivitationActivityTests
     {
-        private readonly ModelFixture _modelFixture;
-
-        public ActivitationActivityTests(ModelFixture modelFixture)
-        {
-            _modelFixture = modelFixture;
-        }
-
-        [Fact]
+        [TestMethod]
         public async Task GivenModel_WhenActivatedThenDeactivate_ShouldPass()
         {
-            await _modelFixture.ModelRepository.WriteConfiguration(new HostConfigurationModel(), CancellationToken.None);
+            ModelFixture modelFixture = await ModelFixture.GetModelFixture();
 
-            string tempZipFile = WriteResourceToFile("TestZip.Zip", "MlHostCli.Test.TestConfig.TestZip.zip");
+            await modelFixture.ModelRepository.WriteConfiguration(new HostConfigurationModel(), CancellationToken.None);
+
+            string tempZipFile = FileTools.WriteResourceToTempFile("TestZip.Zip", typeof(ActivitationActivityTests), "MlHostCli.Test.TestConfig.TestZip.zip");
 
             IOption option = new TestOption
             {
@@ -36,25 +32,25 @@ namespace MlHostCli.Test
                 HostName = "hostName",
             };
 
-            await new UploadModelActivity(option, _modelFixture.ModelRepository, _modelFixture.Telemetry).Upload(CancellationToken.None);
+            await new UploadModelActivity(option, modelFixture.ModelRepository, modelFixture.Telemetry).Upload(CancellationToken.None);
 
-            HostConfigurationModel hostConfigurationModel = await _modelFixture.ModelRepository.ReadConfiguration(CancellationToken.None);
+            HostConfigurationModel hostConfigurationModel = await modelFixture.ModelRepository.ReadConfiguration(CancellationToken.None);
             hostConfigurationModel.Should().NotBeNull();
             hostConfigurationModel.HostAssignments.Should().NotBeNull();
             hostConfigurationModel.HostAssignments!.Count.Should().Be(0);
 
-            await new ActivateModelActivity(option, _modelFixture.ModelRepository, _modelFixture.Telemetry).Activate(CancellationToken.None);
+            await new ActivateModelActivity(option, modelFixture.ModelRepository, modelFixture.Telemetry).Activate(CancellationToken.None);
 
-            hostConfigurationModel = await _modelFixture.ModelRepository.ReadConfiguration(CancellationToken.None);
+            hostConfigurationModel = await modelFixture.ModelRepository.ReadConfiguration(CancellationToken.None);
             hostConfigurationModel.Should().NotBeNull();
             hostConfigurationModel.HostAssignments.Should().NotBeNull();
             hostConfigurationModel.HostAssignments!.Count.Should().Be(1);
             hostConfigurationModel.HostAssignments![0].HostName.Should().Be(option.HostName);
             hostConfigurationModel.HostAssignments![0].ModelId.Should().Be(new ModelId(option.ModelName!, option.VersionId!));
 
-            await new DeactivateModelActivity(option, _modelFixture.ModelRepository, _modelFixture.Telemetry).Deactivate(CancellationToken.None);
+            await new DeactivateModelActivity(option, modelFixture.ModelRepository, modelFixture.Telemetry).Deactivate(CancellationToken.None);
 
-            hostConfigurationModel = await _modelFixture.ModelRepository.ReadConfiguration(CancellationToken.None);
+            hostConfigurationModel = await modelFixture.ModelRepository.ReadConfiguration(CancellationToken.None);
             hostConfigurationModel.Should().NotBeNull();
             hostConfigurationModel.HostAssignments.Should().NotBeNull();
             hostConfigurationModel.HostAssignments!.Count.Should().Be(0);

@@ -1,17 +1,15 @@
 ﻿using Autofac;
-using MlHostApi.Option;
 using MlHostApi.Repository;
-using MlHostApi.Services;
-using MlHostApi.Tools;
 using MlHostCli.Activity;
 using MlHostCli.Application;
-using MlHostCli.Tools;
 using System;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Toolbox.Services;
+using Toolbox.Tools;
 
 [assembly: InternalsVisibleTo("MlHostCli.Test")]
 
@@ -108,7 +106,7 @@ namespace MlHostCli
 
             if (option.BlobStore != null)
             {
-                builder.RegisterInstance(new BlobRepository(option.BlobStore.ContainerName!, option.BlobStore.CreateBlobConnectionString())).As<IBlobRepository>();
+                //builder.RegisterInstance(new BlobRepository(option.BlobStore.ContainerName!, option.BlobStore.CreateBlobConnectionString())).As<IBlobRepository>();
                 builder.RegisterType<ModelRepository>().As<IModelRepository>().InstancePerLifetimeScope();
 
                 builder.RegisterType<ActivateModelActivity>();

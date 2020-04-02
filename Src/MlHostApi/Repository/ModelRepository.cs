@@ -1,8 +1,5 @@
 ﻿using MlHostApi.Models;
-using MlHostApi.Services;
-using MlHostApi.Tools;
 using MlHostApi.Types;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,6 +7,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Toolbox.Repository;
+using Toolbox.Services;
+using Toolbox.Tools;
 
 namespace MlHostApi.Repository
 {
@@ -28,12 +28,12 @@ namespace MlHostApi.Repository
     {
         private const string _hostConfiguratonPath = "host-configuration.json";
 
-        private readonly IBlobRepository _blobRepository;
+        private readonly IDatalakeRepository _datalakeRepository;
         private readonly IJson _json;
 
-        public ModelRepository(IBlobRepository blobRepository, IJson json)
+        public ModelRepository(IDatalakeRepository datalakeRepository, IJson json)
         {
-            _blobRepository = blobRepository;
+            _datalakeRepository = datalakeRepository;
             _json = json;
         }
 
@@ -43,7 +43,7 @@ namespace MlHostApi.Repository
             modelId.VerifyNotNull(nameof(modelId));
 
             using Stream fileStream = new FileStream(modelVersionFile, FileMode.Open);
-            await _blobRepository.Upload(fileStream, modelId.ToBlobPath(), force, token);
+            await _datalakeRepository.Upload(fileStream, modelId.ToBlobPath(), force, token);
         }
 
         public async Task Download(ModelId modelId, string toFile, CancellationToken token)
@@ -52,7 +52,7 @@ namespace MlHostApi.Repository
             toFile.VerifyNotEmpty(nameof(toFile));
 
             using Stream fileStream = new FileStream(toFile, FileMode.Create);
-            await _blobRepository.Download(modelId.ToBlobPath(), fileStream, token);
+            await _datalakeRepository.Download(modelId.ToBlobPath(), fileStream, token);
         }
 
         public async Task Delete(ModelId modelId, CancellationToken token)
@@ -60,27 +60,27 @@ namespace MlHostApi.Repository
             modelId.VerifyNotNull(nameof(modelId));
 
             await RemoveActivation(modelId, token);
-            await _blobRepository.Delete(modelId.ToBlobPath(), token);
+            await _datalakeRepository.Delete(modelId.ToBlobPath(), token);
         }
 
         public async Task<bool> Exist(ModelId modelId, CancellationToken token)
         {
             modelId.VerifyNotNull(nameof(modelId));
-            IReadOnlyList<string> list = await Search(modelId.ToBlobPath(), modelId.ToRegexPattern(), token);
-            return list.Count == 1;
+            return await _datalakeRepository.Exist(modelId.ToBlobPath(), token);
         }
 
-        public Task<BlobInfo?> GetBlobInfo(ModelId modelId, CancellationToken token)
+        public Task<DatalakePathProperties> GetPathProperties(ModelId modelId, CancellationToken token)
         {
-            return _blobRepository.GetBlobInfo(modelId.ToBlobPath(), token);
+            modelId.VerifyNotNull(nameof(modelId));
+            return _datalakeRepository.GetPathProperties(modelId.ToBlobPath(), token);
         }
 
         public async Task<HostConfigurationModel> ReadConfiguration(CancellationToken token)
         {
-            bool exist = await _blobRepository.Exist(_hostConfiguratonPath, token);
+            bool exist = await _datalakeRepository.Exist(_hostConfiguratonPath, token);
             if (!exist) return new HostConfigurationModel();
 
-            byte[] data = await _blobRepository.Read(_hostConfiguratonPath, token);
+            byte[] data = await _datalakeRepository.Read(_hostConfiguratonPath, token);
             string json = Encoding.UTF8.GetString(data);
 
             return _json.Deserialize<HostConfigurationModel>(json).VerifyNotNull("Deserialize failed");
@@ -93,18 +93,18 @@ namespace MlHostApi.Repository
             string json = _json.Serialize(hostConfigurationModel);
             byte[] data = Encoding.UTF8.GetBytes(json);
 
-            await _blobRepository.Write(_hostConfiguratonPath, data, token);
+            await _datalakeRepository.Write(_hostConfiguratonPath, data, true, token);
         }
 
-        public Task<IReadOnlyList<string>> Search(string prefix, string pattern, CancellationToken token)
+        public Task<IReadOnlyList<DatalakePathItem>> Search(string? prefix, string pattern, CancellationToken token)
         {
             if (pattern == "*" || pattern.ToNullIfEmpty() == null)
             {
-                return _blobRepository.Search(prefix, x => true, token);
+                return _datalakeRepository.Search(null, x => true, true, token);
             }
 
             Regex regex = new Regex(pattern, RegexOptions.Compiled);
-            return _blobRepository.Search(prefix, x => regex.Match(x).Success, token);
+            return _datalakeRepository.Search(prefix, x => regex.Match(x.Name).Success, true, token);
         }
 
         public async Task AddActivation(string hostName, ModelId modelId, CancellationToken token)
@@ -141,6 +141,30 @@ namespace MlHostApi.Repository
 
             if (hostAssigments.TryGetValue(hostName, out ModelId? value)) return value;
             return null;
+        }
+
+        public async Task<T?> Read<T>(string path, CancellationToken token) where T : class
+        {
+            path.VerifyNotNull(nameof(path));
+
+            bool exist = await _datalakeRepository.Exist(path, token);
+            if (!exist) return null;
+
+            byte[] data = await _datalakeRepository.Read(path, token);
+            string jsonString = Encoding.UTF8.GetString(data);
+
+            return _json.Deserialize<T>(jsonString).VerifyNotNull("Deserialize failed");
+        }
+
+        public async Task Write<T>(string path, T value, CancellationToken token) where T : class
+        {
+            path.VerifyNotEmpty(nameof(path));
+            value.VerifyNotNull(nameof(value));
+
+            string jsonString = _json.Serialize(value);
+            byte[] data = Encoding.UTF8.GetBytes(jsonString);
+
+            await _datalakeRepository.Write(path, data, true, token);
         }
     }
 }

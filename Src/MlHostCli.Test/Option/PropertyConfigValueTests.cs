@@ -1,16 +1,15 @@
 ﻿using FluentAssertions;
-using MlHostCli.Tools;
-using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Xunit;
+using Toolbox.Tools;
 
 namespace MlHostCli.Test.Option
 {
+    [TestClass]
     public class PropertyConfigValueTests
     {
-        [Fact]
+        [TestMethod]
         public void GivenSimpleClass_WhenGetProperties_ShouldSuccess()
         {
             var subject = new Simple
@@ -34,8 +33,8 @@ namespace MlHostCli.Test.Option
                 .All(x => x.o == x.i)
                 .Should().BeTrue();
         }
-        
-        [Fact]
+
+        [TestMethod]
         public void GivenTwoLevelClasses_WhenGetProperties_ShouldSuccess()
         {
             var subject = new ClassA
@@ -65,9 +64,9 @@ namespace MlHostCli.Test.Option
                 .Zip(expected.OrderBy(x => x), (o, i) => (o, i))
                 .All(x => x.o == x.i)
                 .Should().BeTrue();
-        }    
-        
-        [Fact]
+        }
+
+        [TestMethod]
         public void GivenTwoLevelTwoInstanceClasses_WhenGetProperties_ShouldSuccess()
         {
             IClassA subject = new ClassA
@@ -106,7 +105,7 @@ namespace MlHostCli.Test.Option
                 .Should().BeTrue();
         }
 
-        [Fact]
+        [TestMethod]
         public void GivenThreeLevelTwoInstanceClasses_WhenGetProperties_ShouldSuccess()
         {
             var subject = new ClassA

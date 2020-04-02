@@ -1,21 +1,18 @@
 ﻿using FluentAssertions;
-using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MlHost.Application;
 using MlHost.Services;
 using MlHost.Test.Application;
-using MlHost.Tools;
 using MlHostApi.Types;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
+using Toolbox.Application;
 
 namespace MlHost.Test.Tools
 {
+    [TestClass]
     public class PackageUpdateTests
     {
         private readonly string[] _TestZipFiles = new[]
@@ -35,7 +32,7 @@ namespace MlHost.Test.Tools
             "Folder2\\TestFile22.txt",
         };
 
-        [Fact]
+        [TestMethod]
         public async Task GivenEmbeddedZipFile_WhenDeployed_ShouldMatchFiles()
         {
             string tempFolder = Path.Combine(Path.GetTempPath(), nameof(PackageUpdateTests));

@@ -1,16 +1,14 @@
 ﻿using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MlHostCli.Application;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Xunit;
 
 namespace MlHostCli.Test.Option
 {
+    [TestClass]
     public class OptionNegativeTests
     {
-        [Fact]
+        [TestMethod]
         public void GivenInvalidUploadOption_WhenBuild_ShouldThrow()
         {
             var args = new string[]
@@ -28,7 +26,7 @@ namespace MlHostCli.Test.Option
             act.Should().Throw<ArgumentException>();
         }
 
-        [Fact]
+        [TestMethod]
         public void GivenInvalidDownloadOption_WhenBuild_ShouldThrow()
         {
             var args = new string[]
@@ -46,7 +44,7 @@ namespace MlHostCli.Test.Option
             act.Should().Throw<ArgumentException>();
         }
 
-        [Fact]
+        [TestMethod]
         public void GivenInvalidDownloadOptionWhenModelNameIsMissing_WhenBuild_ShouldThrow()
         {
             var args = new string[]
@@ -64,7 +62,7 @@ namespace MlHostCli.Test.Option
         }
 
 
-        [Fact]
+        [TestMethod]
         public void GivenActivateOptionWithHostMissing_WhenBuild_ShouldThrow()
         {
             var args = new string[]

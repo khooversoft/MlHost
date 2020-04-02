@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using MlHostApi.Tools;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MlHostApi.Types;
 using MlHostCli.Activity;
 using MlHostCli.Application;
@@ -10,24 +10,20 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
-using static MlHostCli.Test.Application.Function;
+using Toolbox.Repository;
+using Toolbox.Tools;
 
 namespace MlHostCli.Test
 {
-    public class ActivityTests : IClassFixture<ModelFixture>
+    [TestClass]
+    public class ActivityTests
     {
-        private readonly ModelFixture _modelFixture;
-
-        public ActivityTests(ModelFixture modelFixture)
-        {
-            _modelFixture = modelFixture;
-        }
-
-        [Fact]
+        [TestMethod]
         public async Task GivenZipModel_WhenUploaded_ShouldPass()
         {
-            string tempZipFile = WriteResourceToFile("TestZip.Zip", "MlHostCli.Test.TestConfig.TestZip.zip");
+            ModelFixture modelFixture = await ModelFixture.GetModelFixture();
+
+            string tempZipFile = FileTools.WriteResourceToTempFile("TestZip.Zip", typeof(ActivityTests), "MlHostCli.Test.TestConfig.TestZip.zip");
 
             ModelId modelId = new ModelId($"test-zip-{Guid.NewGuid()}/v100");
 
@@ -38,19 +34,21 @@ namespace MlHostCli.Test
                 VersionId = modelId.VersionId,
             };
 
-            await new UploadModelActivity(option, _modelFixture.ModelRepository, _modelFixture.Telemetry).Upload(CancellationToken.None);
+            await new UploadModelActivity(option, modelFixture.ModelRepository, modelFixture.Telemetry).Upload(CancellationToken.None);
 
-            IReadOnlyList<string> blobList = await _modelFixture.ModelRepository.Search(modelId, "*", CancellationToken.None);
+            IReadOnlyList<BlobInfo> blobList = await modelFixture.ModelRepository.Search(modelId, "*", CancellationToken.None);
             blobList.Should().NotBeNull();
             blobList.Count.Should().Be(1);
 
             File.Delete(tempZipFile);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task GiveZipModelWhenUploaded_WhenDownloadAndDeleted_ShouldVerify()
         {
-            string tempZipFile = WriteResourceToFile("TestZip.Zip", "MlHostCli.Test.TestConfig.TestZip.zip");
+            ModelFixture modelFixture = await ModelFixture.GetModelFixture();
+
+            string tempZipFile = FileTools.WriteResourceToTempFile("TestZip.Zip", typeof(ActivityTests), "MlHostCli.Test.TestConfig.TestZip.zip");
 
             ModelId modelId = new ModelId($"test-zip-{Guid.NewGuid()}/v100");
 
@@ -61,7 +59,7 @@ namespace MlHostCli.Test
                 VersionId = modelId.VersionId,
             };
 
-            await new UploadModelActivity(option, _modelFixture.ModelRepository, _modelFixture.Telemetry).Upload(CancellationToken.None);
+            await new UploadModelActivity(option, modelFixture.ModelRepository, modelFixture.Telemetry).Upload(CancellationToken.None);
 
             string toZipFile = Path.GetDirectoryName(tempZipFile).Func(x => Path.Combine(x!, "TestZip-Copy.Zip"));
 
@@ -72,16 +70,16 @@ namespace MlHostCli.Test
                 VersionId = option.VersionId,
             };
 
-            await new DownloadModelActivity(downloadOption, _modelFixture.ModelRepository, _modelFixture.Telemetry).Download(CancellationToken.None);
+            await new DownloadModelActivity(downloadOption, modelFixture.ModelRepository, modelFixture.Telemetry).Download(CancellationToken.None);
 
-            byte[] originalZipHash = GetFileHash(tempZipFile);
-            byte[] downloadZipHash = GetFileHash(toZipFile);
+            byte[] originalZipHash = FileTools.GetFileHash(tempZipFile);
+            byte[] downloadZipHash = FileTools.GetFileHash(toZipFile);
             Enumerable.SequenceEqual(originalZipHash, downloadZipHash).Should().BeTrue();
 
-            DeleteModelActivity uploadDeleteActivity = new DeleteModelActivity(option, _modelFixture.ModelRepository, _modelFixture.Telemetry);
+            DeleteModelActivity uploadDeleteActivity = new DeleteModelActivity(option, modelFixture.ModelRepository, modelFixture.Telemetry);
             await uploadDeleteActivity.Delete(CancellationToken.None);
 
-            IReadOnlyList<string> blobList = await _modelFixture.ModelRepository.Search(modelId, "*", CancellationToken.None);
+            IReadOnlyList<BlobInfo> blobList = await modelFixture.ModelRepository.Search(modelId, "*", CancellationToken.None);
             blobList.Should().NotBeNull();
             blobList.Count.Should().Be(0);
 

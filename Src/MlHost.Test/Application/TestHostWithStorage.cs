@@ -9,6 +9,9 @@ namespace MlHost.Test.Application
 {
     public class TestHostWithStorage : TestWebsiteHost, IDisposable
     {
+        private static TestHostWithStorage? _currentHost;
+        private static readonly object _lock = new object();
+
         public TestHostWithStorage()
         {
             string[] args = new[]
@@ -42,6 +45,14 @@ namespace MlHost.Test.Application
 
             _host = host.Start();
             _client = _host.GetTestServer().CreateClient();
+        }
+
+        public static TestHostWithStorage GetHost()
+        {
+            lock (_lock)
+            {
+                return _currentHost ??= new TestHostWithStorage();
+            }
         }
     }
 }

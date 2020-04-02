@@ -1,15 +1,14 @@
 ﻿using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MlHost.Application;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
 
 namespace MlHost.Test.Tools
 {
+    [TestClass]
     public class ConfigurationTests
     {
-        [Fact]
+        [TestMethod]
         public void GivenOption_WhenBuild_ShouldPass()
         {
             const string uri = "http://0.0.0.0:8000/predict";
@@ -41,7 +40,7 @@ namespace MlHost.Test.Tools
             option.Deployment.PackageFolder.Should().Contain("packageFolder");
         }
 
-        [Fact]
+        [TestMethod]
         public void GivenMissingOption_WhenBuild_ShouldThrowException()
         {
             string[] args = new[]

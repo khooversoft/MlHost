@@ -9,6 +9,9 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Toolbox.Repository;
+using Toolbox.Services;
+using Toolbox.Tools;
 
 namespace MlHost.Services
 {
@@ -18,16 +21,19 @@ namespace MlHost.Services
         private readonly ILogger<PackageSourceFromStorage> _logger;
         private readonly IExecutionContext _executionContext;
         private readonly IModelRepository _modelRepository;
+        private readonly IJson _json;
         private readonly string _zipFilePath;
+        private readonly string _EtagPath;
 
-        public PackageSourceFromStorage(IOption option, ILogger<PackageSourceFromStorage> logger, IExecutionContext executionContext, IModelRepository modelRepository)
+        public PackageSourceFromStorage(IOption option, ILogger<PackageSourceFromStorage> logger, IExecutionContext executionContext, IModelRepository modelRepository, IJson json)
         {
             _option = option;
             _logger = logger;
             _executionContext = executionContext;
             _modelRepository = modelRepository;
-
+            _json = json;
             _zipFilePath = Path.Combine(_option.Deployment.PackageFolder, "ml-package.zip");
+            _EtagPath = Path.Combine(_option.Deployment.PackageFolder, "ml-package-etag.json");
         }
 
         public Task<Stream> GetStream()
@@ -49,6 +55,7 @@ namespace MlHost.Services
 
             var sw = Stopwatch.StartNew();
             await _modelRepository.Download(_executionContext.ModelId!, _zipFilePath, _executionContext.TokenSource.Token);
+            await StoreETag();
             sw.Stop();
 
             _logger.LogInformation($"Package file {_zipFilePath} has been downloaded from storage, {sw.ElapsedMilliseconds}ms");
@@ -57,18 +64,38 @@ namespace MlHost.Services
 
         private async Task<bool> IsPackageCurrent()
         {
-            BlobInfo? blobInfo = await _modelRepository.GetBlobInfo(_executionContext.ModelId!, _executionContext.TokenSource.Token);
-            if (blobInfo == null) throw new InvalidOperationException($"Blob for model id {_executionContext.ModelId} does not exist");
+            DatalakePathProperties pathProperties = await _modelRepository.GetPathProperties(_executionContext.ModelId!, _executionContext.TokenSource.Token);
+            if (pathProperties == null) throw new InvalidOperationException($"Blob for model id {_executionContext.ModelId} does not exist");
 
             if (!File.Exists(_zipFilePath)) return false;
+            if (!File.Exists(_EtagPath)) return false;
 
-            using Stream fileStream = new FileStream(_zipFilePath, FileMode.Open);
-            byte[] fileHash = MD5.Create().ComputeHash(fileStream);
+            string? etag = await ReadETag();
+            return etag == pathProperties.ETag;
+        }
 
-            bool isCurrent = Enumerable.SequenceEqual(blobInfo.ContentHash, fileHash);
-            _logger.LogInformation($"Package file '{_zipFilePath}' is {(isCurrent ? "current" : "not current will be updated")}");
+        private async Task StoreETag()
+        {
+            DatalakePathProperties pathProperties = await _modelRepository.GetPathProperties(_executionContext.ModelId!, _executionContext.TokenSource.Token);
+            pathProperties.ETag.VerifyNotEmpty(nameof(pathProperties.ETag));
 
-            return isCurrent;
+            var store = new ETagStore
+            {
+                ETag = pathProperties.ETag!,
+            };
+
+            await _modelRepository.Write(_EtagPath, store, _executionContext.TokenSource.Token);
+        }
+
+        private async Task<string?> ReadETag()
+        {
+            ETagStore? store = await _modelRepository.Read<ETagStore>(_EtagPath, _executionContext.TokenSource.Token);
+            return store?.ETag;
+        }
+
+        private class ETagStore
+        {
+            public string? ETag { get; set; }
         }
     }
 }

@@ -3,12 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MlHost.Application;
 using MlHost.Services;
-using MlHost.Tools;
-using MlHostApi.Option;
 using MlHostApi.Repository;
-using MlHostApi.Services;
+using Toolbox.Services;
 
 namespace MlHost
 {
@@ -33,11 +30,11 @@ namespace MlHost
             services.AddSingleton<IPackageSource, PackageSourceFromStorage>();
             services.AddSingleton<IModelRepository, ModelRepository>();
 
-            services.AddSingleton<IBlobRepository>(x =>
-            {
-                IOption option = x.Resolve<IOption>();
-                return new BlobRepository(option.BlobStore!.ContainerName!, option.BlobStore.CreateBlobConnectionString());
-            });
+            //services.AddSingleton<IBlobRepository>(x =>
+            //{
+            //    IOption option = x.Resolve<IOption>();
+            //    return new BlobRepository(option.BlobStore!.ContainerName!, option.BlobStore.CreateBlobConnectionString());
+            //});
 
             services.AddHostedService<PythonHostedService>();
             services.AddApplicationInsightsTelemetry();

@@ -1,39 +1,32 @@
 ﻿using FluentAssertions;
-using MlHost.Services;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MlHost.Test.Application;
-using MlHostApi.Models;
-using MlHostApi.Services;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Xunit;
+using Toolbox.Services;
 
 namespace MlHost.Test.Controller
 {
-    [Collection("WebsiteTest")]
-    public class QuestionControllerTests : IClassFixture<TestHostWithStorage>
+    [TestClass]
+    public class QuestionControllerTests
     {
-        private readonly TestHostWithStorage _storageStoreFixture;
-
-        public QuestionControllerTests(TestHostWithStorage storageStoreFixture)
-        {
-            _storageStoreFixture = storageStoreFixture;
-        }
-
-        [Fact]
+        [TestMethod]
         public async Task GivenTestModel_WhenUsed_ShouldResponed()
         {
-            await _storageStoreFixture.WaitForStartup();
+            var host = TestHostWithStorage.GetHost();
+
+            await host.WaitForStartup();
 
             dynamic question = new
             {
                 sentence = "what is my deductible",
             };
 
-            IJson jsonSerializer = _storageStoreFixture.Resolve<IJson>();
+            IJson jsonSerializer = host.Resolve<IJson>();
 
             string content = jsonSerializer.Serialize(question);
-            var response = await _storageStoreFixture.Client.PostAsync("api/question/predict", new StringContent(content, Encoding.UTF8, "application/json"));
+            var response = await host.Client.PostAsync("api/question/predict", new StringContent(content, Encoding.UTF8, "application/json"));
             response.EnsureSuccessStatusCode();
 
             var responseString = await response.Content.ReadAsStringAsync();
