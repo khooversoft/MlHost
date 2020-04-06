@@ -18,13 +18,13 @@ namespace MlHost.Services
     internal class PythonHostedService : IHostedService
     {
         private readonly IOption _option;
-        private readonly ILogger<PythonHostedService> _logging;
+        private readonly ILogger<PythonHostedService> _logger;
         private readonly IPackageDeployment _packageDeployment;
         private readonly IExecutePython _executePython;
         private readonly IExecutionContext _executionContext;
         private readonly IModelRepository _modelRepository;
         private readonly IPackageSource _packageSource;
-
+        private readonly IMlPackageService _mlPackageService;
         private readonly Activity[] _startupStrategy;
         private readonly Activity[] _restartStrategy;
 
@@ -36,21 +36,21 @@ namespace MlHost.Services
             IExecutePython executePython,
             IExecutionContext executionContext,
             IModelRepository modelRepository,
-            IPackageSource packageSource)
+            IPackageSource packageSource,
+            IMlPackageService mlPackageService)
         {
             _option = option;
-            _logging = logging;
+            _logger = logging;
             _packageDeployment = packageDeployment;
             _executePython = executePython;
             _executionContext = executionContext;
             _modelRepository = modelRepository;
             _packageSource = packageSource;
+            _mlPackageService = mlPackageService;
 
             _startupStrategy = new Activity[]
             {
-                new Activity("Resetting execution state to running", () => { _executionContext.State = ExecutionState.Starting; return Task.FromResult(true); }),
-                new Activity("Kill running processes", () => _executePython.KillAnyRunningProcesses()),
-                new Activity("Get host registration", async () =>
+                 new Activity("Get host registration", async () =>
                 {
                     _executionContext.ModelId = await GetRegistration();
                     if( _executionContext.ModelId != null) return true;
@@ -58,51 +58,48 @@ namespace MlHost.Services
                     _executionContext.State = ExecutionState.NoModelRegisteredForHost;
                     return false;
                 }),
-                new Activity("Download package if required", async () => await _packageSource.GetPackageIfRequired(_executionContext.ForceDeployment)),
-                new Activity("Deploy ML package", async () =>
-                {
-                    await _packageDeployment.Deploy();
-                    return true;
-                }),
-                new Activity("Start ML package", () =>
-                {
-                    _executeTask = _executePython.Run();
-                    return Task.FromResult(true);
-                })
+                
+                new Activity("Starting ML Package", async () => await _mlPackageService.Start()),
             };
 
             _restartStrategy = _startupStrategy
-                .Prepend(new Activity("Pausing...", async () => { await Task.Delay(TimeSpan.FromSeconds(30)); return true; }))
+                .Prepend(new Activity("Pausing...", async () => 
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(30)); 
+                    return true; 
+                }))
                 .ToArray();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _logging.LogInformation("Starting python service");
+            _logger.LogInformation("Starting python service");
 
             _executionContext.ForceDeployment = _option.ForceDeployment;
-            _ = Task.Run(() => Startup());
+            _ = Task.Run(() => Run());
 
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _logging.LogInformation($"Python service is stopping");
+            _logger.LogInformation($"Python service is stopping");
 
             _executionContext.TokenSource.Cancel();
 
             return Interlocked.Exchange(ref _executeTask, null!) ?? Task.CompletedTask;
         }
 
-        private async Task Startup()
+        private async Task Run()
         {
             Activity[] activities = _startupStrategy;
             var range = new RangeLimit(0, 1);
 
+            CancellationTokenSource tokenSource = CancellationTokenSource.CreateLinkedTokenSource(_executionContext.TokenSource.Token);
+
             while (!_executionContext.TokenSource.Token.IsCancellationRequested && range.Increment())
             {
-                bool success = await RunActivities(activities);
+                bool success = await activities.RunActivities(tokenSource.Token, _logger);
                 if (success) return;
 
                 _executionContext.ForceDeployment = true;
@@ -129,55 +126,15 @@ namespace MlHost.Services
 
         private async Task<ModelId?> GetRegistration()
         {
-            _logging.LogInformation($"Retrieving registration for host {_option.HostName}");
+            _logger.LogInformation($"Retrieving registration for host {_option.HostName}");
             ModelId? modelId = await _modelRepository.GetRegistration(_option.HostName!, _executionContext.TokenSource.Token);
 
-            Action info = () => _logging.LogInformation($"Retrieved registration, host {_option.HostName} is assigned model {modelId}");
-            Action error = () => _logging.LogError($"Failed to retrieved registration for host {_option.HostName}");
+            Action info = () => _logger.LogInformation($"Retrieved registration, host {_option.HostName} is assigned model {modelId}");
+            Action error = () => _logger.LogError($"Failed to retrieved registration for host {_option.HostName}");
 
             (modelId != null ? info : error)();
 
             return modelId;
-        }
-
-        private async Task<bool> RunActivities(IEnumerable<Activity> activities)
-        {
-            foreach (var activity in activities)
-            {
-                if (!(await Run(activity))) return false;
-            }
-
-            return true;
-
-            async Task<bool> Run(Activity activity)
-            {
-                try
-                {
-                    _logging.LogInformation($"[Startup Activity] Starting {activity.Description}");
-                    bool success = await activity.Func();
-
-                    _logging.LogInformation($"[Startup Activity] Completed {activity.Description}, status={success}");
-                    return success;
-                }
-                catch (Exception ex)
-                {
-                    _logging.LogError(ex, $"[Startup Activity] {activity.Description} failed");
-                    return false;
-                }
-            }
-        }
-
-        private class Activity
-        {
-            public Activity(string description, Func<Task<bool>> func)
-            {
-                Description = description;
-                Func = func;
-            }
-
-            public string Description { get; }
-
-            public Func<Task<bool>> Func { get; }
         }
     }
 }

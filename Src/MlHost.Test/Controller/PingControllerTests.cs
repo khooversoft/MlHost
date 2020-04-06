@@ -25,8 +25,7 @@ namespace MlHost.Test.Controller
         [TestMethod]
         public async Task GivenMlHost_WhenPing_ShouldResponed()
         {
-            var host = TestHostWithStorage.GetHost();
-
+            TestWebsiteHost host = await TestWebsiteHost.GetHost();
             IJson jsonSerializer = host.Resolve<IJson>();
 
             var response = await host.Client.GetAsync("api/ping");

@@ -46,15 +46,6 @@ namespace Toolbox.Tools
 
         public LocalProcess SetWorkingDirectory(string? value) { WorkingDirectory = value; return this; }
 
-        public void Stop()
-        {
-            try { Process?.Kill(true); } catch { }
-            try { Process?.Close(); } catch { }
-
-            Interlocked.Exchange(ref _tokenSource, null!)?.Dispose();
-            Interlocked.Exchange(ref _tcs, null!)?.SetResult(this);
-        }
-
         public Task<LocalProcess> Run(CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(File)) throw new ArgumentException(nameof(File));
@@ -103,6 +94,15 @@ namespace Toolbox.Tools
             Process.BeginErrorReadLine();
 
             return _tcs.Task;
+        }
+
+        public void Stop()
+        {
+            try { Process?.Kill(true); } catch { }
+            try { Process?.Close(); } catch { }
+
+            Interlocked.Exchange(ref _tokenSource, null!)?.Dispose();
+            Interlocked.Exchange(ref _tcs, null!)?.SetResult(this);
         }
 
         private void OnProcessExit(object? sender, EventArgs args)

@@ -84,12 +84,12 @@ namespace MlHost.Services
                 ETag = pathProperties.ETag!,
             };
 
-            await _modelRepository.Write(_EtagPath, store, _executionContext.TokenSource.Token);
+            await store.WriteToFile(_EtagPath, _json);
         }
 
         private async Task<string?> ReadETag()
         {
-            ETagStore? store = await _modelRepository.Read<ETagStore>(_EtagPath, _executionContext.TokenSource.Token);
+            ETagStore? store = await FileTools.ReadFromFile<ETagStore>(_EtagPath, _json);
             return store?.ETag;
         }
 

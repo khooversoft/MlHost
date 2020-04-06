@@ -32,6 +32,7 @@ namespace MlHost
             services.AddSingleton<IJson, Json>();
             services.AddSingleton<IPackageSource, PackageSourceFromStorage>();
             services.AddSingleton<IModelRepository, ModelRepository>();
+            services.AddSingleton<IMlPackageService, MlPackageService>();
 
             services.AddSingleton<IDatalakeRepository>(x =>
             {

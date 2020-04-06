@@ -14,8 +14,8 @@ namespace MlHost.Test.Application
 
         public PackageSourceFromResource(Type type, string resourceId)
         {
-            if (type == null) throw new ArgumentException(nameof(type));
-            resourceId = resourceId.ToNullIfEmpty() ?? throw new ArgumentException(nameof(resourceId));
+            type.VerifyNotNull(nameof(type));
+            resourceId.VerifyNotNull(nameof(resourceId));
 
             _type = type;
             _resourceId = resourceId;
@@ -23,12 +23,6 @@ namespace MlHost.Test.Application
 
         public Task<bool> GetPackageIfRequired(bool overwrite) => throw new NotImplementedException();
 
-        public Task<Stream> GetStream()
-        {
-            Stream? packageStream = Assembly.GetAssembly(_type)!.GetManifestResourceStream(_resourceId);
-            if (packageStream == null) throw new ArgumentException($"Resource ID {_resourceId} not located in assembly");
-
-            return Task.FromResult(packageStream);
-        }
+        public Task<Stream> GetStream() => Task.FromResult(_type.GetResourceStream(_resourceId));
     }
 }

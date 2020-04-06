@@ -40,7 +40,7 @@ namespace MlHostCli.Test.Application
             {
                 if (_current != null) return _current;
 
-                using Stream configStream = FileTools.GetResourceStream(typeof(TestOption), _resourceId);
+                using Stream configStream = typeof(TestOption).GetResourceStream(_resourceId);
 
                 IConfiguration config = new ConfigurationBuilder()
                     .AddJsonStream(configStream)

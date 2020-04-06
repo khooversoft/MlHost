@@ -14,8 +14,7 @@ namespace MlHost.Test.Controller
         [TestMethod]
         public async Task GivenTestModel_WhenUsed_ShouldResponed()
         {
-            var host = TestHostWithStorage.GetHost();
-
+            TestWebsiteHost host = await TestWebsiteHost.GetHost();
             await host.WaitForStartup();
 
             dynamic question = new

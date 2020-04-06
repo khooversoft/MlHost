@@ -27,7 +27,6 @@ namespace MlHost.Controllers
                 Status = _executionContext.State.ToString(),
                 ModelId = _executionContext.ModelId?.ToString(),
                 HostName = _option.HostName,
-                LastException = _executionContext.LastException,
             };
 
             return Ok(response);

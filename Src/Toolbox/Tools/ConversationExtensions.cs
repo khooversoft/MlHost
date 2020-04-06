@@ -29,15 +29,22 @@ namespace Toolbox.Tools
             return (ExpandoObject)expando;
         }
 
+        /// <summary>
+        /// Uses function to recursive build configuration settings (.Net Core Configuration) from a class that can have sub-classes
+        /// </summary>
+        /// <typeparam name="T">type of class</typeparam>
+        /// <param name="subject">instance of class</param>
+        /// <returns>list or configuration settings "propertyName=value"</returns>
         public static IReadOnlyList<string> GetConfigValues<T>(this T subject) where T : class
         {
             subject.VerifyNotNull(nameof(subject));
 
-            static string buildName(string? root, string name) =>
-                (root.ToNullIfEmpty() == null ? string.Empty : root + ":") + name;
+            return getProperties(null, subject)
+                .ToList();
 
-            static bool isValue(object value) =>
-                value.GetType() == typeof(string) || !value.GetType().IsClass;
+            static string buildName(string? root, string name) => (root.ToNullIfEmpty() == null ? string.Empty : root + ":") + name;
+
+            static bool isValue(object value) => value.GetType() == typeof(string) || !value.GetType().IsClass;
 
             static IEnumerable<string> getProperties(string? root, object subject) =>
                 subject.GetType().GetProperties()
@@ -49,13 +56,6 @@ namespace Toolbox.Tools
                 object v => getProperties(buildName(root, name), v),
                 _ => Enumerable.Empty<string>(),
             };
-
-            return getProperties(null, subject)
-                .ToList();
         }
-
-        public static byte[] ToMd5Hash(this byte[] subject) => MD5.Create().ComputeHash(subject);
-
-        public static byte[] ToBytes(this string subject) => Encoding.UTF8.GetBytes(subject);
     }
 }

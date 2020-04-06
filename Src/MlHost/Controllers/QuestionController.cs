@@ -32,12 +32,26 @@ namespace MlHost.Controllers
             bool requestIsValid = ((object)request).ToDictionary()
                 ?.Func(x => x.Count > 0) ?? false;
 
+            _logger.LogInformation($"Predict: {request}");
+
             if (!requestIsValid) return StatusCode((int)HttpStatusCode.BadRequest);
 
-            if (_executionContext.State != ExecutionState.Running) return ReturnNotAvailable();
+            switch(_executionContext.State)
+            {
+                case ExecutionState.Booting:
+                case ExecutionState.Starting:
+                case ExecutionState.Deploying:
+                    return ReturnNotAvailable();
 
-            dynamic value = await _question.Ask(request);
-            return Ok(value);
+                case ExecutionState.Running:
+                    dynamic value = await _question.Ask(request);
+                    _logger.LogInformation($"Predict answer: {value}");
+                    return Ok(value);
+
+                default:
+                    _logger.LogError($"Failed: ExecutionState={_executionContext.State}");
+                    return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         private ObjectResult ReturnNotAvailable()

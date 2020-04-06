@@ -18,7 +18,6 @@ namespace Toolbox.Test.Application
             return _datalakeRepository;
 
             DatalakeRepository get() => GetBlobStoreOption()
-                .Action(x => x.Verify())
                 .Func(x => new DatalakeRepository(x));
         }
 
@@ -31,9 +30,9 @@ namespace Toolbox.Test.Application
                 .AddUserSecrets("Toolbox.Test")
                 .Build();
 
-            var option = new StoreOption();
-            configuration.Bind(option, x => x.BindNonPublicProperties = true);
-            option.Verify();
+            var option = new StoreOption()
+                .Action(x => configuration.Bind(x, x => x.BindNonPublicProperties = true))
+                .Action(x => x.Verify());
 
             return option;
         }

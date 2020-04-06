@@ -26,7 +26,7 @@ namespace MlHost.Services
             _executionContext = executionContext;
         }
 
-        public Task Run()
+        public Task Run(CancellationToken token)
         {
             var timeout = TimeSpan.FromMinutes(5);
 
@@ -53,7 +53,7 @@ namespace MlHost.Services
                 CaptureOutput = WaitForRunning,
             };
 
-            Task completeTask = localProcess.Run(_executionContext.TokenSource.Token);
+            Task completeTask = localProcess.Run(token);
 
             _logger.LogInformation("Python process is starting up");
 

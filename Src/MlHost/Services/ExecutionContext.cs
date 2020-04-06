@@ -18,8 +18,6 @@ namespace MlHost.Services
 
         public ModelId? ModelId { get; set; }
 
-        public string? LastException { get; set; }
-
         public bool ForceDeployment { get; set; }
     }
 }
