@@ -34,6 +34,6 @@ namespace MlHostApi.Types
 
         public string FilePath { get; }
 
-        public static string Extension = ".MlPackage";
+        public static string Extension = ".mlPackage";
     }
 }

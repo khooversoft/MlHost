@@ -14,6 +14,7 @@ namespace MlHostCli.Activity
 {
     internal class BindActivity
     {
+        private const string _embeddedFileName = "RunModel.mlPackage";
         private readonly IOption _option;
         private readonly IModelRepository _modelRepository;
         private readonly ITelemetry _telemetry;
@@ -29,28 +30,41 @@ namespace MlHostCli.Activity
         {
             _telemetry.WriteLine($"Binding model to ML Host");
 
-            string filePath = await Download(token);
-            UnpackPackage(filePath, token);
+            await Download(token);
 
-            FileTools.DeleteDirectory(Path.GetDirectoryName(filePath)!);
+            //string filePath = await Download(token);
+            ////UnpackPackage(filePath, token);
+
+            //FileTools.DeleteDirectory(Path.GetDirectoryName(filePath)!);
         }
 
         private async Task<string> Download(CancellationToken token)
         {
             var modelId = new ModelId(_option.ModelName!, _option.VersionId!);
 
-            string directory = Path.Combine(Path.GetTempPath(), nameof(MlHostCli));
-            string filePath = new MlPackageFile(modelId, directory).FilePath;
+            string filePath = Path.Combine(_option.InstallPath!, _embeddedFileName);
             _telemetry.WriteLine($"Downloading model {modelId} to {filePath}");
 
             await _modelRepository.Download(modelId, filePath, token);
             return filePath;
         }
 
-        private void UnpackPackage(string filePath, CancellationToken token)
-        {
-            _telemetry.WriteLine($"Unpacking {filePath} to install path {_option.InstallPath}");
-            ZipArchiveTools.ExtractFromZipFile(filePath, _option.InstallPath!, token);
-        }
+        //private async Task<string> Download(CancellationToken token)
+        //{
+        //    var modelId = new ModelId(_option.ModelName!, _option.VersionId!);
+
+        //    string directory = Path.Combine(Path.GetTempPath(), nameof(MlHostCli));
+        //    string filePath = new MlPackageFile(modelId, directory).FilePath;
+        //    _telemetry.WriteLine($"Downloading model {modelId} to {filePath}");
+
+        //    await _modelRepository.Download(modelId, filePath, token);
+        //    return filePath;
+        //}
+
+        //    private void UnpackPackage(string filePath, CancellationToken token)
+        //    {
+        //        _telemetry.WriteLine($"Unpacking {filePath} to install path {_option.InstallPath}");
+        //        ZipArchiveTools.ExtractFromZipFile(filePath, _option.InstallPath!, token);
+        //    }
     }
 }

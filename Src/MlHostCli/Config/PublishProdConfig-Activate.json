@@ -8,7 +8,7 @@
   "modelName": "sentiment-demo",
   "versionId": "V20200324-001",
 
-  "InstallPath": "D:\\Sources\\MlHost\\Src\\MlHost\\wwwroot",
+  "InstallPath": "D:\\Sources\\MlHost\\Src\\MlHost\\MlPackage",
 
   "KeyVault": {
     "KeyVaultName": "mltest-kv",

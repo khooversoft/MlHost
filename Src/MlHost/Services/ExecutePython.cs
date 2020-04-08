@@ -17,17 +17,13 @@ namespace MlHost.Services
         private readonly ILogger<ExecutePython> _logger;
         private readonly IOption _option;
         private readonly IExecutionContext _executionContext;
-        private readonly ITelemetryMemory _telemetryMemory;
         private Task? _localProcess;
 
-        public ExecutePython(ILogger<ExecutePython> logger, IOption option, IExecutionContext executionContext, ITelemetryMemory telemetryMemory)
+        public ExecutePython(ILogger<ExecutePython> logger, IOption option, IExecutionContext executionContext)
         {
             _logger = logger;
             _option = option;
             _executionContext = executionContext;
-            _telemetryMemory = telemetryMemory;
-
-            _telemetryMemory.Add($"([{nameof(ExecutePython)})] constructed");
         }
 
         public Task Run()
@@ -45,8 +41,7 @@ namespace MlHost.Services
                 tcs.SetException(new TimeoutException("Python child process failed to start"));
             });
 
-            _logger.LogInformation("Starting python child process");
-            _telemetryMemory.Add($"([{nameof(ExecutePython)})] Starting python child process, deployment folder={_option.DeploymentFolder}");
+            _logger.LogInformation($"Starting python child process, deployment folder={_option.DeploymentFolder}");
 
             var localProcess = new LocalProcess(_logger)
             {
@@ -74,7 +69,6 @@ namespace MlHost.Services
 
                     _logger.LogInformation("Python child process is running");
                     _executionContext.State = ExecutionState.Running;
-                    _telemetryMemory.Add($"([{nameof(ExecutePython)}] Python child process is running");
 
                     tcs.SetResult(true);
                     return false;

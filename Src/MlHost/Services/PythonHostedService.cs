@@ -12,22 +12,23 @@ namespace MlHost.Services
 {
     internal class PythonHostedService : IHostedService
     {
+        private readonly IOption _option;
         private readonly ILogger<PythonHostedService> _logger;
         private readonly IExecutePython _executePython;
         private readonly IExecutionContext _executionContext;
-        private readonly ITelemetryMemory _telemetryMemory;
         private readonly Activity[] _startupStrategy;
         private readonly Activity[] _restartStrategy;
 
         public PythonHostedService(
+            IOption option,
             ILogger<PythonHostedService> logging,
             IExecutePython executePython,
-            IExecutionContext executionContext, ITelemetryMemory telemetryMemory)
+            IExecutionContext executionContext)
         {
+            _option = option;
             _logger = logging;
             _executePython = executePython;
             _executionContext = executionContext;
-            _telemetryMemory = telemetryMemory;
 
             Func<Action, Task> voidTask = x => { x(); return Task.CompletedTask; };
 
@@ -35,19 +36,17 @@ namespace MlHost.Services
             {
                 new Activity("Resetting execution state to running", () => voidTask(() => _executionContext.State = ExecutionState.Starting)),
                 new Activity("Kill running processes", () => voidTask(() => ProcessTools.KillAnyRunningProcesses(_logger))),
+                new Activity("Deploy MlPackage to deployment folder", () => voidTask(() => ExportZipModelToDeploymentFolder())),
                 new Activity("Start ML package", async () => await _executePython.Run()),
             };
 
             _restartStrategy = _startupStrategy
                 .Prepend(new Activity("Pausing...", async () => await Task.Delay(TimeSpan.FromSeconds(30))))
                 .ToArray();
-
-            _telemetryMemory.Add($"([{nameof(PythonHostedService)}] constructed");
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _telemetryMemory.Add($"([{nameof(PythonHostedService)})] starting");
             _logger.LogInformation("Starting python service");
 
             _ = Task.Run(() => Run());
@@ -57,7 +56,6 @@ namespace MlHost.Services
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            _telemetryMemory.Add($"([{nameof(PythonHostedService)})] stopping");
             _logger.LogInformation($"Python service is stopping");
 
             _executionContext.TokenSource.Cancel();
@@ -74,8 +72,7 @@ namespace MlHost.Services
                 try
                 {
                     await activities.RunActivities(_executionContext.TokenSource.Token, _logger);
-
-                    _telemetryMemory.Add($"([{nameof(PythonHostedService)}] Running");
+                    _logger.LogInformation($"Python service is running");
                     return;
                 }
                 catch
@@ -85,6 +82,13 @@ namespace MlHost.Services
             }
 
             _executionContext.State = ExecutionState.Failed;
+        }
+
+        private void ExportZipModelToDeploymentFolder()
+        {
+            _logger.LogInformation($"Deploying from resource to {_option.DeploymentFolder}");
+
+            ZipArchiveTools.ExtractZipFileFromResource(typeof(PythonHostedService), "MlHost.MlPackage.RunModel.mlPackage", _option.DeploymentFolder, _executionContext.TokenSource.Token);
         }
     }
 }

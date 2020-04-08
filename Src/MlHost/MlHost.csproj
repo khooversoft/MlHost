@@ -17,16 +17,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="MlPackage\RunModel.mlPackage" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="MlPackage\RunModel.mlPackage" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.13.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
