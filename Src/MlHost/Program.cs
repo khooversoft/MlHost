@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MlHost.Application;
+using MlHost.Services;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("MlHost.Test")]
@@ -25,7 +26,7 @@ namespace MlHost
 
         internal static IHostBuilder CreateHostBuilder(string[] args, IOption option) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureServices(services => 
+                .ConfigureServices(services =>
                 {
                     services.AddSingleton(option);
                 })
@@ -38,5 +39,9 @@ namespace MlHost
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+                //.ConfigureServices(services =>
+                //{
+                //    services.AddHostedService<PythonHostedService>();
+                //});
     }
 }

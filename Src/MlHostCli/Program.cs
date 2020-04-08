@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Toolbox.Repository;
 using Toolbox.Services;
 using Toolbox.Tools;
 
@@ -79,9 +80,7 @@ namespace MlHostCli
                     () => option.Upload ? container.Resolve<UploadModelActivity>().Upload(cancellationTokenSource.Token) : Task.CompletedTask,
                     () => option.Download ? container.Resolve<DownloadModelActivity>().Download(cancellationTokenSource.Token) : Task.CompletedTask,
                     () => option.Delete ? container.Resolve<DeleteModelActivity>().Delete(cancellationTokenSource.Token) : Task.CompletedTask,
-                    () => option.Activate ? container.Resolve<ActivateModelActivity>().Activate(cancellationTokenSource.Token) : Task.CompletedTask,
-                    () => option.Deactivate ? container.Resolve<DeactivateModelActivity>().Deactivate(cancellationTokenSource.Token) : Task.CompletedTask,
-                    () => option.List ? container.Resolve<ListModelActivity>().List(cancellationTokenSource.Token) : Task.CompletedTask,
+                    () => option.Bind ? container.Resolve<BindActivity>().Bind(cancellationTokenSource.Token) : Task.CompletedTask,
                 };
 
                 await activities
@@ -104,17 +103,15 @@ namespace MlHostCli
             builder.RegisterType<ConsoleTelemetry>().As<ITelemetry>().InstancePerLifetimeScope();
             builder.RegisterType<DumpConfigurationActivity>();
 
-            if (option.BlobStore != null)
+            if (option.Store != null)
             {
-                //builder.RegisterInstance(new BlobRepository(option.BlobStore.ContainerName!, option.BlobStore.CreateBlobConnectionString())).As<IBlobRepository>();
+                builder.RegisterInstance(new DatalakeRepository(option.Store)).As<IDatalakeRepository>();
                 builder.RegisterType<ModelRepository>().As<IModelRepository>().InstancePerLifetimeScope();
 
-                builder.RegisterType<ActivateModelActivity>();
                 builder.RegisterType<DeleteModelActivity>();
                 builder.RegisterType<DownloadModelActivity>();
-                builder.RegisterType<ListModelActivity>();
                 builder.RegisterType<UploadModelActivity>();
-                builder.RegisterType<DeactivateModelActivity>();
+                builder.RegisterType<BindActivity>();
             }
 
             return builder.Build();

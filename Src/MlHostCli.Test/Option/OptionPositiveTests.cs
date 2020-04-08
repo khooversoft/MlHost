@@ -38,9 +38,9 @@ namespace MlHostCli.Test.Option
                     $"PackageFile={tempZipFile}",
                     "modelName=ml-model-temp",
                     "VersionId=v10-0-0-1",
-                    "BlobStore:ContainerName=containerName",
-                    "BlobStore:AccountName=accountName",
-                    "BlobStore:AccountKey=dummyKey",
+                    "Store:ContainerName=containerName",
+                    "Store:AccountName=accountName",
+                    "Store:AccountKey=dummyKey",
                 };
 
                 IOption option = new OptionBuilder()
@@ -52,10 +52,10 @@ namespace MlHostCli.Test.Option
                 option.ModelName.Should().Be("ml-model-temp");
                 option.VersionId.Should().Be("v10-0-0-1");
 
-                option.BlobStore.Should().NotBeNull();
-                option.BlobStore!.ContainerName.Should().Be("containerName");
-                option.BlobStore!.AccountName.Should().Be("accountName");
-                option.BlobStore!.AccountKey.Should().Be("dummyKey");
+                option.Store.Should().NotBeNull();
+                option.Store!.ContainerName.Should().Be("containerName");
+                option.Store!.AccountName.Should().Be("accountName");
+                option.Store!.AccountKey.Should().Be("dummyKey");
             }
             finally
             {
@@ -76,7 +76,7 @@ namespace MlHostCli.Test.Option
                 PackageFile = "c:\\zipfile2.mlPackage",
                 ModelName = "ml-model-temp",
                 VersionID = "v10-0-0-1",
-                BlobStore = new
+                Store = new
                 {
                     ContainerName = "containerName",
                     AccountName = "accountName",
@@ -104,10 +104,10 @@ namespace MlHostCli.Test.Option
                 option.ModelName.Should().Be("ml-model-temp-next-version");
                 option.VersionId.Should().Be("v10-0-0-1");
 
-                option.BlobStore.Should().NotBeNull();
-                option.BlobStore!.ContainerName.Should().Be("containerName");
-                option.BlobStore!.AccountName.Should().Be("accountName");
-                option.BlobStore!.AccountKey.Should().Be("accountKey");
+                option.Store.Should().NotBeNull();
+                option.Store!.ContainerName.Should().Be("containerName");
+                option.Store!.AccountName.Should().Be("accountName");
+                option.Store!.AccountKey.Should().Be("accountKey");
             }
             finally
             {
@@ -124,9 +124,9 @@ namespace MlHostCli.Test.Option
                 "PackageFile=c:\\zipfile2.mlPackage",
                 "modelName=mymodel99",
                 "VersionId=x1000",
-                "BlobStore:ContainerName=containerName",
-                "BlobStore:AccountName=accountName",
-                "BlobStore:AccountKey=dummyKey",
+                "Store:ContainerName=containerName",
+                "Store:AccountName=accountName",
+                "Store:AccountKey=dummyKey",
             };
 
             IOption option = new OptionBuilder()
@@ -138,10 +138,10 @@ namespace MlHostCli.Test.Option
             option.ModelName.Should().Be("mymodel99");
             option.VersionId.Should().Be("x1000");
 
-            option.BlobStore.Should().NotBeNull();
-            option.BlobStore!.ContainerName.Should().Be("containerName");
-            option.BlobStore!.AccountName.Should().Be("accountName");
-            option.BlobStore!.AccountKey.Should().Be("dummyKey");
+            option.Store.Should().NotBeNull();
+            option.Store!.ContainerName.Should().Be("containerName");
+            option.Store!.AccountName.Should().Be("accountName");
+            option.Store!.AccountKey.Should().Be("dummyKey");
         }
 
         [TestMethod]
@@ -152,9 +152,9 @@ namespace MlHostCli.Test.Option
                 "Delete",
                 "modelName=mymodel-temp",
                 "VersionId=v1000",
-                "BlobStore:ContainerName=containerName",
-                "BlobStore:AccountName=accountName",
-                "BlobStore:AccountKey=dummyKey",
+                "Store:ContainerName=containerName",
+                "Store:AccountName=accountName",
+                "Store:AccountKey=dummyKey",
             };
 
             IOption option = new OptionBuilder()
@@ -165,39 +165,37 @@ namespace MlHostCli.Test.Option
             option.ModelName.Should().Be("mymodel-temp");
             option.VersionId.Should().Be("v1000");
 
-            option.BlobStore.Should().NotBeNull();
-            option.BlobStore!.ContainerName.Should().Be("containerName");
-            option.BlobStore!.AccountName.Should().Be("accountName");
-            option.BlobStore!.AccountKey.Should().Be("dummyKey");
+            option.Store.Should().NotBeNull();
+            option.Store!.ContainerName.Should().Be("containerName");
+            option.Store!.AccountName.Should().Be("accountName");
+            option.Store!.AccountKey.Should().Be("dummyKey");
         }
 
         [TestMethod]
-        public void GivenValidActivateOption_WhenBuild_ShouldSucceed()
+        public void GivenValidBindOption_WhenBuild_ShouldSucceed()
         {
             var args = new string[]
             {
-                "Activate",
+                "Bind",
                 "modelName=model-temp",
                 "VersionId=v1000",
-                "HostName=Host-SVR1000",
-                "BlobStore:ContainerName=containerName",
-                "BlobStore:AccountName=accountName",
-                "BlobStore:AccountKey=dummyKey",
+                "InstallPath=c:\\folder\\installPath",
+                "Store:ContainerName=containerName",
+                "Store:AccountName=accountName",
+                "Store:AccountKey=dummyKey",
             };
 
             IOption option = new OptionBuilder()
                 .AddCommandLine(args)
                 .Build();
 
-            option.Activate.Should().BeTrue();
             option.ModelName.Should().Be("model-temp");
             option.VersionId.Should().Be("v1000");
-            option.HostName.Should().Be("Host-SVR1000");
 
-            option.BlobStore.Should().NotBeNull();
-            option.BlobStore!.ContainerName.Should().Be("containerName");
-            option.BlobStore!.AccountName.Should().Be("accountName");
-            option.BlobStore!.AccountKey.Should().Be("dummyKey");
+            option.Store.Should().NotBeNull();
+            option.Store!.ContainerName.Should().Be("containerName");
+            option.Store!.AccountName.Should().Be("accountName");
+            option.Store!.AccountKey.Should().Be("dummyKey");
         }
     }
 }

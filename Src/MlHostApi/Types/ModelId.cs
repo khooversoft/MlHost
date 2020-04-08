@@ -12,15 +12,15 @@ namespace MlHostApi.Types
     {
         public ModelId(string modelName, string versionId)
         {
-            ModelName = modelName.ToLower().VerifyBlobVector(nameof(modelName));
-            VersionId = versionId.ToLower().VerifyBlobVector(nameof(versionId));
+            ModelName = modelName.ToLower().VerifyStoreVector(nameof(modelName));
+            VersionId = versionId.ToLower().VerifyStoreVector(nameof(versionId));
         }
 
         public ModelId(string root, string modelName, string versionId)
         {
-            Root = root.ToLower().VerifyBlobVector(nameof(root));
-            ModelName = modelName.ToLower().VerifyBlobVector(nameof(modelName));
-            VersionId = versionId.ToLower().VerifyBlobVector(nameof(VersionId));
+            Root = root.ToLower().VerifyStoreVector(nameof(root));
+            ModelName = modelName.ToLower().VerifyStoreVector(nameof(modelName));
+            VersionId = versionId.ToLower().VerifyStoreVector(nameof(versionId));
         }
 
         public ModelId(string path)
@@ -33,9 +33,9 @@ namespace MlHostApi.Types
 
             if (pathVectors.Count < 2 || pathVectors.Count > 3) throw new ArgumentException($"{path} does not have 2 or 3 vectors");
 
-            if (pathVectors.Count == 3) Root = pathVectors.Pop().VerifyBlobVector($"{nameof(Root)} is invalid"); ;
-            ModelName = pathVectors.Pop().VerifyBlobVector($"{nameof(ModelName)} is invalid");
-            VersionId = pathVectors.Pop().VerifyBlobVector($"{nameof(VersionId)} is invalid");
+            if (pathVectors.Count == 3) Root = pathVectors.Pop().VerifyStoreVector($"{nameof(Root)} is invalid"); ;
+            ModelName = pathVectors.Pop().VerifyStoreVector($"{nameof(ModelName)} is invalid");
+            VersionId = pathVectors.Pop().VerifyStoreVector($"{nameof(VersionId)} is invalid");
         }
 
         public static string RootName { get; } = "ml-models";

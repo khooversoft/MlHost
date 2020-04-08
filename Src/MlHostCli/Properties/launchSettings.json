@@ -2,7 +2,7 @@
   "profiles": {
     "MlHostCli": {
       "commandName": "Project",
-      "commandLineArgs": "upload, zipFile=D:\\Work\\ML\\Sentiment\\sentiment-demo\\Build\\sentiement-model.zip modelName=sentiment-demo versionId=V20200324-001 configfile=D:\\Sources\\MlHost\\Src\\MlHostCli\\Config\\PublishTestConfig-Activate.json activate",
+      "commandLineArgs": "ConfigFile=D:\\Sources\\MlHost\\Src\\MlHostCli\\Config\\PublishProdConfig-Activate.json",
       "environmentVariables": {
         "RunAs": "CurrentUser"
       }

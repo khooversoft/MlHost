@@ -1,5 +1,4 @@
-﻿using MlHostApi.Option;
-using Toolbox.Repository;
+﻿using System.IO;
 
 namespace MlHost.Application
 {
@@ -7,16 +6,6 @@ namespace MlHost.Application
     {
         public string ServiceUri { get; set; } = "http://localhost:5003/predict";
 
-        public bool ForceDeployment { get; set; }
-
-        public string? HostName { get; set; }
-
-        public StoreOption? Store { get; set; }
-
-        public DeploymentOption Deployment { get; set; } = new DeploymentOption();
-
-        public KeyVaultOption? KeyVault { get; set; }
-
-        public string? SecretId { get; set; }
+        public string DeploymentFolder { get; set; } = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
     }
 }

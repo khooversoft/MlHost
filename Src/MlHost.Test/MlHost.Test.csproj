@@ -9,14 +9,10 @@
 
   <ItemGroup>
     <None Remove="Package\TestModel.mlPackage" />
-    <None Remove="Package\TestZip-Update.zip" />
-    <None Remove="Package\TestZip.zip" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Package\TestModel.mlPackage" />
-    <EmbeddedResource Include="Package\TestZip-Update.zip" />
-    <EmbeddedResource Include="Package\TestZip.zip" />
   </ItemGroup>
 
   <ItemGroup>

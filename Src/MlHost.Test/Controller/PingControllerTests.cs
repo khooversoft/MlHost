@@ -18,14 +18,13 @@ namespace MlHost.Test.Controller
         {
             ExecutionState.Booting.ToString(),
             ExecutionState.Starting.ToString(),
-            ExecutionState.Deploying.ToString(),
             ExecutionState.Running.ToString(),
         };
 
         [TestMethod]
         public async Task GivenMlHost_WhenPing_ShouldResponed()
         {
-            TestWebsiteHost host = await TestWebsiteHost.GetHost();
+            TestWebsiteHost host = await TestApplication.GetHost();
             IJson jsonSerializer = host.Resolve<IJson>();
 
             var response = await host.Client.GetAsync("api/ping");

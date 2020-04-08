@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Toolbox.Tools;
 
@@ -8,9 +6,9 @@ namespace MlHost.Tools
 {
     internal class Activity
     {
-        private readonly Func<Task<bool>> _func;
+        private readonly Func<Task> _func;
 
-        public Activity(string description, Func<Task<bool>> func)
+        public Activity(string description, Func<Task> func)
         {
             description.VerifyNotEmpty(nameof(description));
             func.VerifyNotNull(nameof(func));
@@ -21,6 +19,6 @@ namespace MlHost.Tools
 
         public string Description { get; }
 
-        public Task<bool> Execute() => _func();
+        public Task Execute() => _func();
     }
 }

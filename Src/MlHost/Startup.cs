@@ -3,11 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MlHost.Application;
+using Microsoft.Extensions.Logging;
 using MlHost.Services;
 using MlHost.Tools;
-using MlHostApi.Repository;
-using Toolbox.Repository;
 using Toolbox.Services;
 
 namespace MlHost
@@ -19,34 +17,29 @@ namespace MlHost
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        internal IConfiguration Configuration { get; }
+
+        internal ITelemetryMemory TelemetryMemory { get; } = new TelemetryMemory();
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(TelemetryMemory);
             services.AddControllers();
             services.AddSingleton<IQuestion, QuestionService>();
             services.AddSingleton<IExecutionContext, ExecutionContext>();
-            services.AddSingleton<IPackageDeployment, PackageDeployment>();
             services.AddSingleton<IExecutePython, ExecutePython>();
             services.AddSingleton<IJson, Json>();
-            services.AddSingleton<IPackageSource, PackageSourceFromStorage>();
-            services.AddSingleton<IModelRepository, ModelRepository>();
-            services.AddSingleton<IMlPackageService, MlPackageService>();
-
-            services.AddSingleton<IDatalakeRepository>(x =>
-            {
-                IOption option = x.Resolve<IOption>();
-                return new DatalakeRepository(option.Store!);
-            });
 
             services.AddHostedService<PythonHostedService>();
             services.AddApplicationInsightsTelemetry();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddProvider(new TelemetryMemoryLoggerProvider(TelemetryMemory));
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

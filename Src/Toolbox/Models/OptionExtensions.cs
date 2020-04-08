@@ -1,7 +1,6 @@
-﻿using Toolbox.Repository;
-using Toolbox.Tools;
+﻿using Toolbox.Tools;
 
-namespace MlHostApi.Option
+namespace Toolbox.Models
 {
     public static class OptionExtensions
     {

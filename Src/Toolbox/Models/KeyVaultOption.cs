@@ -1,9 +1,4 @@
-﻿using MlHostApi.Tools;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MlHostApi.Option
+﻿namespace Toolbox.Models
 {
     public class KeyVaultOption
     {

@@ -2,7 +2,6 @@
 using MlHost.Application;
 using MlHost.Tools;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,21 +17,24 @@ namespace MlHost.Services
         private readonly ILogger<ExecutePython> _logger;
         private readonly IOption _option;
         private readonly IExecutionContext _executionContext;
+        private readonly ITelemetryMemory _telemetryMemory;
+        private Task? _localProcess;
 
-        public ExecutePython(ILogger<ExecutePython> logger, IOption option, IExecutionContext executionContext)
+        public ExecutePython(ILogger<ExecutePython> logger, IOption option, IExecutionContext executionContext, ITelemetryMemory telemetryMemory)
         {
             _logger = logger;
             _option = option;
             _executionContext = executionContext;
+            _telemetryMemory = telemetryMemory;
+
+            _telemetryMemory.Add($"([{nameof(ExecutePython)})] constructed");
         }
 
-        public Task Run(CancellationToken token)
+        public Task Run()
         {
             var timeout = TimeSpan.FromMinutes(5);
 
-            KillAnyRunningProcesses();
-
-            string fullPath = Path.Combine(_option.Deployment!.DeploymentFolder, @"python-3.8.1.amd64\python.exe");
+            string fullPath = Path.Combine(_option.DeploymentFolder, @"python-3.8.1.amd64\python.exe");
             if (!File.Exists(fullPath)) throw new FileNotFoundException(fullPath);
 
             var tcs = new TaskCompletionSource<bool>();
@@ -44,20 +46,21 @@ namespace MlHost.Services
             });
 
             _logger.LogInformation("Starting python child process");
+            _telemetryMemory.Add($"([{nameof(ExecutePython)})] Starting python child process, deployment folder={_option.DeploymentFolder}");
 
             var localProcess = new LocalProcess(_logger)
             {
                 File = fullPath,
                 Arguments = @".\app.py",
-                WorkingDirectory = _option.Deployment.DeploymentFolder,
+                WorkingDirectory = _option.DeploymentFolder,
                 CaptureOutput = WaitForRunning,
             };
 
-            Task completeTask = localProcess.Run(token);
+            _localProcess = localProcess.Run(_executionContext.TokenSource.Token);
 
             _logger.LogInformation("Python process is starting up");
 
-            return Task.WhenAll(completeTask, tcs.Task);
+            return tcs.Task;
 
             // ====================================================================================
             // Output function to test for "running" condition of Python
@@ -67,11 +70,13 @@ namespace MlHost.Services
 
                 if (subject.IndexOf(lookFor) >= 0)
                 {
+                    scopedTokenSource.Dispose();
+
                     _logger.LogInformation("Python child process is running");
                     _executionContext.State = ExecutionState.Running;
+                    _telemetryMemory.Add($"([{nameof(ExecutePython)}] Python child process is running");
 
                     tcs.SetResult(true);
-                    scopedTokenSource.Dispose();
                     return false;
                 }
 
@@ -79,24 +84,6 @@ namespace MlHost.Services
             }
         }
 
-        public Task<bool> KillAnyRunningProcesses()
-        {
-            foreach(var process in Process.GetProcessesByName("python"))
-            {
-                _logger.LogWarning($"Killing already running python.exe process {process.ProcessName} before starting child process");
-
-                try 
-                { 
-                    process.Kill(true);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, $"Cannot kill process {process.ProcessName}");
-                    return Task.FromResult(false);
-                }
-            }
-
-            return Task.FromResult(true);
-        }
+        public Task Stop() => _localProcess ?? Task.CompletedTask;
     }
 }

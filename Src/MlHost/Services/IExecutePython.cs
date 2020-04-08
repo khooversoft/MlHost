@@ -5,8 +5,8 @@ namespace MlHost.Services
 {
     internal interface IExecutePython
     {
-        Task Run(CancellationToken token);
+        Task Run();
 
-        Task<bool> KillAnyRunningProcesses();
+        Task Stop();
     }
 }

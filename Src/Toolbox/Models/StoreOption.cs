@@ -1,9 +1,7 @@
-﻿using Toolbox.Tools;
-
-namespace Toolbox.Repository
+﻿namespace Toolbox.Models
 {
     public class StoreOption
-    {       
+    {
         public string? ContainerName { get; set; }
 
         public string? AccountName { get; set; }

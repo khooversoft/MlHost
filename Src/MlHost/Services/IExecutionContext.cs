@@ -8,9 +8,5 @@ namespace MlHost.Services
         CancellationTokenSource TokenSource { get; }
 
         ExecutionState State { get; set; }
-
-        ModelId? ModelId { get; set; }
-
-        public bool ForceDeployment { get; set; }
     }
 }

@@ -21,13 +21,10 @@ namespace MlHostApi.Repository
     /// The storage has the following URI schema.
     /// 
     /// "ml-models/{modelName}/{versionId}"
-    /// "host-configuration.json"
     /// 
     /// </summary>
     public class ModelRepository : IModelRepository
     {
-        private const string _hostConfiguratonPath = "host-configuration.json";
-
         private readonly IDatalakeRepository _datalakeRepository;
         private readonly IJson _json;
 
@@ -43,7 +40,7 @@ namespace MlHostApi.Repository
             modelId.VerifyNotNull(nameof(modelId));
 
             using Stream fileStream = new FileStream(modelVersionFile, FileMode.Open);
-            await _datalakeRepository.Upload(fileStream, modelId.ToBlobPath(), force, token);
+            await _datalakeRepository.Upload(fileStream, modelId.ToPath(), force, token);
         }
 
         public async Task Download(ModelId modelId, string toFile, CancellationToken token)
@@ -51,49 +48,28 @@ namespace MlHostApi.Repository
             modelId.VerifyNotNull(nameof(modelId));
             toFile.VerifyNotEmpty(nameof(toFile));
 
+            Directory.CreateDirectory(Path.GetDirectoryName(toFile));
             using Stream fileStream = new FileStream(toFile, FileMode.Create);
-            await _datalakeRepository.Download(modelId.ToBlobPath(), fileStream, token);
+            await _datalakeRepository.Download(modelId.ToPath(), fileStream, token);
         }
 
         public async Task Delete(ModelId modelId, CancellationToken token)
         {
             modelId.VerifyNotNull(nameof(modelId));
 
-            await RemoveActivation(modelId, token);
-            await _datalakeRepository.Delete(modelId.ToBlobPath(), token);
+            await _datalakeRepository.Delete(modelId.ToPath(), token);
         }
 
         public async Task<bool> Exist(ModelId modelId, CancellationToken token)
         {
             modelId.VerifyNotNull(nameof(modelId));
-            return await _datalakeRepository.Exist(modelId.ToBlobPath(), token);
+            return await _datalakeRepository.Exist(modelId.ToPath(), token);
         }
 
         public Task<DatalakePathProperties> GetPathProperties(ModelId modelId, CancellationToken token)
         {
             modelId.VerifyNotNull(nameof(modelId));
-            return _datalakeRepository.GetPathProperties(modelId.ToBlobPath(), token);
-        }
-
-        public async Task<HostConfigurationModel> ReadConfiguration(CancellationToken token)
-        {
-            bool exist = await _datalakeRepository.Exist(_hostConfiguratonPath, token);
-            if (!exist) return new HostConfigurationModel();
-
-            byte[] data = await _datalakeRepository.Read(_hostConfiguratonPath, token);
-            string json = Encoding.UTF8.GetString(data);
-
-            return _json.Deserialize<HostConfigurationModel>(json).VerifyNotNull("Deserialize failed");
-        }
-
-        public async Task WriteConfiguration(HostConfigurationModel hostConfigurationModel, CancellationToken token)
-        {
-            hostConfigurationModel.VerifyNotNull(nameof(hostConfigurationModel));
-
-            string json = _json.Serialize(hostConfigurationModel);
-            byte[] data = Encoding.UTF8.GetBytes(json);
-
-            await _datalakeRepository.Write(_hostConfiguratonPath, data, true, token);
+            return _datalakeRepository.GetPathProperties(modelId.ToPath(), token);
         }
 
         public Task<IReadOnlyList<DatalakePathItem>> Search(string? prefix, string pattern, CancellationToken token)
@@ -105,42 +81,6 @@ namespace MlHostApi.Repository
 
             Regex regex = new Regex(pattern, RegexOptions.Compiled);
             return _datalakeRepository.Search(prefix, x => regex.Match(x.Name).Success, true, token);
-        }
-
-        public async Task AddActivation(string hostName, ModelId modelId, CancellationToken token)
-        {
-            hostName.VerifyNotEmpty(nameof(hostName));
-            modelId.VerifyNotNull(nameof(modelId));
-
-            IDictionary<string, ModelId> hostAssigments = (await ReadConfiguration(token)).ToDictionary();
-
-            if (hostAssigments.TryGetValue(hostName, out ModelId? readModelId) && modelId == readModelId) return;
-
-            await hostAssigments
-                .Action(x => x[hostName] = modelId)
-                .ToModel()
-                .Func(async x => await WriteConfiguration(x, token));
-        }
-
-        public async Task RemoveActivation(string hostName, CancellationToken token)
-        {
-            hostName.VerifyNotEmpty(nameof(hostName));
-
-            IDictionary<string, ModelId> hostAssigments = (await ReadConfiguration(token)).ToDictionary();
-
-            if (!hostAssigments.Remove(hostName)) return;
-
-            await hostAssigments
-                .ToModel()
-                .Func(async x => await WriteConfiguration(x, token));
-        }
-
-        public async Task<ModelId?> GetRegistration(string hostName, CancellationToken token)
-        {
-            IDictionary<string, ModelId> hostAssigments = (await ReadConfiguration(token)).ToDictionary();
-
-            if (hostAssigments.TryGetValue(hostName, out ModelId? value)) return value;
-            return null;
         }
 
         public async Task<T?> Read<T>(string path, CancellationToken token) where T : class

@@ -1,5 +1,4 @@
-﻿using MlHostApi.Models;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace MlHost.Services
 {

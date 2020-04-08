@@ -1,11 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using MlHostApi.Option;
-using MlHostApi.Tools;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Toolbox.Repository;
 using Toolbox.Tools;
 
 namespace MlHost.Application
@@ -17,21 +10,7 @@ namespace MlHost.Application
             option.VerifyNotNull(nameof(option));
 
             option.ServiceUri.VerifyNotEmpty($"{nameof(option.ServiceUri)} is missing");
-            option.HostName.VerifyNotEmpty($"{nameof(option.HostName)} is missing");
-            option.Store.Verify();
-            option.Deployment.Verify();
-
-            if (option.Store!.AccountKey.ToNullIfEmpty() == null)
-            {
-                option.KeyVault!.Verify();
-            }
-        }
-
-        public static void Verify(this DeploymentOption? deploymentOption)
-        {
-            deploymentOption.VerifyNotNull("Deployment option is required");
-            deploymentOption!.DeploymentFolder.VerifyNotEmpty($"{nameof(deploymentOption.DeploymentFolder)} is missing");
-            deploymentOption!.PackageFolder.VerifyNotEmpty($"{nameof(deploymentOption.PackageFolder)} is missing");
+            option.DeploymentFolder.VerifyNotEmpty($"{nameof(option.DeploymentFolder)} is missing");
         }
 
         public static Option Bind(this IConfiguration configuration)

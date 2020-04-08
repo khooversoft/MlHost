@@ -14,7 +14,7 @@ namespace MlHostApi.Tools
 
         public static string ValidPattern => _validPattern;
 
-        public static string VerifyBlobVector(this string subject, string name) => subject
+        public static string VerifyStoreVector(this string subject, string name) => subject
             .VerifyNotEmpty(name)
             .VerifyAssert(x => _pattern.Match(x).Success, $"{name} is not valid, value={subject}, pattern={_validPattern}");
     }

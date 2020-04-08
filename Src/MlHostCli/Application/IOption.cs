@@ -1,4 +1,4 @@
-﻿using Toolbox.Repository;
+﻿using Toolbox.Models;
 using Toolbox.Services;
 
 namespace MlHostCli.Application
@@ -11,22 +11,20 @@ namespace MlHostCli.Application
         bool Upload { get; }
         bool Download { get; }
         bool Delete { get; }
-        bool List { get; }
-        bool Activate { get; }
-        bool Deactivate { get; }
+
+        bool Bind { get; }
+        string? InstallPath { get; }
 
         bool Force { get; }
 
         string? ModelName { get; }
         string? VersionId { get; }
 
-        string? HostName { get; }
-
         string? SecretId { get; }
 
         string? PackageFile { get; }
 
-        StoreOption? BlobStore { get; }
+        StoreOption? Store { get; }
 
         ISecretFilter? SecretFilter { get; }
     }

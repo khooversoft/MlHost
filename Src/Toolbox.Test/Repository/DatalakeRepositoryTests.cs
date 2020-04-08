@@ -53,7 +53,7 @@ namespace Toolbox.Test.Repository
 
             IDatalakeRepository datalakeRepository = TestOption.GetDatalakeRepository();
 
-            string originalFilePath = FileTools.WriteResourceToTempFile(path, typeof(DatalakeRepositoryTests), TestOption._resourceId);
+            string originalFilePath = FileTools.WriteResourceToTempFile(path, nameof(DatalakeRepositoryTests), typeof(DatalakeRepositoryTests), TestOption._resourceId);
             originalFilePath.Should().NotBeNullOrEmpty();
 
             using (Stream readFile = new FileStream(originalFilePath, FileMode.Open))
@@ -97,7 +97,7 @@ namespace Toolbox.Test.Repository
             verifyList.Should().NotBeNull();
             verifyList.Count.Should().Be(0);
 
-            string originalFilePath = FileTools.WriteResourceToTempFile(path, typeof(DatalakeRepositoryTests), TestOption._resourceId);
+            string originalFilePath = FileTools.WriteResourceToTempFile(path, nameof(DatalakeRepositoryTests), typeof(DatalakeRepositoryTests), TestOption._resourceId);
             originalFilePath.Should().NotBeNullOrEmpty();
 
             string[] fileLists = new[]

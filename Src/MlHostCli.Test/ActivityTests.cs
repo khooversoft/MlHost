@@ -23,7 +23,7 @@ namespace MlHostCli.Test
         {
             ModelFixture modelFixture = ModelFixture.GetModelFixture();
 
-            string tempZipFile = FileTools.WriteResourceToTempFile("TestZip.Zip", typeof(ActivityTests), "MlHostCli.Test.TestConfig.TestZip.zip");
+            string tempZipFile = FileTools.WriteResourceToTempFile("TestZip.Zip", nameof(ActivityTests), typeof(ActivityTests), "MlHostCli.Test.TestConfig.TestZip.zip");
 
             ModelId modelId = new ModelId($"test-zip-{Guid.NewGuid()}/v100");
 
@@ -46,7 +46,7 @@ namespace MlHostCli.Test
         {
             ModelFixture modelFixture = ModelFixture.GetModelFixture();
 
-            string tempZipFile = FileTools.WriteResourceToTempFile("TestZip.Zip", typeof(ActivityTests), "MlHostCli.Test.TestConfig.TestZip.zip");
+            string tempZipFile = FileTools.WriteResourceToTempFile("TestZip.Zip", nameof(ActivityTests), typeof(ActivityTests), "MlHostCli.Test.TestConfig.TestZip.zip");
 
             ModelId modelId = new ModelId($"test-zip-{Guid.NewGuid()}/v100");
 

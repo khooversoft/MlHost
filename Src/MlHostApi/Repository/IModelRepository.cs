@@ -19,17 +19,7 @@ namespace MlHostApi.Repository
 
         Task<DatalakePathProperties> GetPathProperties(ModelId modelId, CancellationToken token);
 
-        Task<HostConfigurationModel> ReadConfiguration(CancellationToken token);
-
-        Task WriteConfiguration(HostConfigurationModel hostConfigurationModel, CancellationToken token);
-
         Task<IReadOnlyList<DatalakePathItem>> Search(string? prefix, string pattern, CancellationToken token);
-
-        Task AddActivation(string hostName, ModelId modelId, CancellationToken token);
-
-        Task RemoveActivation(string hostName, CancellationToken token);
-
-        Task<ModelId?> GetRegistration(string hostName, CancellationToken token);
 
         Task<T?> Read<T>(string path, CancellationToken token) where T : class;
 

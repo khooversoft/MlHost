@@ -6,7 +6,7 @@ using System;
 namespace MlHostApi.Test.Tools
 {
     [TestClass]
-    public class VerifyBlobVectorTests
+    public class VerifyVectorTests
     {
         [DataTestMethod]
         [DataRow("a-1")]
@@ -14,9 +14,9 @@ namespace MlHostApi.Test.Tools
         [DataRow("a339-vbe1")]
         [DataRow("ab")]
         [DataRow("mymodel-temp")]
-        public void GivenValidBlobVector_WhenTested_ShouldPass(string value)
+        public void GivenValidVector_WhenTested_ShouldPass(string value)
         {
-            value.VerifyBlobVector("message");
+            value.VerifyStoreVector("message");
         }
 
         [DataTestMethod]
@@ -32,9 +32,9 @@ namespace MlHostApi.Test.Tools
         [DataRow("b-34-")]
         [DataRow("myModel-temp")]
         [DataRow("3339-Vbe1")]
-        public void GiveninvalidBlobVector_WhenTested_ShouldThrowException(string value)
+        public void GiveninvalidVector_WhenTested_ShouldThrowException(string value)
         {
-            Action act = () => value.VerifyBlobVector("message");
+            Action act = () => value.VerifyStoreVector("message");
 
             act.Should().Throw<ArgumentException>();
         }

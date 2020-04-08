@@ -33,22 +33,9 @@ namespace Toolbox.Tools
 
         public Func<string, bool>? CaptureOutput { get; set; }
 
-        public LocalProcess SetSuccessExitCode(int value) { SuccessExitCode = value; return this; }
-
-        public LocalProcess SetFile(string value)
-        {
-            value = value ?? throw new ArgumentNullException(nameof(value));
-            File = value;
-            return this;
-        }
-
-        public LocalProcess SetArguments(string value) { Arguments = value; return this; }
-
-        public LocalProcess SetWorkingDirectory(string? value) { WorkingDirectory = value; return this; }
-
         public Task<LocalProcess> Run(CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(File)) throw new ArgumentException(nameof(File));
+            File.VerifyNotEmpty(nameof(File));
             if (_tcs != null || _tokenSource != null) throw new InvalidOperationException("Local process is running");
 
             Process = new Process()
@@ -98,10 +85,11 @@ namespace Toolbox.Tools
 
         public void Stop()
         {
+            Interlocked.Exchange(ref _tokenSource, null!)?.Dispose();
+
             try { Process?.Kill(true); } catch { }
             try { Process?.Close(); } catch { }
 
-            Interlocked.Exchange(ref _tokenSource, null!)?.Dispose();
             Interlocked.Exchange(ref _tcs, null!)?.SetResult(this);
         }
 
@@ -143,7 +131,7 @@ namespace Toolbox.Tools
             if (data == null) return;
 
             string message = $"LocalProcess: {data}";
-            _logger.LogTrace(message);
+            _logger.LogInformation(message);
 
             if (CaptureOutput != null)
             {

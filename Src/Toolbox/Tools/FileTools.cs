@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 using Toolbox.Services;
 
@@ -9,11 +11,19 @@ namespace Toolbox.Tools
 {
     public static class FileTools
     {
-        public static string WriteResourceToTempFile(string fileName, Type type, string resourceId) =>
-                Path.GetTempPath()
-                    .Func(path => Path.Combine(path, Guid.NewGuid().ToString(), fileName))
-                    .Action(path => Directory.CreateDirectory(Path.GetDirectoryName(path)))
-                    .Action(file => WriteStreamToFile(GetResourceStream(type, resourceId), file));
+        public static string WriteResourceToTempFile(string fileName, string folder, Type type, string resourceId)
+        {
+            fileName.VerifyNotEmpty(nameof(fileName));
+            folder.VerifyNotEmpty(nameof(folder));
+
+            string filePath = Path.Combine(Path.GetTempPath(), folder, fileName);
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+            using var stream = GetResourceStream(type, resourceId);
+            WriteStreamToFile(stream, filePath);
+
+            return filePath;
+        }
 
         public static byte[] GetFileHash(string file)
         {
@@ -57,6 +67,18 @@ namespace Toolbox.Tools
 
             string jsonString = await File.ReadAllTextAsync(filePath);
             return json.Deserialize<T>(jsonString);
+        }
+
+        public static void DeleteDirectory(string path)
+        {
+            path.VerifyNotEmpty(nameof(path));
+            Directory.Delete(path, true);
+
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            while (Directory.Exists(path) && !timeout.Token.IsCancellationRequested)
+            {
+                Thread.Sleep(TimeSpan.FromMilliseconds(200));
+            }
         }
     }
 }

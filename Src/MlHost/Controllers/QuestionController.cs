@@ -26,7 +26,7 @@ namespace MlHost.Controllers
             _option = option;
         }
 
-        [HttpPost("predict")]
+        [HttpPost()]
         public async Task<IActionResult> Predict([FromBody] dynamic request)
         {
             bool requestIsValid = ((object)request).ToDictionary()
@@ -40,7 +40,6 @@ namespace MlHost.Controllers
             {
                 case ExecutionState.Booting:
                 case ExecutionState.Starting:
-                case ExecutionState.Deploying:
                     return ReturnNotAvailable();
 
                 case ExecutionState.Running:
@@ -61,8 +60,6 @@ namespace MlHost.Controllers
             var response = new PingResponse
             {
                 Status = _executionContext.State.ToString(),
-                ModelId = _executionContext?.ModelId?.ToString(),
-                HostName = _option.HostName,
             };
 
             return StatusCode((int)HttpStatusCode.ServiceUnavailable, response);

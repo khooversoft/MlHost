@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MlHost.Application;
 using MlHost.Services;
+using MlHost.Tools;
 using MlHostApi.Models;
-using MlHostApi.Types;
+using System.Linq;
 
 namespace MlHost.Controllers
 {
@@ -11,12 +12,12 @@ namespace MlHost.Controllers
     public class PingController : ControllerBase
     {
         private readonly IExecutionContext _executionContext;
-        private readonly IOption _option;
+        private readonly ITelemetryMemory _telemetryMemory;
 
-        public PingController(IExecutionContext executionContext, IOption option)
+        public PingController(IExecutionContext executionContext, ITelemetryMemory telemetryMemory)
         {
             _executionContext = executionContext;
-            _option = option;
+            _telemetryMemory = telemetryMemory;
         }
 
         [HttpGet]
@@ -25,8 +26,24 @@ namespace MlHost.Controllers
             var response = new PingResponse
             {
                 Status = _executionContext.State.ToString(),
-                ModelId = _executionContext.ModelId?.ToString(),
-                HostName = _option.HostName,
+            };
+
+            return Ok(response);
+        }
+
+        [HttpGet("Logs")]
+        public IActionResult GetLogs()
+        {
+            var logs = _telemetryMemory.GetLoggedMessages();
+
+            dynamic response = new
+            {
+                Count = logs.Count,
+
+                Messages = logs
+                    .Reverse()
+                    .Take(100)
+                    .ToList(),
             };
 
             return Ok(response);

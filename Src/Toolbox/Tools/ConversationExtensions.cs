@@ -2,8 +2,6 @@
 using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Toolbox.Tools
 {
@@ -44,15 +42,13 @@ namespace Toolbox.Tools
 
             static string buildName(string? root, string name) => (root.ToNullIfEmpty() == null ? string.Empty : root + ":") + name;
 
-            static bool isValue(object value) => value.GetType() == typeof(string) || !value.GetType().IsClass;
-
             static IEnumerable<string> getProperties(string? root, object subject) =>
                 subject.GetType().GetProperties()
                 .SelectMany(x => getProperty(root, x.Name, x.GetValue(subject)));
 
             static IEnumerable<string> getProperty(string? root, string name, object? subject) => subject switch
             {
-                object v when isValue(v) => new[] { $"{buildName(root, name)}={v.ToString()!}" },
+                object v when v.GetType() == typeof(string) || !v.GetType().IsClass => new[] { $"{buildName(root, name)}={v!}" },
                 object v => getProperties(buildName(root, name), v),
                 _ => Enumerable.Empty<string>(),
             };

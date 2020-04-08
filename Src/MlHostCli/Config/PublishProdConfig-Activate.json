@@ -1,18 +1,22 @@
 {
-  "upload": true,
-  "Activate": true,
-  "List": true,
-  "Dump": true,
+  //"upload": true,
+  "bind": true,
+  "force": true,
 
   "SecretId": "MlHostCli.exe",
+  "packageFile": "D:\\Work\\ML\\Sentiment\\sentiment-demo\\sentiment-demo.mlPackage",
+  "modelName": "sentiment-demo",
+  "versionId": "V20200324-001",
+
+  "InstallPath": "D:\\Sources\\MlHost\\Src\\MlHost\\wwwroot",
 
   "KeyVault": {
     "KeyVaultName": "mltest-kv",
     "KeyName": "mlteststoragev1-accountkey"
   },
 
-  "BlobStore": {
-    "ContainerName": "mldatamodels",
-    "AccountName": "mlteststoragev1"
+  "Store": {
+    "AccountName": "mltestadlsv1",
+    "ContainerName": "mldatamodels"
   }
 }

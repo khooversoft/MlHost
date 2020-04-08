@@ -2,10 +2,10 @@
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
-using MlHostApi.Option;
 using System;
 using System.IO;
 using System.Linq;
+using Toolbox.Models;
 using Toolbox.Services;
 using Toolbox.Tools;
 
@@ -45,7 +45,7 @@ namespace MlHostCli.Application
             string? accountKey = null;
             Option option = null!;
 
-            Func<string, string> createAccountKeyCommand = x => $"{nameof(option.BlobStore)}:{nameof(option.BlobStore.AccountKey)}=" + x;
+            Func<string, string> createAccountKeyCommand = x => $"{nameof(option.Store)}:{nameof(option.Store.AccountKey)}=" + x;
 
             // Because ordering or placement on critical configuration can different, loop through a process
             // of building the correct configuration.  Pattern cases below are in priority order.
@@ -68,11 +68,11 @@ namespace MlHostCli.Application
                         configFile = v.ConfigFile;
                         continue;
 
-                    case Option v when v.BlobStore?.AccountKey == null && v.SecretId.ToNullIfEmpty() != null && secretId == null:
+                    case Option v when v.Store?.AccountKey == null && v.SecretId.ToNullIfEmpty() != null && secretId == null:
                         secretId = v.SecretId;
                         continue;
 
-                    case Option v when v.BlobStore?.AccountKey.ToNullIfEmpty() == null && accountKey == null:
+                    case Option v when v.Store?.AccountKey.ToNullIfEmpty() == null && accountKey == null:
                         Console.WriteLine("Getting secret from Key Vault");
                         option.KeyVault!.Verify();
 
@@ -89,13 +89,12 @@ namespace MlHostCli.Application
                 break;
             };
 
-            if (option.BlobStore?.AccountKey != null)
+            if (option.Store?.AccountKey.ToNullIfEmpty() != null)
             {
-                option.SecretFilter = new SecretFilter(new[] { option.BlobStore.AccountKey });
+                option.SecretFilter = new SecretFilter(new[] { option.Store.AccountKey! });
             }
 
-            return option
-                .Verify();
+            return option.Verify();
         }
     }
 }
