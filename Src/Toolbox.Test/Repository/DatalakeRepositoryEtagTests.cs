@@ -14,6 +14,7 @@ namespace Toolbox.Test.Repository
     [TestClass]
     public class DatalakeRepositoryEtagTests
     {
+        [TestCategory("Developer")]
         [TestMethod]
         public async Task GivenData_WhenSaved_ShouldMatchEtag()
         {
@@ -45,6 +46,7 @@ namespace Toolbox.Test.Repository
             await datalakeRepository.Delete(path, CancellationToken.None);
         }
 
+        [TestCategory("Developer")]
         [TestMethod]
         public async Task GivenData_WhenSavedAndWritten_ShouldNotMatchEtag()
         {
@@ -77,6 +79,7 @@ namespace Toolbox.Test.Repository
             await datalakeRepository.Delete(path, CancellationToken.None);
         }
 
+        [TestCategory("Developer")]
         [TestMethod]
         public async Task GivenData_WhenSavedAndUpdate_ShouldNotMatchEtag()
         {

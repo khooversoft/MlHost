@@ -16,6 +16,7 @@ namespace Toolbox.Test.Repository
     [TestClass]
     public class DatalakeRepositoryTests
     {
+        [TestCategory("Developer")]
         [TestMethod]
         public async Task GivenData_WhenSaved_ShouldWork()
         {
@@ -46,6 +47,7 @@ namespace Toolbox.Test.Repository
             list.Should().NotBeNull();
         }
 
+        [TestCategory("Developer")]
         [TestMethod]
         public async Task GivenFile_WhenSaved_ShouldWork()
         {
@@ -84,6 +86,7 @@ namespace Toolbox.Test.Repository
             (await datalakeRepository.Exist(path, CancellationToken.None)).Should().BeFalse();
         }
 
+        [TestCategory("Developer")]
         [TestMethod]
         public async Task GivenFiles_WhenSearched_ReturnsCorrectly()
         {
