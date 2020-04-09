@@ -14,7 +14,6 @@
     <Content Remove="Properties\PublishProfiles\**" />
     <EmbeddedResource Remove="Properties\PublishProfiles\**" />
     <None Remove="Properties\PublishProfiles\**" />
-    <EmbeddedResource Include="MlPackage\RunModel.mlPackage" />
   </ItemGroup>
  
   <ItemGroup>
