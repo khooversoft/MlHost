@@ -36,7 +36,7 @@ namespace MlHost.Services
             {
                 new Activity("Resetting execution state to running", () => voidTask(() => _executionContext.State = ExecutionState.Starting)),
                 new Activity("Kill running processes", () => voidTask(() => ProcessTools.KillAnyRunningProcesses(_logger))),
-                new Activity("Deploy MlPackage to deployment folder", () => voidTask(() => ExportZipModelToDeploymentFolder())),
+                new Activity("Deploy MlPackage to deployment folder", () => voidTask(() => DeployPackage())),
                 new Activity("Start ML package", async () => await _executePython.Run()),
             };
 
@@ -84,11 +84,22 @@ namespace MlHost.Services
             _executionContext.State = ExecutionState.Failed;
         }
 
-        private void ExportZipModelToDeploymentFolder()
+        private void DeployPackage()
         {
-            _logger.LogInformation($"Deploying from resource to {_option.DeploymentFolder}");
+            bool isPackageRequested = _option.PackageFile.ToNullIfEmpty() != null;
 
-            ZipArchiveTools.ExtractZipFileFromResource(typeof(PythonHostedService), "MlHost.MlPackage.RunModel.mlPackage", _option.DeploymentFolder, _executionContext.TokenSource.Token);
+            switch(isPackageRequested)
+            {
+                case true:
+                    _logger.LogInformation($"Deploying from {_option.PackageFile} to {_option.DeploymentFolder}");
+                    ZipArchiveTools.ExtractFromZipFile(_option.PackageFile!, _option.DeploymentFolder, _executionContext.TokenSource.Token);
+                    break;
+
+                default:
+                    _logger.LogInformation($"Deploying from resource to {_option.DeploymentFolder}");
+                    ZipArchiveTools.ExtractZipFileFromResource(typeof(PythonHostedService), "MlHost.MlPackage.RunModel.mlPackage", _option.DeploymentFolder, _executionContext.TokenSource.Token);
+                    break;
+            }
         }
     }
 }

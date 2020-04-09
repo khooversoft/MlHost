@@ -95,12 +95,13 @@ namespace MlHost.Test.Application
 
         private IOption GetOption()
         {
-            string deploymentFolder = FileTools.WriteResourceToTempFile("TestModel.mlPackage", nameof(TestWebsiteHost), typeof(TestWebsiteHost), "MlHost.Test.Package.TestModel.mlPackage")
-                .Func(tempFile => ZipArchiveTools.ExtractZipToTempDirectory(tempFile, CancellationToken.None));
+            string packageFile = FileTools.WriteResourceToTempFile("TestModel.mlPackage", nameof(TestWebsiteHost), typeof(TestWebsiteHost), "MlHost.Test.Package.TestModel.mlPackage");
+            string deploymentFolder = ZipArchiveTools.ExtractZipToTempDirectory(packageFile, CancellationToken.None);
 
             string[] args = new[]
             {
                 "ServiceUri=http://localhost:5003/predict",
+                $"PackageFile={packageFile}",
                 $"DeploymentFolder={deploymentFolder}",
             };
 

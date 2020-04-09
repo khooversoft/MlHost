@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MlHostCli.Application;
+using System;
 using System.IO;
 using Toolbox.Services;
 
@@ -172,6 +173,27 @@ namespace MlHostCli.Test.Option
         }
 
         [TestMethod]
+        public void GivendNotVsProject_WhenBuild_ShouldThrow()
+        {
+            var args = new string[]
+            {
+                "Bind",
+                "modelName=model-temp",
+                "VersionId=v1000",
+                "VsProject=c:\\folder\\installPath",
+                "Store:ContainerName=containerName",
+                "Store:AccountName=accountName",
+                "Store:AccountKey=dummyKey",
+            };
+
+            Action act = () => new OptionBuilder()
+                .AddCommandLine(args)
+                .Build();
+
+            act.Should().Throw<ArgumentException>();
+        }
+
+        [TestMethod]
         public void GivenValidBindOption_WhenBuild_ShouldSucceed()
         {
             var args = new string[]
@@ -179,7 +201,7 @@ namespace MlHostCli.Test.Option
                 "Bind",
                 "modelName=model-temp",
                 "VersionId=v1000",
-                "InstallPath=c:\\folder\\installPath",
+                "VsProject=c:\\folder\\installPath\\testproject.csproj",
                 "Store:ContainerName=containerName",
                 "Store:AccountName=accountName",
                 "Store:AccountKey=dummyKey",

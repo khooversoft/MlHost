@@ -41,6 +41,7 @@ namespace MlHostCli.Application
 
             option => option.Bind
                 && option.VsProject.VerifyNotEmpty($"{nameof(option.VsProject)} is required") != null
+                && option.VsProject.VerifyAssert(x => Path.GetExtension(x).ToNullIfEmpty() != null, $"{option.VsProject} is not a VS CS project file") != null
                 && _verifyModelId(option)
                 && _verifyStore(option),
         };

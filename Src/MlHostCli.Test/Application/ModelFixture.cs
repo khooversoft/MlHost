@@ -15,7 +15,7 @@ namespace MlHostCli.Test.Application
 {
     public class ModelFixture
     {
-        internal const string _resourceId = "MlHostCli.Test.Application.TestConfig.json";
+        internal const string _resourceId = "MlHostCli.Test.TestConfig.TestConfig.json";
         private static ModelFixture? _current;
         private static object _lock = new object();
 

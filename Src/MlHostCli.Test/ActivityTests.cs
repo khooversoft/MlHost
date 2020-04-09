@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Toolbox.Repository;
@@ -18,12 +19,14 @@ namespace MlHostCli.Test
     [TestClass]
     public class ActivityTests
     {
+        private const string _testZipResourceId = "MlHostCli.Test.TestConfig.TestZip.zip";
+
         [TestMethod]
         public async Task GivenZipModel_WhenUploaded_ShouldPass()
         {
             ModelFixture modelFixture = ModelFixture.GetModelFixture();
 
-            string tempZipFile = FileTools.WriteResourceToTempFile("TestZip.Zip", nameof(ActivityTests), typeof(ActivityTests), "MlHostCli.Test.TestConfig.TestZip.zip");
+            string tempZipFile = FileTools.WriteResourceToTempFile("TestZip.Zip", nameof(ActivityTests), typeof(ActivityTests), _testZipResourceId);
 
             ModelId modelId = new ModelId($"test-zip-{Guid.NewGuid()}/v100");
 
@@ -46,7 +49,7 @@ namespace MlHostCli.Test
         {
             ModelFixture modelFixture = ModelFixture.GetModelFixture();
 
-            string tempZipFile = FileTools.WriteResourceToTempFile("TestZip.Zip", nameof(ActivityTests), typeof(ActivityTests), "MlHostCli.Test.TestConfig.TestZip.zip");
+            string tempZipFile = FileTools.WriteResourceToTempFile("TestZip.Zip", nameof(ActivityTests), typeof(ActivityTests), _testZipResourceId);
 
             ModelId modelId = new ModelId($"test-zip-{Guid.NewGuid()}/v100");
 

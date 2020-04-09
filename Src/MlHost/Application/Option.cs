@@ -11,5 +11,7 @@ namespace MlHost.Application
         public string DeploymentFolder { get; set; } = Assembly.GetExecutingAssembly().Location
                 .Func(x => Path.GetDirectoryName(x)!)
                 .Func(x => Path.Combine(x, "MlPackageDeploy"));
+
+        public string? PackageFile { get; set; }
     }
 }

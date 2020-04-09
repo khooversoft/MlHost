@@ -31,10 +31,11 @@ namespace MlHostCli.Activity
         public async Task Bind(CancellationToken token)
         {
             _option.VsProject.VerifyAssert(x => File.Exists(x), $"Vs Project file={_option.VsProject} does not exist");
-            _telemetry.WriteLine($"Binding model to ML Host");
+            _telemetry.WriteLine($"Binding model to ML Host {Path.GetFileNameWithoutExtension(_option.VsProject)}");
 
             await Download(token);
 
+            _telemetry.WriteLine($"Update VS Project file {_option.VsProject} with embedded command for model.");
             new VsProject(_option.VsProject!)
                 .Read()
                 .Add($"{_folderName}\\{_embeddedFileName}")
