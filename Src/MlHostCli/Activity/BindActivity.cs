@@ -1,6 +1,7 @@
 ﻿using MlHostApi.Repository;
 using MlHostApi.Types;
 using MlHostCli.Application;
+using MlHostCli.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +16,7 @@ namespace MlHostCli.Activity
     internal class BindActivity
     {
         private const string _embeddedFileName = "RunModel.mlPackage";
+        private const string _folderName = "MlPackage";
         private readonly IOption _option;
         private readonly IModelRepository _modelRepository;
         private readonly ITelemetry _telemetry;
@@ -28,43 +30,25 @@ namespace MlHostCli.Activity
 
         public async Task Bind(CancellationToken token)
         {
+            _option.VsProject.VerifyAssert(x => File.Exists(x), $"Vs Project file={_option.VsProject} does not exist");
             _telemetry.WriteLine($"Binding model to ML Host");
 
             await Download(token);
 
-            //string filePath = await Download(token);
-            ////UnpackPackage(filePath, token);
-
-            //FileTools.DeleteDirectory(Path.GetDirectoryName(filePath)!);
+            new VsProject(_option.VsProject!)
+                .Read()
+                .Add($"{_folderName}\\{_embeddedFileName}")
+                .Write();
         }
 
-        private async Task<string> Download(CancellationToken token)
+        private async Task Download(CancellationToken token)
         {
             var modelId = new ModelId(_option.ModelName!, _option.VersionId!);
 
-            string filePath = Path.Combine(_option.InstallPath!, _embeddedFileName);
+            string filePath = Path.Combine(Path.GetDirectoryName(_option.VsProject)!, _folderName, _embeddedFileName);
             _telemetry.WriteLine($"Downloading model {modelId} to {filePath}");
 
             await _modelRepository.Download(modelId, filePath, token);
-            return filePath;
         }
-
-        //private async Task<string> Download(CancellationToken token)
-        //{
-        //    var modelId = new ModelId(_option.ModelName!, _option.VersionId!);
-
-        //    string directory = Path.Combine(Path.GetTempPath(), nameof(MlHostCli));
-        //    string filePath = new MlPackageFile(modelId, directory).FilePath;
-        //    _telemetry.WriteLine($"Downloading model {modelId} to {filePath}");
-
-        //    await _modelRepository.Download(modelId, filePath, token);
-        //    return filePath;
-        //}
-
-        //    private void UnpackPackage(string filePath, CancellationToken token)
-        //    {
-        //        _telemetry.WriteLine($"Unpacking {filePath} to install path {_option.InstallPath}");
-        //        ZipArchiveTools.ExtractFromZipFile(filePath, _option.InstallPath!, token);
-        //    }
     }
 }

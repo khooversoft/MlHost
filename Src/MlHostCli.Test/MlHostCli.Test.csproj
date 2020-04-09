@@ -13,8 +13,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Application\TestConfig.json" />
+    <EmbeddedResource Include="TestConfig\TestConfig.json" />
     <EmbeddedResource Include="TestConfig\TestZip.zip" />
+    <EmbeddedResource Include="TestData\TestProject-none.csproj" />
+    <EmbeddedResource Include="TestData\TestProject-two.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="TestData\TestProject-one.csproj" />
   </ItemGroup>
 
   <ItemGroup>

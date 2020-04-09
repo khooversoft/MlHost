@@ -15,7 +15,7 @@ namespace MlHostCli.Application
         public bool Delete { get; set; }
 
         public bool Bind { get; set; }
-        public string? InstallPath { get; set; }
+        public string? VsProject { get; set; }
 
         public bool Force { get; set; }
 

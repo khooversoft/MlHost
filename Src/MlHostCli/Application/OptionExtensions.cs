@@ -40,7 +40,7 @@ namespace MlHostCli.Application
                 && _verifyStore(option),
 
             option => option.Bind
-                && option.InstallPath.VerifyNotEmpty($"{nameof(option.InstallPath)} is required") != null
+                && option.VsProject.VerifyNotEmpty($"{nameof(option.VsProject)} is required") != null
                 && _verifyModelId(option)
                 && _verifyStore(option),
         };

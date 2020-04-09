@@ -44,7 +44,7 @@ namespace MlHostCli.Application
                 "  Bind                : Bind command",
                 "  ModelName={name}    : Model's name",
                 "  VersionId={name}    : Model's version",
-                "  InstallPath={path}  : Path where to install model.",
+                "  VsProject={path}    : Path of the VS Project for ASP.NET Core.",
                 "",
                 "",
                 "Configuration for BlobStorage",
