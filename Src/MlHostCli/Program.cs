@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Microsoft.Extensions.Logging;
 using MlHostApi.Repository;
 using MlHostCli.Activity;
 using MlHostCli.Application;
@@ -63,6 +64,8 @@ namespace MlHostCli
                 return _ok;
             }
 
+            option.DumpConfigurations();
+
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
             using (ILifetimeScope container = CreateContainer(option).BeginLifetimeScope(_lifetimeScopeTag))
@@ -76,11 +79,11 @@ namespace MlHostCli
 
                 var activities = new Func<Task>[]
                 {
-                    () => option.Dump ? container.Resolve<DumpConfigurationActivity>().Dump() : Task.CompletedTask,
                     () => option.Upload ? container.Resolve<UploadModelActivity>().Upload(cancellationTokenSource.Token) : Task.CompletedTask,
                     () => option.Download ? container.Resolve<DownloadModelActivity>().Download(cancellationTokenSource.Token) : Task.CompletedTask,
                     () => option.Delete ? container.Resolve<DeleteModelActivity>().Delete(cancellationTokenSource.Token) : Task.CompletedTask,
                     () => option.Bind ? container.Resolve<BindActivity>().Bind(cancellationTokenSource.Token) : Task.CompletedTask,
+                    () => option.Swagger ? container.Resolve<BuildSwaggerActivity>().Write(cancellationTokenSource.Token) : Task.CompletedTask,
                 };
 
                 await activities
@@ -100,9 +103,13 @@ namespace MlHostCli
             builder.RegisterInstance(option.SecretFilter ?? new SecretFilter()).As<ISecretFilter>();
 
             builder.RegisterType<Json>().As<IJson>().InstancePerLifetimeScope();
-            builder.RegisterType<ConsoleTelemetry>().As<ITelemetry>().InstancePerLifetimeScope();
-            builder.RegisterType<DumpConfigurationActivity>();
+            builder.RegisterType<BuildSwaggerActivity>();
 
+            // Logging
+            var loggerFactory = LoggerFactory.Create(configure => configure.AddConsole());
+            builder.RegisterInstance(loggerFactory).As<ILoggerFactory>().InstancePerLifetimeScope();
+            builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>)).InstancePerDependency();
+            
             if (option.Store != null)
             {
                 builder.RegisterInstance(new DatalakeRepository(option.Store)).As<IDatalakeRepository>();

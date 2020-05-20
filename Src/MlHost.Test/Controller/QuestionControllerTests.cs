@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MlHost.Test.Application;
+using MlHostApi.Models;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,9 +19,15 @@ namespace MlHost.Test.Controller
             TestWebsiteHost host = await TestApplication.GetHost();
             await host.WaitForStartup();
 
-            dynamic question = new
+            var question = new PredictRequest
             {
-                sentence = "what is my deductible",
+                Sentence = "I am happy",
+                MemberKey = "my key",
+                Metadata = new Dictionary<string, string>
+                {
+                    ["Meta1"] = "Meta1-Data1",
+                    ["Meta2"] = "Meta1-Data2"
+                }
             };
 
             IJson jsonSerializer = host.Resolve<IJson>();
@@ -29,9 +37,23 @@ namespace MlHost.Test.Controller
             response.EnsureSuccessStatusCode();
 
             var responseString = await response.Content.ReadAsStringAsync();
-
             responseString.Should().NotBeNullOrEmpty();
-            responseString.Should().Be("{\"label\":\"2\",\"score\":\"0.999996602535248\"}");
+
+            PredictResponse predictResponse = jsonSerializer.Deserialize<PredictResponse>(responseString);
+            predictResponse.Should().NotBeNull();
+
+            predictResponse.Query.Should().Be(question.Sentence);
+
+            predictResponse.Model.Should().NotBeNull();
+            predictResponse.Model!.Name.Should().Be("emote-sent");
+            predictResponse.Model!.Version.Should().Be("0.1");
+
+            predictResponse.Intents.Should().NotBeNull();
+            predictResponse.Intents!.Count.Should().Be(2);
+            predictResponse.Intents![0].Label.Should().Be("HAPPINESS");
+            predictResponse.Intents![0].Score.Should().Be(0.9824827);
+            predictResponse.Intents![1].Label.Should().Be("LOVE");
+            predictResponse.Intents![1].Score.Should().Be(0.009116333);
 
             var logResponse = await host.Client.GetAsync("api/ping/Logs");
             logResponse.EnsureSuccessStatusCode();

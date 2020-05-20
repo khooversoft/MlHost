@@ -1,5 +1,8 @@
 ﻿using MlHostApi.Tools;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using Toolbox.Tools;
 
 namespace MlHostCli.Application
 {
@@ -13,7 +16,6 @@ namespace MlHostCli.Application
                 "",
                 "Help                  : Display help",
                 "List                  : List active models",
-                "Dump                  : Dump current configuration",
                 "",
                 "Upload a ML Model zip package to storage",
                 "  Upload              : Upload command",
@@ -46,6 +48,11 @@ namespace MlHostCli.Application
                 "  VersionId={name}    : Model's version",
                 "  VsProject={path}    : Path of the VS Project for ASP.NET Core.",
                 "",
+                "Build Swagger JSON for Azure API Management.",
+                "  Swagger             : Swagger command",
+                "  ModelName={name}    : Model's name",
+                "  Environment={name}  : Environment name (Dev, APCT, Prod).",
+                "",
                 "",
                 "Configuration for BlobStorage",
                 "  SecretId={secretId}                       : Use .NET Core configuration secret json file.  SecretId indicates which secret file to use.",
@@ -61,6 +68,20 @@ namespace MlHostCli.Application
                 "Model ID",
                $"  Model name and version must match {VerifyExtensions.ValidPattern}.",
             };
+        }
+
+        public static void DumpConfigurations(this IOption option)
+        {
+            const int maxWidth = 80;
+
+            option.GetConfigValues()
+                .Select(x => "  " + x)
+                .Prepend(new string('=', maxWidth))
+                .Prepend("Current configurations")
+                .Prepend(string.Empty)
+                .Append(string.Empty)
+                .Append(string.Empty)
+                .ForEach(x => Console.WriteLine(option.SecretFilter?.FilterSecrets(x) ?? x));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MlHostApi.Types;
 using MlHostCli.Activity;
@@ -21,6 +22,7 @@ namespace MlHostCli.Test
     {
         private const string _testZipResourceId = "MlHostCli.Test.TestConfig.TestZip.zip";
 
+        [TestCategory("Developer")]
         [TestMethod]
         public async Task GivenZipModel_WhenUploaded_ShouldPass()
         {
@@ -32,18 +34,19 @@ namespace MlHostCli.Test
 
             IOption option = new TestOption
             {
-                PackageFile= tempZipFile,
+                PackageFile = tempZipFile,
                 ModelName = modelId.ModelName,
                 VersionId = modelId.VersionId,
             };
 
-            await new UploadModelActivity(option, modelFixture.ModelRepository, modelFixture.Telemetry).Upload(CancellationToken.None);
+            await new UploadModelActivity(option, modelFixture.ModelRepository, new NullLogger<UploadModelActivity>()).Upload(CancellationToken.None);
 
             (await modelFixture.ModelRepository.Exist(modelId, CancellationToken.None)).Should().BeTrue();
 
             File.Delete(tempZipFile);
         }
 
+        [TestCategory("Developer")]
         [TestMethod]
         public async Task GiveZipModelWhenUploaded_WhenDownloadAndDeleted_ShouldVerify()
         {
@@ -60,7 +63,7 @@ namespace MlHostCli.Test
                 VersionId = modelId.VersionId,
             };
 
-            await new UploadModelActivity(option, modelFixture.ModelRepository, modelFixture.Telemetry).Upload(CancellationToken.None);
+            await new UploadModelActivity(option, modelFixture.ModelRepository, new NullLogger<UploadModelActivity>()).Upload(CancellationToken.None);
 
             string toZipFile = Path.GetDirectoryName(tempZipFile).Func(x => Path.Combine(x!, "TestZip-Copy.Zip"));
 
@@ -71,13 +74,13 @@ namespace MlHostCli.Test
                 VersionId = option.VersionId,
             };
 
-            await new DownloadModelActivity(downloadOption, modelFixture.ModelRepository, modelFixture.Telemetry).Download(CancellationToken.None);
+            await new DownloadModelActivity(downloadOption, modelFixture.ModelRepository, new NullLogger<DownloadModelActivity>()).Download(CancellationToken.None);
 
             byte[] originalZipHash = FileTools.GetFileHash(tempZipFile);
             byte[] downloadZipHash = FileTools.GetFileHash(toZipFile);
             Enumerable.SequenceEqual(originalZipHash, downloadZipHash).Should().BeTrue();
 
-            DeleteModelActivity uploadDeleteActivity = new DeleteModelActivity(option, modelFixture.ModelRepository, modelFixture.Telemetry);
+            DeleteModelActivity uploadDeleteActivity = new DeleteModelActivity(option, modelFixture.ModelRepository, new NullLogger<DeleteModelActivity>());
             await uploadDeleteActivity.Delete(CancellationToken.None);
 
             (await modelFixture.ModelRepository.Exist(modelId, CancellationToken.None)).Should().BeFalse();

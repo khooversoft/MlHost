@@ -11,6 +11,7 @@
   "profiles": {
     "MlHost": {
       "commandName": "Project",
+      "commandLineArgs": "LogFile=d:\\work\\intent",
       "launchUrl": "weatherforecast",
       "environmentVariables": {
         "RunAs": "CurrentUser",

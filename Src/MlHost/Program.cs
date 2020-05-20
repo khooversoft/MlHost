@@ -1,10 +1,15 @@
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MlHost.Application;
 using MlHost.Services;
+using System.IO;
 using System.Runtime.CompilerServices;
+using Toolbox.Logging;
+using Toolbox.Services;
+using Toolbox.Tools;
 
 [assembly: InternalsVisibleTo("MlHost.Test")]
 
@@ -32,16 +37,16 @@ namespace MlHost
                 })
                 .ConfigureLogging(builder =>
                 {
-                    builder
-                        .AddFilter<Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider>("", LogLevel.Trace);
+                    builder.AddFilter<Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider>("", LogLevel.Trace);
+
+                    if (option.LogFile.ToNullIfEmpty() != null)
+                    {
+                        builder.AddFile(Path.GetDirectoryName(option.LogFile)!, Path.GetFileNameWithoutExtension(option.LogFile)!);
+                    }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-                //.ConfigureServices(services =>
-                //{
-                //    services.AddHostedService<PythonHostedService>();
-                //});
     }
 }

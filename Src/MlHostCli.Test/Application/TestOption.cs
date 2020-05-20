@@ -33,5 +33,13 @@ namespace MlHostCli.Test.Application
         public StoreOption? Store { get; set; }
 
         public ISecretFilter? SecretFilter { get; set; }
+
+        public bool Swagger { get; set; }
+
+        public string? Environment { get; set; }
+
+        public string? SwaggerFile { get; set; }
+
+        public IPropertyResolver? PropertyResolver { get; set; }
     }
 }

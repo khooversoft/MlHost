@@ -42,6 +42,20 @@ namespace Toolbox.Tools
                     .GetManifestResourceStream(streamId.VerifyNotEmpty(nameof(streamId)))
                     .VerifyNotNull($"Cannot find {streamId} in assembly's resource");
 
+        /// <summary>
+        /// Read resource and convert to string
+        /// </summary>
+        /// <param name="type">type int the assembly that has the resource</param>
+        /// <param name="streamId">resource id</param>
+        /// <returns>resource as string</returns>
+        public static string GetResourceAsString(this Type type, string streamId)
+        {
+            using Stream stream = type.GetResourceStream(streamId);
+            using var reader = new StreamReader(stream);
+
+            return reader.ReadToEnd();
+        }
+
         public static void WriteStreamToFile(this Stream stream, string file)
         {
             using Stream writeFile = new FileStream(file, FileMode.Create);

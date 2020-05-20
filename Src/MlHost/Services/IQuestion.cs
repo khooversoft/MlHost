@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using MlHostApi.Models;
+using System.Threading.Tasks;
 
 namespace MlHost.Services
 {
     public interface IQuestion
     {
-        Task<dynamic> Ask(dynamic request);
+        Task<PredictResponse> Ask(Question request);
     }
 }

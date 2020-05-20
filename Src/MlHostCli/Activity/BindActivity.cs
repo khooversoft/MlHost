@@ -1,4 +1,5 @@
-﻿using MlHostApi.Repository;
+﻿using Microsoft.Extensions.Logging;
+using MlHostApi.Repository;
 using MlHostApi.Types;
 using MlHostCli.Application;
 using MlHostCli.Tools;
@@ -19,23 +20,23 @@ namespace MlHostCli.Activity
         private const string _folderName = "MlPackage";
         private readonly IOption _option;
         private readonly IModelRepository _modelRepository;
-        private readonly ITelemetry _telemetry;
+        private readonly ILogger<BindActivity> _logger;
 
-        public BindActivity(IOption option, IModelRepository modelRepository, ITelemetry telemetry)
+        public BindActivity(IOption option, IModelRepository modelRepository, ILogger<BindActivity> logger)
         {
             _option = option;
             _modelRepository = modelRepository;
-            _telemetry = telemetry;
+            _logger = logger;
         }
 
         public async Task Bind(CancellationToken token)
         {
             _option.VsProject.VerifyAssert(x => File.Exists(x), $"Vs Project file={_option.VsProject} does not exist");
-            _telemetry.WriteLine($"Binding model to ML Host {Path.GetFileNameWithoutExtension(_option.VsProject)}");
+            _logger.LogInformation($"Binding model to ML Host {Path.GetFileNameWithoutExtension(_option.VsProject)}");
 
             await Download(token);
 
-            _telemetry.WriteLine($"Update VS Project file {_option.VsProject} with embedded command for model.");
+            _logger.LogInformation($"Update VS Project file {_option.VsProject} with embedded command for model.");
             new VsProject(_option.VsProject!)
                 .Read()
                 .Add($"{_folderName}\\{_embeddedFileName}")
@@ -47,7 +48,7 @@ namespace MlHostCli.Activity
             var modelId = new ModelId(_option.ModelName!, _option.VersionId!);
 
             string filePath = Path.Combine(Path.GetDirectoryName(_option.VsProject)!, _folderName, _embeddedFileName);
-            _telemetry.WriteLine($"Downloading model {modelId} to {filePath}");
+            _logger.LogInformation($"Downloading model {modelId} to {filePath}");
 
             await _modelRepository.Download(modelId, filePath, token);
         }

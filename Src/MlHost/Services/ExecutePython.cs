@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Toolbox.Services;
 using Toolbox.Tools;
 
 namespace MlHost.Services
@@ -35,11 +36,11 @@ namespace MlHost.Services
 
             var tcs = new TaskCompletionSource<bool>();
             var scopedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new CancellationTokenSource(timeout).Token, _executionContext.TokenSource.Token);
-            scopedTokenSource.Token.Register(() =>
+            scopedTokenSource.Token.Register((Action)(() =>
             {
-                _logger.LogError($"Python failed to start within timeout of {timeout}");
+                LoggerExtensions.LogError(this._logger, (string)$"Python failed to start within timeout of {timeout}");
                 tcs.SetException(new TimeoutException("Python child process failed to start"));
-            });
+            }));
 
             _logger.LogInformation($"Starting python child process, deployment folder={_option.DeploymentFolder}");
 
@@ -54,7 +55,6 @@ namespace MlHost.Services
             _localProcess = localProcess.Run(_executionContext.TokenSource.Token);
 
             _logger.LogInformation("Python process is starting up");
-
             return tcs.Task;
 
             // ====================================================================================

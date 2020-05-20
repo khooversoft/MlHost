@@ -3,6 +3,7 @@ using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Toolbox.Models;
@@ -64,6 +65,9 @@ namespace MlHostCli.Application
                     case Option v when v.Help:
                         return new Option { Help = true };
 
+                    case Option v when v.Swagger:
+                        break;
+
                     case Option v when v.ConfigFile.ToNullIfEmpty() != null && configFile == null:
                         configFile = v.ConfigFile;
                         continue;
@@ -73,15 +77,7 @@ namespace MlHostCli.Application
                         continue;
 
                     case Option v when v.Store?.AccountKey.ToNullIfEmpty() == null && accountKey == null:
-                        Console.WriteLine("Getting secret from Key Vault");
-                        option.KeyVault!.Verify();
-
-                        var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback));
-
-                        accountKey = new ConfigurationBuilder()
-                            .AddAzureKeyVault($"https://{option.KeyVault!.KeyVaultName}.vault.azure.net/", keyVaultClient, new DefaultKeyVaultSecretManager())
-                            .Build()[option.KeyVault!.KeyName];
-
+                        accountKey = GetAccountKeyFromKeyVault(option);
                         if (accountKey != null) continue;
                         break;
                 }
@@ -94,7 +90,41 @@ namespace MlHostCli.Application
                 option.SecretFilter = new SecretFilter(new[] { option.Store.AccountKey! });
             }
 
-            return option.Verify();
+            option.Verify();
+
+            if (option.Swagger)
+            {
+                option.PropertyResolver = new PropertyResolver(new[]
+                {
+                    new KeyValuePair<string, string>("modelName", option.ModelName!),
+                    new KeyValuePair<string, string>("environment", option.Environment!),
+                });
+            }
+
+            return option;
+        }
+
+        private string GetAccountKeyFromKeyVault(Option option)
+        {
+            try
+            {
+                Console.WriteLine("Getting secret from Key Vault");
+                option.KeyVault!.Verify();
+
+                var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(new AzureServiceTokenProvider().KeyVaultTokenCallback));
+
+                IConfiguration configuration = new ConfigurationBuilder()
+                    .AddAzureKeyVault($"https://{option.KeyVault!.KeyVaultName}.vault.azure.net/", keyVaultClient, new DefaultKeyVaultSecretManager())
+                    .Build();
+
+                return configuration[option.KeyVault!.KeyName];
+            }
+            catch
+            {
+                Console.WriteLine("Failed to get key from key vault");
+                option.DumpConfigurations();
+                throw;
+            }
         }
     }
 }

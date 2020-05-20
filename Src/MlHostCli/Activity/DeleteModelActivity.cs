@@ -1,4 +1,5 @@
-﻿using MlHostApi.Repository;
+﻿using Microsoft.Extensions.Logging;
+using MlHostApi.Repository;
 using MlHostApi.Types;
 using MlHostCli.Application;
 using System.Threading;
@@ -11,20 +12,20 @@ namespace MlHostCli.Activity
     {
         private readonly IOption _option;
         private readonly IModelRepository _modelRepository;
-        private readonly ITelemetry _telemetry;
+        private readonly ILogger<DeleteModelActivity> _logger;
 
-        public DeleteModelActivity(IOption option, IModelRepository modelRepository, ITelemetry telemetry)
+        public DeleteModelActivity(IOption option, IModelRepository modelRepository, ILogger<DeleteModelActivity> logger)
         {
             _option = option;
             _modelRepository = modelRepository;
-            _telemetry = telemetry;
+            _logger = logger;
         }
 
         public Task Delete(CancellationToken token)
         {
             var modelId = new ModelId(_option.ModelName!, _option.VersionId!);
 
-            _telemetry.WriteLine($"Deleting model {modelId}");
+            _logger.LogInformation($"Deleting model {modelId}");
             return _modelRepository.Delete(modelId, token);
         }
     }

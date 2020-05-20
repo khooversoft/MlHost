@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
+using System.Xml;
 
 namespace Toolbox.Tools
 {
@@ -42,14 +45,20 @@ namespace Toolbox.Tools
 
             static string buildName(string? root, string name) => (root.ToNullIfEmpty() == null ? string.Empty : root + ":") + name;
 
+            // Get properties on object
             static IEnumerable<string> getProperties(string? root, object subject) =>
                 subject.GetType().GetProperties()
                 .SelectMany(x => getProperty(root, x.Name, x.GetValue(subject)));
 
+            // Get property on object
             static IEnumerable<string> getProperty(string? root, string name, object? subject) => subject switch
             {
                 object v when v.GetType() == typeof(string) || !v.GetType().IsClass => new[] { $"{buildName(root, name)}={v!}" },
+
+                IEnumerable<object> v => v.SelectMany((x, i) => getProperties(buildName(root, name) + $":{i}", x)),
+
                 object v => getProperties(buildName(root, name), v),
+
                 _ => Enumerable.Empty<string>(),
             };
         }

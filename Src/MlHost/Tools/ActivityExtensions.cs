@@ -32,7 +32,7 @@ namespace MlHost.Tools
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, $"[Activity] {activity.Description} failed");
+                    logger.LogError(ex, $"[Activity] {activity.Description} failed, ex:{ex}");
                     throw;
                 }
             }

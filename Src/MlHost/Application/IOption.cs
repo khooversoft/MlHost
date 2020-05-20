@@ -4,8 +4,14 @@
     {
         string? ServiceUri { get; }
 
-        string DeploymentFolder { get; set; }
+        string DeploymentFolder { get; }
 
-        string? PackageFile { get; set; }
+        string? PackageFile { get; }
+
+        bool KillProcess { get; }
+
+        int MaxRequests { get; }
+
+        string? LogFile { get; }
     }
 }

@@ -3,6 +3,8 @@ using MlHost.Application;
 using MlHost.Services;
 using MlHost.Tools;
 using MlHostApi.Models;
+using NSwag.Annotations;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MlHost.Controllers
@@ -20,8 +22,19 @@ namespace MlHost.Controllers
             _telemetryMemory = telemetryMemory;
         }
 
+        /// <summary>
+        /// Ping to get current state of the ML Service
+        /// 
+        /// Booting - System is booting
+        /// Starting - Service is starting
+        /// Running - Service is running
+        /// Failed - Service has failed to start
+        /// 
+        /// </summary>
+        /// <returns>status</returns>
+        [OpenApiIgnore]
         [HttpGet]
-        public IActionResult Ping()
+        public ActionResult<PingResponse> Ping()
         {
             var response = new PingResponse
             {
@@ -31,15 +44,19 @@ namespace MlHost.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Get the last 100 logs in reverse order
+        /// </summary>
+        /// <returns>array of strings</returns>
+        [OpenApiIgnore]
         [HttpGet("Logs")]
-        public IActionResult GetLogs()
+        public ActionResult<PingLogs> GetLogs()
         {
-            var logs = _telemetryMemory.GetLoggedMessages();
+            IReadOnlyList<string> logs = _telemetryMemory.GetLoggedMessages();
 
-            dynamic response = new
+            var response = new PingLogs
             {
                 Count = logs.Count,
-
                 Messages = logs
                     .Reverse()
                     .Take(100)

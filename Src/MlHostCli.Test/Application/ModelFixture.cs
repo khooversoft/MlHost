@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using MlHostApi.Repository;
 using System;
 using System.Collections.Generic;
@@ -27,8 +28,6 @@ namespace MlHostCli.Test.Application
         }
 
         public IModelRepository ModelRepository { get; }
-
-        public ITelemetry Telemetry { get; } = new FakeTelemetry();
 
         public async Task<IReadOnlyList<DatalakePathItem>> ListFiles() => await ModelRepository.Search(null, "*", CancellationToken.None);
 

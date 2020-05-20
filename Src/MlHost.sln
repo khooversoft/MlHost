@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D9B51A8E-3AAD-45A7-9E13-8635AFB835B0}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		..\azure-pipelines.yml = ..\azure-pipelines.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MlHostCli", "MlHostCli\MlHostCli.csproj", "{CBA81AAF-E46C-4EBE-9898-72BF6B71B27B}"
@@ -20,9 +21,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MlHostCli.Test", "MlHostCli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MlHostApi.Test", "MlHostApi.Test\MlHostApi.Test.csproj", "{992AB802-EB22-4A21-B009-39CAD30A52D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Toolbox", "Toolbox\Toolbox.csproj", "{5D9F2B7A-C3C1-444F-B5BF-A2B8CD8D0263}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbox", "Toolbox\Toolbox.csproj", "{5D9F2B7A-C3C1-444F-B5BF-A2B8CD8D0263}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Toolbox.Test", "Toolbox.Test\Toolbox.Test.csproj", "{F283F638-3885-42BE-83E2-23C9E1A2219B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbox.Test", "Toolbox.Test\Toolbox.Test.csproj", "{F283F638-3885-42BE-83E2-23C9E1A2219B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MlProcess", "MlProcess\MlProcess.csproj", "{82FD4113-7FDE-428D-914F-AFD8C8BDF039}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,6 +65,10 @@ Global
 		{F283F638-3885-42BE-83E2-23C9E1A2219B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F283F638-3885-42BE-83E2-23C9E1A2219B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F283F638-3885-42BE-83E2-23C9E1A2219B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82FD4113-7FDE-428D-914F-AFD8C8BDF039}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82FD4113-7FDE-428D-914F-AFD8C8BDF039}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82FD4113-7FDE-428D-914F-AFD8C8BDF039}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82FD4113-7FDE-428D-914F-AFD8C8BDF039}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

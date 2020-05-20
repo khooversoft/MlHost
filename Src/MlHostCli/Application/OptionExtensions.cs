@@ -44,6 +44,11 @@ namespace MlHostCli.Application
                 && option.VsProject.VerifyAssert(x => Path.GetExtension(x).ToNullIfEmpty() != null, $"{option.VsProject} is not a VS CS project file") != null
                 && _verifyModelId(option)
                 && _verifyStore(option),
+
+            option => option.Swagger
+                && option.ModelName?.ToLower().VerifyStoreVector($"{nameof(option.ModelName)}  is required") != null
+                && option.Environment?.ToLower().VerifyStoreVector($"{nameof(option.Environment)}  is required") != null
+                && option.SwaggerFile.VerifyNotEmpty($"{nameof(option.SwaggerFile)} is required") != null,
         };
 
         public static Option Verify(this Option option)

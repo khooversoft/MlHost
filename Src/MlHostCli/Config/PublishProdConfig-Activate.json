@@ -1,22 +1,11 @@
 {
-  //"upload": true,
-  "bind": true,
-  "force": true,
-
-  "SecretId": "MlHostCli.exe",
-  "packageFile": "D:\\Work\\ML\\Sentiment\\sentiment-demo\\sentiment-demo.mlPackage",
-  "modelName": "sentiment-demo",
-  "versionId": "V20200324-001",
-
-  "VsProject": "D:\\Sources\\MlHost\\Src\\MlHost\\MlHost.csproj",
-
   "KeyVault": {
-    "KeyVaultName": "mltest-kv",
-    "KeyName": "mlteststoragev1-accountkey"
+    "KeyVaultName": "dev-hbt-keyvault-w2-01",
+    "KeyName": "devmlservices-accountkey"
   },
 
   "Store": {
-    "AccountName": "mltestadlsv1",
-    "ContainerName": "mldatamodels"
+    "AccountName": "devmlservices",
+    "ContainerName": "ml-packages"
   }
 }

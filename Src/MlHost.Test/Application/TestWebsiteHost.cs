@@ -51,7 +51,7 @@ namespace MlHost.Test.Application
 
         public async Task WaitForStartup()
         {
-            var token = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            var token = new CancellationTokenSource(TimeSpan.FromMinutes(5));
             while (!token.IsCancellationRequested)
             {
                 var response = await Client.GetAsync("api/ping");

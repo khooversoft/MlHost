@@ -2,7 +2,7 @@
   "profiles": {
     "MlHostCli": {
       "commandName": "Project",
-      "commandLineArgs": "ConfigFile=D:\\Sources\\MlHost\\Src\\MlHostCli\\Config\\PublishProdConfig-Activate.json",
+      "commandLineArgs": "swagger modelName=\"ModelNameX\" environment=\"Dev\" swaggerFile=c:\\work\\swagger_{environment}.json",
       "environmentVariables": {
         "RunAs": "CurrentUser"
       }

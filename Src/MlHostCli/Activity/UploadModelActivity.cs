@@ -1,4 +1,5 @@
-﻿using MlHostApi.Repository;
+﻿using Microsoft.Extensions.Logging;
+using MlHostApi.Repository;
 using MlHostApi.Types;
 using MlHostCli.Application;
 using System;
@@ -17,25 +18,25 @@ namespace MlHostCli.Activity
     {
         private readonly IOption _option;
         private readonly IModelRepository _modelRepository;
-        private readonly ITelemetry _telemetry;
+        private readonly ILogger<UploadModelActivity> _logger;
         private static readonly IReadOnlyList<string> _validFiles = new string[]
         {
             "app.py",
             "python-3.8.1.amd64",
         };
 
-        public UploadModelActivity(IOption option, IModelRepository modelRepository, ITelemetry telemetry)
+        public UploadModelActivity(IOption option, IModelRepository modelRepository, ILogger<UploadModelActivity> logger)
         {
             _option = option;
             _modelRepository = modelRepository;
-            _telemetry = telemetry;
+            _logger = logger;
         }
 
         public async Task Upload(CancellationToken token)
         {
             var modelId = new ModelId(_option.ModelName!, _option.VersionId!);
 
-            _telemetry.WriteLine($"Uploading model {_option.PackageFile} to model {modelId}, force={_option.Force}");
+            _logger.LogInformation($"Uploading model {_option.PackageFile} to model {modelId}, force={_option.Force}");
 
             VerifyIsZip();
             await _modelRepository.Upload(_option.PackageFile!, modelId, _option.Force, token);

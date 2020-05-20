@@ -6,11 +6,11 @@ namespace MlHostCli.Application
     internal interface IOption
     {
         bool Help { get; }
-        bool Dump { get; }
 
         bool Upload { get; }
         bool Download { get; }
         bool Delete { get; }
+        bool Swagger { get; set; }
 
         bool Bind { get; }
         string? VsProject { get; }
@@ -24,8 +24,13 @@ namespace MlHostCli.Application
 
         string? PackageFile { get; }
 
+        string? Environment { get; }
+        string? SwaggerFile { get; }
+
         StoreOption? Store { get; }
 
         ISecretFilter? SecretFilter { get; }
+
+        IPropertyResolver? PropertyResolver { get; }
     }
 }

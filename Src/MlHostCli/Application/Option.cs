@@ -6,13 +6,13 @@ namespace MlHostCli.Application
     internal class Option : IOption
     {
         public bool Help { get; set; }
-        public bool Dump { get; set; }
 
         public string? ConfigFile { get; set; }
 
         public bool Upload { get; set; }
         public bool Download { get; set; }
         public bool Delete { get; set; }
+        public bool Swagger { get; set; }
 
         public bool Bind { get; set; }
         public string? VsProject { get; set; }
@@ -26,10 +26,15 @@ namespace MlHostCli.Application
 
         public string? PackageFile { get; set; }
 
+        public string? Environment { get; set; }
+        public string? SwaggerFile { get; set; }
+
         public StoreOption? Store { get; set; }
 
         public KeyVaultOption? KeyVault { get; set; }
 
         public ISecretFilter? SecretFilter { get; set; }
+
+        public IPropertyResolver? PropertyResolver { get; set; }
     }
 }
