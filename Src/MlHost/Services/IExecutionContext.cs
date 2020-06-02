@@ -8,5 +8,7 @@ namespace MlHost.Services
         CancellationTokenSource TokenSource { get; }
 
         ExecutionState State { get; set; }
+
+        string? DeploymentFolder { get; set; }
     }
 }

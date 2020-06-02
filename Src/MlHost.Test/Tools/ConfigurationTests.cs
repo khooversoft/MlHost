@@ -12,11 +12,12 @@ namespace MlHost.Test.Tools
         public void GivenOption_WhenBuild_ShouldPass()
         {
             const string uri = "http://0.0.0.0:8000/predict";
+            const string packageFile = "packageFileData";
 
             string[] args = new[]
             {
                 $"ServiceUri={uri}",
-                "DeploymentFolder=deploymentFolder",
+                $"PackageFile={packageFile}",
             };
 
             IOption option = new OptionBuilder()
@@ -25,7 +26,7 @@ namespace MlHost.Test.Tools
 
             option.Should().NotBeNull();
             option.ServiceUri.Should().Be(uri);
-            option.DeploymentFolder.Should().Contain("deploymentFolder");
+            option.PackageFile.Should().Be(packageFile);
         }
     }
 }

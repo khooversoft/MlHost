@@ -29,6 +29,18 @@ namespace Toolbox.Tools
             zipArchive.ExtractToFolder(toFolder, token);
         }
 
+        public static string ExtractZipFromResource(Type type, string resourceId, string folder, string fileName, CancellationToken token)
+        {
+            string filePath = Path.Combine(Path.GetTempPath(), folder, fileName);
+
+            string directory = Path.GetDirectoryName(filePath)!;
+            FileTools.DeleteDirectory(directory);
+            Directory.CreateDirectory(directory);
+
+            ExtractZipFileFromResource(type, resourceId, filePath, token);
+            return filePath;
+        }
+
         public static void ExtractZipFileFromResource(Type type, string resourceId, string toFolder, CancellationToken token)
         {
             using Stream packageStream = FileTools.GetResourceStream(type, resourceId);

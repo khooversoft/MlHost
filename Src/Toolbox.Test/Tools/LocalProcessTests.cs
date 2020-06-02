@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Toolbox.Application;
 using Toolbox.Tools;
+using Toolbox.Tools.Local;
 
 namespace Toolbox.Test.Tools
 {
@@ -18,16 +19,33 @@ namespace Toolbox.Test.Tools
             var logger = new MemoryLogger();
             var token = new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token;
 
-            var localProcess = new LocalProcess(logger)
+            var localProcess = new LocalProcessBuilder()
             {
-                File = "powershell.exe",
+                ExecuteFile = "pwsh.exe",
                 Arguments = "-Command \"& {Get-Location}\"",
-            };
+            }.Build(logger);
 
             await localProcess.Run(token);
             logger.Count().Should().BeGreaterThan(0);
 
             localProcess.ExitCode.Should().Be(0);
+        } 
+        
+        [TestMethod]
+        public async Task GivenBadCommand_WhenExecuted_ShouldThrow()
+        {
+            var logger = new MemoryLogger();
+            var token = new CancellationTokenSource(TimeSpan.FromSeconds(10000)).Token;
+
+            var localProcess = new LocalProcessBuilder()
+            {
+                ExecuteFile = "pwsh_bad.exe",
+                Arguments = "-Command \"& {Get-Location}\"",
+            }.Build(logger);
+
+            Func<Task> act = () => localProcess.Run(token);
+            await act.Should().ThrowAsync<InvalidOperationException>();
+            logger.Count().Should().BeGreaterThan(0);
         }
 
         [TestMethod]
@@ -36,11 +54,10 @@ namespace Toolbox.Test.Tools
             var logger = new MemoryLogger();
             var token = new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token;
 
-            var localProcess = new LocalProcess(logger)
-            {
-                File = "powershell.exe",
-                Arguments = "-Command \"& {Start-Sleep 2}\"",
-            };
+            var localProcess = new LocalProcessBuilder()
+                .SetExecuteFile("pwsh.exe")
+                .SetArguments("-Command \"& {Start-Sleep 2}\"")
+                .Build(logger);
 
             await localProcess.Run(token);
             logger.Count().Should().BeGreaterThan(0);
@@ -49,19 +66,62 @@ namespace Toolbox.Test.Tools
         }
 
         [TestMethod]
-        public async Task GivenSleepOverTimeoutCommand_WhenExecuted_ShouldThrowExection()
+        public async Task GivenExitCode_WhenExecuted_ShouldPassExpected()
+        {
+            var logger = new MemoryLogger();
+            var token = new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token;
+
+            var localProcess = new LocalProcessBuilder()
+                .SetExecuteFile("pwsh.exe")
+                .SetSuccessExitCode(1)
+                .SetArguments("-Command \"Exit(1);")
+                .Build(logger);
+
+            await localProcess.Run(token);
+            logger.Count().Should().BeGreaterThan(0);
+
+            localProcess.ExitCode.Should().Be(1);
+        }
+
+        [TestMethod]
+        public async Task GivenExitCode_WhenDifferentExitCode_ShouldPassExpected()
+        {
+            var logger = new MemoryLogger();
+            var token = new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token;
+
+            var localProcess = new LocalProcessBuilder()
+                .SetExecuteFile("pwsh.exe")
+                .SetSuccessExitCode(1)
+                .SetArguments("-Command \"Exit(2);")
+                .Build(logger);
+
+            LocalProcess? subject = null;
+            Func<Task<LocalProcess>> act = async () => subject = await localProcess.Run(token);
+            await act.Should().ThrowAsync<ArgumentException>();
+
+            subject.Should().BeNull();
+            logger.Count().Should().BeGreaterThan(0);
+
+            localProcess.ExitCode.Should().Be(2);
+        }
+
+        [TestMethod]
+        public async Task GivenSleepOverTimeoutCommandWithCancellationToken_WhenExecuted_ShoulNotThrowExection()
         {
             var logger = new MemoryLogger();
             var token = new CancellationTokenSource(TimeSpan.FromSeconds(2)).Token;
 
-            var localProcess = new LocalProcess(logger)
-            {
-                File = "powershell.exe",
-                Arguments = "-Command \"& {Start-Sleep 10}\"",
-            };
+            var localProcess = new LocalProcessBuilder()
+                .SetExecuteFile("pwsh.exe")
+                .SetArguments("-Command \"& {Start-Sleep 10}\"")
+                .Build(logger);
 
-            Func<Task> act = () => localProcess.Run(token);
+            LocalProcess? subject = null;
+            Func<Task<LocalProcess>> act = async () => subject = await localProcess.Run(token);
             await act.Should().NotThrowAsync();
+
+            subject.Should().NotBeNull();
+            subject!.IsRunning.Should().BeFalse();
         }
     }
 }

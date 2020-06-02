@@ -18,18 +18,20 @@ namespace MlProcess.Activities
         private readonly IOption _option;
         private readonly IJson _json;
         private readonly ILogger<RunModels> _logger;
-        private readonly IHttpRest _httpRest;
         private readonly IMetricSampler _metricSampler;
         private readonly ILifetimeScope _container;
+        private readonly Dictionary<string, HttpRest> _httpEndpoints;
 
-        public RunModels(IOption option, IJson json, ILogger<RunModels> logger, IHttpRest httpRest, IMetricSampler metricSampler, ILifetimeScope container)
+        public RunModels(IOption option, IJson json, ILogger<RunModels> logger, IMetricSampler metricSampler, ILifetimeScope container)
         {
             _option = option;
             _json = json;
             _logger = logger;
-            _httpRest = httpRest;
             _metricSampler = metricSampler;
             _container = container;
+
+            _httpEndpoints = _option.Models
+                .ToDictionary(x => x.Name, x => container.Resolve<HttpRest>(new NamedParameter("uri", x.Uri)), StringComparer.OrdinalIgnoreCase);
         }
 
         public async Task Run(ExecContext execContext)
@@ -66,7 +68,7 @@ namespace MlProcess.Activities
         {
             try
             {
-                PredictResponse response = await _httpRest.Invoke(apiOption.Uri, journalRecord.Question!, token);
+                PredictResponse response = await _httpEndpoints[apiOption.Name].Invoke(journalRecord.Question!, token);
                 _metricSampler.Add(apiOption.Name);
 
                 var newJournal = new ResponseJournal
@@ -80,6 +82,7 @@ namespace MlProcess.Activities
                 writeJournalWriter.Post(newJournal, token);
             }
             catch (TaskCanceledException) { }
+            catch (CircuitBreakerException) { }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, $"Request to model failed, skipping {journalRecord.RequestId} for model {apiOption.Name}");

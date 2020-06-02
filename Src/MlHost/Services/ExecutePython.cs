@@ -2,11 +2,15 @@
 using MlHost.Application;
 using MlHost.Tools;
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using Toolbox.Services;
 using Toolbox.Tools;
+using Toolbox.Tools.Local;
 
 namespace MlHost.Services
 {
@@ -18,7 +22,8 @@ namespace MlHost.Services
         private readonly ILogger<ExecutePython> _logger;
         private readonly IOption _option;
         private readonly IExecutionContext _executionContext;
-        private Task? _localProcess;
+        private SubjectScope<MonitorLocalProcess>? _monitorLocalProcess;
+        private SubjectScope<CancellationTokenSource>? _token;
 
         public ExecutePython(ILogger<ExecutePython> logger, IOption option, IExecutionContext executionContext)
         {
@@ -27,57 +32,72 @@ namespace MlHost.Services
             _executionContext = executionContext;
         }
 
-        public Task Run()
+        public Task Start()
         {
-            var timeout = TimeSpan.FromMinutes(5);
+            _executionContext.DeploymentFolder.VerifyNotEmpty(nameof(_executionContext.DeploymentFolder));
 
-            string fullPath = Path.Combine(_option.DeploymentFolder, @"python-3.8.1.amd64\python.exe");
-            if (!File.Exists(fullPath)) throw new FileNotFoundException(fullPath);
+            string fullPath = Path.Combine(_executionContext.DeploymentFolder!, "run.ps1")
+                .VerifyAssert<string, FileNotFoundException>(x => File.Exists(x), x => x);
 
+            _logger.LogInformation($"Starting python child process, deployment folder={_executionContext.DeploymentFolder}");
+
+            RegisterTimeoutAndCancelation();
             var tcs = new TaskCompletionSource<bool>();
-            var scopedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(new CancellationTokenSource(timeout).Token, _executionContext.TokenSource.Token);
-            scopedTokenSource.Token.Register((Action)(() =>
+
+            _monitorLocalProcess = new LocalProcessBuilder()
             {
-                LoggerExtensions.LogError(this._logger, (string)$"Python failed to start within timeout of {timeout}");
-                tcs.SetException(new TimeoutException("Python child process failed to start"));
-            }));
-
-            _logger.LogInformation($"Starting python child process, deployment folder={_option.DeploymentFolder}");
-
-            var localProcess = new LocalProcess(_logger)
+                ExecuteFile = "powershell.exe",
+                Arguments = $"-File {fullPath}",
+                WorkingDirectory = _executionContext.DeploymentFolder,
+            }
+            .Build(lineData =>
             {
-                File = fullPath,
-                Arguments = @".\app.py",
-                WorkingDirectory = _option.DeploymentFolder,
-                CaptureOutput = WaitForRunning,
-            };
+                switch (lineData)
+                {
+                    case string subject when LookFor(subject, "Running on"):
+                        _logger.LogInformation($"Detected running command: {lineData}");
+                        tcs.SetResult(true);
+                        _executionContext.State = ExecutionState.Running;
+                        return MonitorState.Running;
 
-            _localProcess = localProcess.Run(_executionContext.TokenSource.Token);
+                    case string subject when LookFor(subject, "RuntimeError", "not enough memory"):
+                        _logger.LogError($"Detected running runtime error, not enough memory, {lineData}");
+                        _executionContext.State = ExecutionState.Restarting;
+                        return MonitorState.Restart;
+
+                    default:
+                        return null;
+                }
+            }, _logger)
+            .ToSubjectScope();
+
+            _monitorLocalProcess.Subject.Start(_executionContext.TokenSource.Token);
 
             _logger.LogInformation("Python process is starting up");
             return tcs.Task;
-
-            // ====================================================================================
-            // Output function to test for "running" condition of Python
-            bool WaitForRunning(string subject)
-            {
-                const string lookFor = "Running on";
-
-                if (subject.IndexOf(lookFor) >= 0)
-                {
-                    scopedTokenSource.Dispose();
-
-                    _logger.LogInformation("Python child process is running");
-                    _executionContext.State = ExecutionState.Running;
-
-                    tcs.SetResult(true);
-                    return false;
-                }
-
-                return true;
-            }
         }
 
-        public Task Stop() => _localProcess ?? Task.CompletedTask;
+        public void Stop()
+        {
+            _logger.LogInformation("Stopping ML process");
+
+            _monitorLocalProcess?.GetAndClear()?.Stop();
+        }
+
+        private void RegisterTimeoutAndCancelation()
+        {
+            _token = CancellationTokenSource.CreateLinkedTokenSource(new CancellationTokenSource(TimeSpan.FromMinutes(5)).Token, _executionContext.TokenSource.Token)
+                .ToSubjectScope();
+
+            _token.Subject.Token.Register(() =>
+            {
+                _logger.LogInformation($"{nameof(ExecutePython)} canceled");
+                Stop();
+            });
+        }
+
+        private bool LookFor(string lineData, params string[] searchFor) => searchFor
+            .VerifyAssert(x => x.Length > 0, $"Invalid {nameof(searchFor)}, must have at least 1 element")
+            .All(x => (lineData ?? string.Empty).IndexOf(x, StringComparison.OrdinalIgnoreCase) >= 0);
     }
 }

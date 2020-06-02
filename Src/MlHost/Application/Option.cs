@@ -9,10 +9,6 @@ namespace MlHost.Application
     {
         public string ServiceUri { get; set; } = "http://localhost:5003/predict";
 
-        public string DeploymentFolder { get; set; } = Assembly.GetExecutingAssembly().Location
-                .Func(x => Path.GetDirectoryName(x)!)
-                .Func(x => Path.Combine(x, $"MlPackageDeploy_{Guid.NewGuid()}"));
-
         public string? PackageFile { get; set; }
 
         public bool KillProcess { get; set; } = true;

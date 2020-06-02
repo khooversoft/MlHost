@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Toolbox.Tools
@@ -17,7 +19,18 @@ namespace Toolbox.Tools
         public static string VerifyNotEmpty(this string? subject, string message) => subject.ToNullIfEmpty() ?? throw new ArgumentException(message);
 
         [DebuggerStepThrough]
-        public static T VerifyAssert<T>(this T subject, Func<T, bool> test, string message) => test(subject) switch { true => subject, _ => throw new ArgumentException(message) };
+        public static T VerifyAssert<T>(this T subject, Func<T, bool> test, string message) => test(subject) switch
+        {
+            true => subject,
+            _ => throw new ArgumentException(message)
+        };
+
+        [DebuggerStepThrough]
+        public static T VerifyAssert<T, TException>(this T subject, Func<T, bool> test, Func<T, string> message) where TException : Exception => test(subject) switch
+        {
+            true => subject,
+            _ => throw (Exception)Activator.CreateInstance(typeof(T), message(subject))!
+        };
 
         public static TResult Func<T, TResult>(this T subject, Func<T, TResult> function) => function.VerifyNotNull(nameof(subject))(subject);
 
@@ -50,5 +63,7 @@ namespace Toolbox.Tools
                 await action(item);
             }
         }
+
+        public static SubjectScope<T> ToSubjectScope<T>(this T subject) where T : class => new SubjectScope<T>(subject.VerifyNotNull(nameof(subject)));
     }
 }

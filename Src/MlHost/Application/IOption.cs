@@ -4,8 +4,6 @@
     {
         string? ServiceUri { get; }
 
-        string DeploymentFolder { get; }
-
         string? PackageFile { get; }
 
         bool KillProcess { get; }

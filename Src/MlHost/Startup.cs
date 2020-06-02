@@ -31,6 +31,7 @@ namespace MlHost
             services.AddSingleton<IExecutionContext, ExecutionContext>();
             services.AddSingleton<IExecutePython, ExecutePython>();
             services.AddSingleton<IJson, Json>();
+            services.AddSingleton<IDeployPackage, DeployPackage>();
 
             services.AddHostedService<PythonHostedService>();
             services.AddApplicationInsightsTelemetry();

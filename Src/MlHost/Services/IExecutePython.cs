@@ -5,8 +5,8 @@ namespace MlHost.Services
 {
     internal interface IExecutePython
     {
-        Task Run();
+        Task Start();
 
-        Task Stop();
+        void Stop();
     }
 }

@@ -6,5 +6,6 @@
         Starting,
         Running,
         Failed,
+        Restarting
     }
 }

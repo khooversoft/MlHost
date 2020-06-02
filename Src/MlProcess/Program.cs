@@ -104,9 +104,9 @@ namespace MlProcess
             builder.RegisterInstance(option.SecretFilter ?? new SecretFilter()).As<ISecretFilter>();
 
             builder.RegisterType<Json>().As<IJson>().InstancePerLifetimeScope();
-            builder.RegisterType<HttpRest>().As<IHttpRest>().InstancePerLifetimeScope();
             builder.RegisterType<MetricSampler>().As<IMetricSampler>().InstancePerLifetimeScope();
 
+            builder.RegisterType<HttpRest>();
             builder.RegisterType<BuildJournalFile>();
             builder.RegisterType<RunModels>();
             builder.RegisterType<AppendResults>();

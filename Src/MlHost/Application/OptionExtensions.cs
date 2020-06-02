@@ -10,7 +10,6 @@ namespace MlHost.Application
             option.VerifyNotNull(nameof(option));
 
             option.ServiceUri.VerifyNotEmpty($"{nameof(option.ServiceUri)} is missing");
-            option.DeploymentFolder.VerifyNotEmpty($"{nameof(option.DeploymentFolder)} is missing");
         }
 
         public static Option Bind(this IConfiguration configuration)

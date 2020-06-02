@@ -13,10 +13,11 @@ namespace Toolbox.Tools
     {
         public static string WriteResourceToTempFile(string fileName, string folder, Type type, string resourceId)
         {
-            fileName.VerifyNotEmpty(nameof(fileName));
+            @fileName.VerifyNotEmpty(nameof(fileName));
             folder.VerifyNotEmpty(nameof(folder));
 
             string filePath = Path.Combine(Path.GetTempPath(), folder, fileName);
+            
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
             using var stream = GetResourceStream(type, resourceId);

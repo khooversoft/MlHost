@@ -53,6 +53,7 @@ namespace MlHost.Controllers
             {
                 case ExecutionState.Booting:
                 case ExecutionState.Starting:
+                case ExecutionState.Restarting:
                     return ReturnNotAvailable();
 
                 case ExecutionState.Running:

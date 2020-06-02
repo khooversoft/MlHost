@@ -29,10 +29,7 @@ namespace MlHost.Test.Application
         }
 
         [AssemblyCleanup]
-        public static void Cleanup()
-        {
-            Interlocked.Exchange(ref _currentHost, null!)?.Shutdown();
-        }
+        public static void Cleanup() => Interlocked.Exchange(ref _currentHost, null!)?.Shutdown();
 
     }
 }

@@ -8,5 +8,7 @@ namespace MlHost.Services
         public CancellationTokenSource TokenSource { get; } = new CancellationTokenSource();
 
         public ExecutionState State { get; set; }
+
+        public string? DeploymentFolder { get; set; }
     }
 }

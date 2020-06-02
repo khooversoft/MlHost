@@ -23,7 +23,8 @@ namespace MlHost.Services
             IOption option,
             ILogger<PythonHostedService> logging,
             IExecutePython executePython,
-            IExecutionContext executionContext)
+            IExecutionContext executionContext,
+            IDeployPackage deployPackage)
         {
             _option = option;
             _logger = logging;
@@ -36,8 +37,8 @@ namespace MlHost.Services
             {
                 new Activity("Resetting execution state to running", () => voidTask(() => _executionContext.State = ExecutionState.Starting)),
                 _option.KillProcess ? new Activity("Kill running processes", () => voidTask(() => ProcessTools.KillAnyRunningProcesses(_logger))) : null,
-                new Activity("Deploy MlPackage to deployment folder", () => voidTask(() => DeployPackage())),
-                new Activity("Start ML package", async () => await _executePython.Run()),
+                new Activity("Deploy MlPackage to deployment folder", () => voidTask(() => deployPackage.Deploy())),
+                new Activity("Start ML package", async () => await _executePython.Start()),
             }
             .Where(x => x != null)
             .OfType<Activity>()
@@ -57,12 +58,14 @@ namespace MlHost.Services
             return Task.CompletedTask;
         }
 
-        public async Task StopAsync(CancellationToken cancellationToken)
+        public Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation($"Python service is stopping");
 
             _executionContext.TokenSource.Cancel();
-            await _executePython.Stop();
+            _executePython.Stop();
+
+            return Task.CompletedTask;
         }
 
         private async Task Run()
@@ -85,31 +88,6 @@ namespace MlHost.Services
             }
 
             _executionContext.State = ExecutionState.Failed;
-        }
-
-        private void DeployPackage()
-        {
-            bool isPackageRequested = _option.PackageFile.ToNullIfEmpty() != null;
-
-            try
-            {
-                switch (isPackageRequested)
-                {
-                    case true:
-                        _logger.LogInformation($"Deploying from {_option.PackageFile} to {_option.DeploymentFolder}");
-                        ZipArchiveTools.ExtractFromZipFile(_option.PackageFile!, _option.DeploymentFolder, _executionContext.TokenSource.Token);
-                        break;
-
-                    default:
-                        _logger.LogInformation($"Deploying from resource to {_option.DeploymentFolder}");
-                        ZipArchiveTools.ExtractZipFileFromResource(typeof(PythonHostedService), "MlHost.MlPackage.RunModel.mlPackage", _option.DeploymentFolder, _executionContext.TokenSource.Token);
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Failed to deploy package, ex={ex}");
-            }
         }
     }
 }
