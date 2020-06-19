@@ -1,4 +1,6 @@
 {
-  "AccountName": "devmlservices",
-  "ContainerName": "integration-tests"
+  //"AccountName": "devmlservices",
+  //"ContainerName": "integration-tests"
+  "AccountName": "mltestadlsv1",
+  "ContainerName": "model-test"
 }
