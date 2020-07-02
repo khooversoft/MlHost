@@ -1,4 +1,6 @@
-﻿using Toolbox.Models;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Toolbox.Models;
 using Toolbox.Services;
 
 namespace MlHostCli.Application
@@ -13,6 +15,7 @@ namespace MlHostCli.Application
         public bool Download { get; set; }
         public bool Delete { get; set; }
         public bool Swagger { get; set; }
+        public bool Build { get; set; }
 
         public bool Bind { get; set; }
         public string? VsProject { get; set; }
@@ -33,8 +36,21 @@ namespace MlHostCli.Application
 
         public KeyVaultOption? KeyVault { get; set; }
 
+        public PackageMetadata? Package { get; set; }
+
         public ISecretFilter? SecretFilter { get; set; }
 
         public IPropertyResolver? PropertyResolver { get; set; }
+    }
+
+    internal class PackageMetadata
+    {
+        public string? ModelName { get; set; }
+
+        public string? VersionId { get; set; }
+
+        public IList<string>? FileFolders { get; set; }
+
+        public IDictionary<string, string>? Properties { get; set; }
     }
 }

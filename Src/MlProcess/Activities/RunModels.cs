@@ -76,7 +76,7 @@ namespace MlProcess.Activities
                     RequestId = journalRecord.RequestId,
                     Question = journalRecord.Question,
                     ModelName = apiOption.Name,
-                    Intents = response.Intents?.ToList(),
+                    Intents = response.Intents?.ToList() ?? response.Intent?.ToList(),
                 };
 
                 writeJournalWriter.Post(newJournal, token);

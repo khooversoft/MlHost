@@ -11,5 +11,7 @@ namespace MlHostApi.Models
         public string? Query { get; set; }
 
         public IList<Intent>? Intents { get; set; }
+
+        public IList<Intent>? Intent { get; set; }
     }
 }

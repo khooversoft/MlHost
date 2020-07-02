@@ -17,6 +17,14 @@
   </ItemGroup>
  
   <ItemGroup>
+    <None Remove="MlPackage\RunModel.mlPackage" />
+  </ItemGroup>
+ 
+  <ItemGroup>
+    <EmbeddedResource Include="MlPackage\RunModel.mlPackage" />
+  </ItemGroup>
+ 
+  <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
  
@@ -33,10 +41,6 @@
  
   <ItemGroup>
     <WCFMetadata Include="Connected Services" />
-  </ItemGroup>
- 
-  <ItemGroup>
-    <Folder Include="MlPackage\" />
   </ItemGroup>
  
 </Project>
