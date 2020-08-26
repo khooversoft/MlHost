@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Toolbox.Tools;
 
@@ -59,18 +60,44 @@ namespace MlHost.Services
 
         private void DeployPackageFromPackage()
         {
+            int fileExtractedCount = 0;
+            int totalFileCount = 0;
+
+            using Timer timer = new Timer(
+                x => _logger.LogInformation($"Extracting {fileExtractedCount} of {totalFileCount} files from package"),
+                null,
+                TimeSpan.FromSeconds(1),
+                TimeSpan.FromSeconds(1));
+
             try
             {
                 switch (_option.PackageFile.ToNullIfEmpty() != null)
                 {
                     case true:
                         _logger.LogInformation($"Deploying from {_option.PackageFile} to {_executionContext.DeploymentFolder}");
-                        ZipArchiveTools.ExtractFromZipFile(_option.PackageFile!, _executionContext.DeploymentFolder!, _executionContext.TokenSource.Token);
+                        ZipArchiveTools.ExtractFromZipFile(
+                            _option.PackageFile!,
+                            _executionContext.DeploymentFolder!,
+                            _executionContext.TokenSource.Token,
+                            x =>
+                            {
+                                fileExtractedCount = x.Count;
+                                totalFileCount = x.Total;
+                            });
                         break;
 
                     default:
                         _logger.LogInformation($"Deploying from resource to {_executionContext.DeploymentFolder}");
-                        ZipArchiveTools.ExtractZipFileFromResource(typeof(PythonHostedService), "MlHost.MlPackage.RunModel.mlPackage", _executionContext.DeploymentFolder!, _executionContext.TokenSource.Token);
+                        ZipArchiveTools.ExtractZipFileFromResource(
+                            typeof(PythonHostedService),
+                            "MlHost.MlPackage.RunModel.mlPackage",
+                            _executionContext.DeploymentFolder!,
+                            _executionContext.TokenSource.Token,
+                            x =>
+                            {
+                                fileExtractedCount = x.Count;
+                                totalFileCount = x.Total;
+                            });
                         break;
                 }
             }

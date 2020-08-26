@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Debug;
 using MlHost.Application;
 using MlHost.Services;
 using System.IO;
@@ -34,15 +35,20 @@ namespace MlHost
                 .ConfigureServices(services =>
                 {
                     services.AddSingleton(option);
+                    //services.AddApplicationInsightsTelemetry();
                 })
                 .ConfigureLogging(builder =>
                 {
-                    builder.AddFilter<Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider>("", LogLevel.Trace);
+                    //builder.AddFilter<Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider>("", LogLevel.Trace);
 
                     if (option.LogFile.ToNullIfEmpty() != null)
                     {
                         builder.AddFile(Path.GetDirectoryName(option.LogFile)!, Path.GetFileNameWithoutExtension(option.LogFile)!);
                     }
+
+                    builder.AddDebug();
+                    builder.AddFilter<DebugLoggerProvider>(x => true);
+
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

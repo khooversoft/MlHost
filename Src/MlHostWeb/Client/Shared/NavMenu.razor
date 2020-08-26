@@ -1,0 +1,58 @@
+﻿@using Services;
+@inject NavMenuService _navMenuService;
+
+<div class="top-row pl-4 navbar">
+    <a class="navbar-brand btn-link-icon" href="">
+        <img src="/Images/Scout2.png" class="img-thumbnail img-fluid program-icon" />
+        Scout
+    </a>
+
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </li>
+        <li class="nav-item">
+            <NavLink class="nav-link" href="mlmodels" Match="NavLinkMatch.All">
+                <span class="oi oi-layers" aria-hidden="true"></span> ML Models
+            </NavLink>
+            <ul class="nav flex-column">
+
+                @foreach (var item in NavMenuItems)
+                {
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href=@item.Href>
+                            <span class="oi @item.IconName" aria-hidden="true"></span> @item.Text
+                        </NavLink>
+                    </li>
+                }
+
+            </ul>
+        </li>
+        <li class="nav-item">
+            <NavLink class="nav-link" href="bots" Match="NavLinkMatch.All">
+                <span class="oi oi-fork" aria-hidden="true"></span> BOT
+            </NavLink>
+        </li>
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    private IReadOnlyList<NavMenuItem> NavMenuItems => _navMenuService.GetItems();
+}

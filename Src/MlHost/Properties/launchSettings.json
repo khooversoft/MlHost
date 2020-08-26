@@ -11,7 +11,7 @@
   "profiles": {
     "MlHost": {
       "commandName": "Project",
-      "commandLineArgs": "LogFile=d:\\work\\intent",
+      "commandLineArgs": "LogFile=d:\\work\\mlhost\\intent PackageFile=D:\\ML-Models\\v3\\intent-classifier-v3.mlPackage",
       "launchUrl": "weatherforecast",
       "environmentVariables": {
         "RunAs": "CurrentUser",

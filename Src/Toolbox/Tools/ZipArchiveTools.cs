@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Toolbox.Models;
 
 namespace Toolbox.Tools
 {
@@ -18,7 +19,7 @@ namespace Toolbox.Tools
             return toFolder;
         }
 
-        public static void ExtractFromZipFile(string zipFilePath, string toFolder, CancellationToken token)
+        public static void ExtractFromZipFile(string zipFilePath, string toFolder, CancellationToken token, Action<ZipExtractProgress>? monitor = null)
         {
             zipFilePath.VerifyNotEmpty(nameof(zipFilePath))
                 .VerifyAssert(x => File.Exists(x), $"{zipFilePath} does not exist");
@@ -26,7 +27,7 @@ namespace Toolbox.Tools
             using var stream = new FileStream(zipFilePath, FileMode.Open);
             using var zipArchive = new ZipArchive(stream, ZipArchiveMode.Read, false);
 
-            zipArchive.ExtractToFolder(toFolder, token);
+            zipArchive.ExtractToFolder(toFolder, token, monitor);
         }
 
         public static string ExtractZipFromResource(Type type, string resourceId, string folder, string fileName, CancellationToken token)
@@ -41,14 +42,14 @@ namespace Toolbox.Tools
             return filePath;
         }
 
-        public static void ExtractZipFileFromResource(Type type, string resourceId, string toFolder, CancellationToken token)
+        public static void ExtractZipFileFromResource(Type type, string resourceId, string toFolder, CancellationToken token, Action<ZipExtractProgress>? monitor = null)
         {
             using Stream packageStream = FileTools.GetResourceStream(type, resourceId);
             using var zipArchive = new ZipArchive(packageStream, ZipArchiveMode.Read, false);
-            zipArchive.ExtractToFolder(toFolder, token);
+            zipArchive.ExtractToFolder(toFolder, token, monitor);
         }
 
-        public static void ExtractToFolder(this ZipArchive zipArchive, string toFolder, CancellationToken token)
+        public static void ExtractToFolder(this ZipArchive zipArchive, string toFolder, CancellationToken token, Action<ZipExtractProgress>? monitor)
         {
             zipArchive.VerifyNotNull(nameof(zipArchive));
             toFolder.VerifyNotEmpty(nameof(toFolder));
@@ -61,9 +62,12 @@ namespace Toolbox.Tools
                 .Select(x => new FileEntry(x))
                 .ToArray();
 
+            int fileCount = 0;
             foreach (FileEntry zipFile in zipFiles)
             {
                 if (token.IsCancellationRequested) break;
+
+                monitor?.Invoke(new ZipExtractProgress(zipFiles.Length, ++fileCount));
 
                 Path.Combine(toFolder, zipFile.FilePath)
                     .Action(x => zipFile.ExtractToFile(x));

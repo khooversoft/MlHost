@@ -1,0 +1,17 @@
+﻿@page "/model/{versionId}"
+
+<DisplayMarkdown Id=@(ModelItem.DocId) />
+
+<p>**Question: @(ModelInput.Question)</p>
+<p>**Question result: @(ModelInput.Result)</p>
+
+<EditForm OnSubmit="SubmitForm" Model="ModelInput">
+    <div class="simple-form">
+        <div class="form-group">
+            <label for="question">Question</label>
+            <input @bind="ModelInput.Question" type="text" class="form-control" id="question" placeholder="Enter question for model" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</EditForm>

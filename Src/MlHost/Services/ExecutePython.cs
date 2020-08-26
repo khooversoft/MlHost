@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Toolbox.Services;
 using Toolbox.Tools;
-using Toolbox.Tools.Local;
+//using Toolbox.Tools.Local;
 
 namespace MlHost.Services
 {
@@ -20,14 +20,16 @@ namespace MlHost.Services
     internal class ExecutePython : IExecutePython
     {
         private readonly ILogger<ExecutePython> _logger;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly IOption _option;
         private readonly IExecutionContext _executionContext;
-        private SubjectScope<MonitorLocalProcess>? _monitorLocalProcess;
+        private SubjectScope<LocalProcess>? _localProcess;
         private SubjectScope<CancellationTokenSource>? _token;
 
-        public ExecutePython(ILogger<ExecutePython> logger, IOption option, IExecutionContext executionContext)
+        public ExecutePython(ILoggerFactory loggerFactory, IOption option, IExecutionContext executionContext)
         {
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<ExecutePython>();
+            _loggerFactory = loggerFactory;
             _option = option;
             _executionContext = executionContext;
         }
@@ -44,34 +46,32 @@ namespace MlHost.Services
             RegisterTimeoutAndCancelation();
             var tcs = new TaskCompletionSource<bool>();
 
-            _monitorLocalProcess = new LocalProcessBuilder()
+            _localProcess = new LocalProcessBuilder()
             {
                 ExecuteFile = "powershell.exe",
                 Arguments = $"-File {fullPath}",
                 WorkingDirectory = _executionContext.DeploymentFolder,
-            }
-            .Build(lineData =>
-            {
-                switch (lineData)
+                CaptureOutput = lineData =>
                 {
-                    case string subject when LookFor(subject, "Running on"):
-                        _logger.LogInformation($"Detected running command: {lineData}");
-                        tcs.SetResult(true);
-                        _executionContext.State = ExecutionState.Running;
-                        return MonitorState.Running;
+                    switch (lineData)
+                    {
+                        case string subject when LookFor(subject, "Running on"):
+                            _logger.LogInformation($"Detected running command: {lineData}");
+                            tcs.SetResult(true);
+                            _executionContext.State = ExecutionState.Running;
+                            break;
 
-                    case string subject when LookFor(subject, "RuntimeError", "not enough memory"):
-                        _logger.LogError($"Detected running runtime error, not enough memory, {lineData}");
-                        _executionContext.State = ExecutionState.Restarting;
-                        return MonitorState.Restart;
-
-                    default:
-                        return null;
+                        case string subject when LookFor(subject, "RuntimeError", "not enough memory"):
+                            _logger.LogError($"Detected running runtime error, not enough memory, {lineData}");
+                            _executionContext.State = ExecutionState.Failed;
+                            break;
+                    }
                 }
-            }, _logger)
+            }
+            .Build(_loggerFactory.CreateLogger<LocalProcess>())
             .ToSubjectScope();
 
-            _monitorLocalProcess.Subject.Start(_executionContext.TokenSource.Token);
+            _localProcess.Subject.Run();
 
             _logger.LogInformation("Python process is starting up");
             return tcs.Task;
@@ -81,7 +81,7 @@ namespace MlHost.Services
         {
             _logger.LogInformation("Stopping ML process");
 
-            _monitorLocalProcess?.GetAndClear()?.Stop();
+            _localProcess?.GetAndClear()?.Stop();
         }
 
         private void RegisterTimeoutAndCancelation()

@@ -34,7 +34,6 @@ namespace MlHost
             services.AddSingleton<IDeployPackage, DeployPackage>();
 
             services.AddHostedService<PythonHostedService>();
-            services.AddApplicationInsightsTelemetry();
 
             services.AddSwaggerDocument(config =>
             {
