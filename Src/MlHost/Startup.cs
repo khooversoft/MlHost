@@ -54,7 +54,7 @@ namespace MlHost
                     .AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .SetPreflightMaxAge(TimeSpan.FromSeconds(2520));
+                    .SetPreflightMaxAge(TimeSpan.FromHours(1));
             }));
         }
 

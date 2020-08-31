@@ -46,7 +46,7 @@ namespace MlHostWeb.Server
             }
 
             app.UseCors(policy =>
-                policy.WithOrigins("http://localhost:5000", "https://localhost:5001")
+                policy.WithOrigins("http://localhost:5020", "https://localhost:5021")
                 .AllowAnyMethod()
                 .WithHeaders(HeaderNames.ContentType, HeaderNames.Authorization, "x-custom-header")
                 .AllowCredentials());

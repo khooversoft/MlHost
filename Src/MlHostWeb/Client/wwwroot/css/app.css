@@ -5,7 +5,7 @@ html, body {
 }
 
 a, .btn-link {
-    color: #0366d6;
+    color: black;
 }
 
 a, .btn-link-icon {
@@ -111,6 +111,7 @@ app {
 
 .content {
     padding-top: 1.1rem;
+    position: inherit;
 }
 
 .navbar-toggler {
