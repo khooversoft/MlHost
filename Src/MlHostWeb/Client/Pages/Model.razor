@@ -2,16 +2,44 @@
 
 <DisplayMarkdown Id=@(ModelItem.DocId) />
 
-<p>**Question: @(ModelInput.Question)</p>
-<p>**Question result: @(ModelInput.Result)</p>
+<hr />
 
-<EditForm OnSubmit="SubmitForm" Model="ModelInput">
-    <div class="simple-form">
-        <div class="form-group">
-            <label for="question">Question</label>
-            <input @bind="ModelInput.Question" type="text" class="form-control" id="question" placeholder="Enter question for model" />
+<div class="mt-md-2">
+    <table class="table">
+        <tbody>
+            <tr>
+                <td class="table-col0 table-padding">Name</td>
+                <td class="table-padding">@ModelItem.Name</td>
+            </tr>
+            <tr>
+                <td class="table-col0 table-padding">Version ID</td>
+                <td class="table-padding">@ModelItem.VersionId</td>
+            </tr>
+            <tr>
+                <td class="table-col0 table-padding">Model Url</td>
+                <td class="table-padding">@ModelItem.ModelUrl</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr class="mt-md-4" />
+
+    <EditForm OnSubmit="SubmitForm" Model="ModelInput">
+        <div class="simple-form">
+            <div class="form-group">
+                <label for="question">Question</label>
+                <input @bind="ModelInput.Question" type="text" class="form-control" id="question" placeholder="Enter question for model" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <button @onclick="ShowSwagger" class="btn btn-info float-right">Swagger</button>
         </div>
+    </EditForm>
 
-        <button type="submit" class="btn btn-primary">Submit</button>
+    <hr />
+
+    <div class="editor">
+        <textarea @bind=ModelInput.Result placeholder="model result" rows="10" style="width:100%" readonly></textarea>
     </div>
-</EditForm>
+</div>
+

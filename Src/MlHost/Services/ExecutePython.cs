@@ -24,7 +24,6 @@ namespace MlHost.Services
         private readonly IOption _option;
         private readonly IExecutionContext _executionContext;
         private SubjectScope<LocalProcess>? _localProcess;
-        private SubjectScope<CancellationTokenSource>? _token;
 
         public ExecutePython(ILoggerFactory loggerFactory, IOption option, IExecutionContext executionContext)
         {
@@ -43,7 +42,6 @@ namespace MlHost.Services
 
             _logger.LogInformation($"Starting python child process, deployment folder={_executionContext.DeploymentFolder}");
 
-            RegisterTimeoutAndCancelation();
             var tcs = new TaskCompletionSource<bool>();
 
             _localProcess = new LocalProcessBuilder()
@@ -82,18 +80,6 @@ namespace MlHost.Services
             _logger.LogInformation("Stopping ML process");
 
             _localProcess?.GetAndClear()?.Stop();
-        }
-
-        private void RegisterTimeoutAndCancelation()
-        {
-            _token = CancellationTokenSource.CreateLinkedTokenSource(new CancellationTokenSource(TimeSpan.FromMinutes(5)).Token, _executionContext.TokenSource.Token)
-                .ToSubjectScope();
-
-            _token.Subject.Token.Register(() =>
-            {
-                _logger.LogInformation($"{nameof(ExecutePython)} canceled");
-                Stop();
-            });
         }
 
         private bool LookFor(string lineData, params string[] searchFor) => searchFor

@@ -1,4 +1,4 @@
-﻿namespace MlHostWeb.Client.Services
+﻿namespace MlHostWeb.Server.Services
 {
     public interface IContentService
     {

@@ -48,6 +48,7 @@ namespace MlHost
 
                     builder.AddDebug();
                     builder.AddFilter<DebugLoggerProvider>(x => true);
+                    builder.AddFilter(x => true);
 
                 })
                 .ConfigureWebHostDefaults(webBuilder =>

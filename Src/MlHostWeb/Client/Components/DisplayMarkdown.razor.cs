@@ -10,11 +10,16 @@ namespace MlHostWeb.Client.Components
     public partial class DisplayMarkdown
     {
         [Inject]
-        public IContentService ContentService { get; set; }
+        public ClientContentService ClientContentService { get; set; }
 
         [Parameter]
         public string Id { get; set; }
 
-        public string GetDocHtml() => @ContentService.GetDocHtml(Id);
+        public string Html { get; set; }
+
+        protected override async Task OnParametersSetAsync()
+        {
+            Html = await ClientContentService.GetDocHtml(Id);
+        }
     }
 }

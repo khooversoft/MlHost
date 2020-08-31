@@ -80,7 +80,7 @@ namespace Toolbox.Tools
 
             _logger.LogInformation($"Stopping {ExecuteFile}");
 
-            try { _process?.Kill(true); } catch { }
+            try { _process?.Kill(); } catch { }
             try { _process?.Close(); } catch { }
 
             _process = null;

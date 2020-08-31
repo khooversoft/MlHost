@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace MlHostWeb.Client.Services
+namespace MlHostWeb.Server.Services
 {
     public class ContentService : IContentService
     {
@@ -24,7 +24,7 @@ namespace MlHostWeb.Client.Services
 
         private string AddResource(string id)
         {
-            string path = $"MlHostWeb.Client.Application.Data.{id}";
+            string path = $"MlHostWeb.Server.Application.Data.{id}";
 
             using Stream resource = Assembly.GetAssembly(typeof(ContentService)).GetManifestResourceStream(path);
             if (resource == null) throw new ArgumentException($"Cannot find doc {id}");

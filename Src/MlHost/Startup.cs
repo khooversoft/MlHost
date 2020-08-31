@@ -7,12 +7,15 @@ using Microsoft.Extensions.Logging;
 using MlHost.Services;
 using MlHost.Tools;
 using NSwag;
+using System;
 using Toolbox.Services;
 
 namespace MlHost
 {
     public class Startup
     {
+        const string _policyName = "defaultPolicy";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -44,7 +47,17 @@ namespace MlHost
                     document.Schemes = new[] { OpenApiSchema.Http | OpenApiSchema.Https };
                 };
             });
+
+            services.AddCors(x => x.AddPolicy(_policyName, builder =>
+            {
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .SetPreflightMaxAge(TimeSpan.FromSeconds(2520));
+            }));
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
@@ -55,13 +68,13 @@ namespace MlHost
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseHttpsRedirection();
-            }
+            //else
+            //{
+            //    app.UseHttpsRedirection();
+            //}
 
             app.UseRouting();
-
+            app.UseCors(_policyName);
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => endpoints.MapControllers());

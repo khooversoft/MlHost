@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MlHostWeb.Client.Services;
+using Toolbox.Services;
+using MlHostWeb.Client.Application;
 
 namespace MlHostWeb.Client
 {
@@ -18,8 +20,9 @@ namespace MlHostWeb.Client
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
             builder.Services.AddSingleton<NavMenuService>();
-            builder.Services.AddSingleton<IContentService, ContentService>();
-            builder.Services.AddSingleton<IModelService, ModelService>();
+            builder.Services.AddScoped<ClientContentService>();
+            builder.Services.AddScoped<ModelConfiguration>();
+            builder.Services.AddSingleton<IJson, Json>();
 
             builder.RootComponents.Add<App>("app");
 

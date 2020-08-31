@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
+using Microsoft.Net.Http.Headers;
+using MlHostWeb.Server.Services;
 
 namespace MlHostWeb.Server
 {
@@ -22,9 +24,10 @@ namespace MlHostWeb.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddSingleton<IContentService, ContentService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,6 +44,12 @@ namespace MlHostWeb.Server
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseCors(policy =>
+                policy.WithOrigins("http://localhost:5000", "https://localhost:5001")
+                .AllowAnyMethod()
+                .WithHeaders(HeaderNames.ContentType, HeaderNames.Authorization, "x-custom-header")
+                .AllowCredentials());
 
             app.UseHttpsRedirection();
             app.UseBlazorFrameworkFiles();

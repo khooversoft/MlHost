@@ -1,10 +1,31 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Application\Data\BOT.md" />
+    <None Remove="Application\Data\Emotion.md" />
+    <None Remove="Application\Data\Home.md" />
+    <None Remove="Application\Data\IdCard.md" />
+    <None Remove="Application\Data\Intent.md" />
+    <None Remove="Application\Data\MlModel.md" />
+    <None Remove="Application\Data\Sentiment.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Application\Data\BOT.md" />
+    <EmbeddedResource Include="Application\Data\Emotion.md" />
+    <EmbeddedResource Include="Application\Data\Home.md" />
+    <EmbeddedResource Include="Application\Data\IdCard.md" />
+    <EmbeddedResource Include="Application\Data\Intent.md" />
+    <EmbeddedResource Include="Application\Data\MlModel.md" />
+    <EmbeddedResource Include="Application\Data\Sentiment.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Markdig" Version="0.21.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="3.2.1" />
   </ItemGroup>
 

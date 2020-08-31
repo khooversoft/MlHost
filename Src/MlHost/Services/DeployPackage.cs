@@ -66,8 +66,8 @@ namespace MlHost.Services
             using Timer timer = new Timer(
                 x => _logger.LogInformation($"Extracting {fileExtractedCount} of {totalFileCount} files from package"),
                 null,
-                TimeSpan.FromSeconds(1),
-                TimeSpan.FromSeconds(1));
+                TimeSpan.FromSeconds(5),
+                TimeSpan.FromSeconds(5));
 
             try
             {

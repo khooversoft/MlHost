@@ -1,4 +1,4 @@
-@page "/fetchdata"
+@*@page "/fetchdata"
 @using MlHostWeb.Shared
 @inject HttpClient Http
 
@@ -43,4 +43,4 @@ else
         forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
     }
 
-}
+}*@

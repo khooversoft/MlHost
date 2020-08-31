@@ -1,3 +1,10 @@
-﻿<div>
-    <p>@((MarkupString)GetDocHtml())</p>
-</div>
+﻿@if (Html == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div>
+        <p>@((MarkupString)Html)</p>
+    </div>
+}
