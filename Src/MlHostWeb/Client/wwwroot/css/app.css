@@ -4,17 +4,54 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-a, .btn-link {
+a {
     color: black;
+    text-decoration: none;
+    background-color: transparent;
 }
 
-a, .btn-link-icon {
+    a:hover {
+        color: #0056b3;
+        text-decoration: none;
+    }
+
+.btn-link-icon {
+    font-weight: 500;
+    color: White;
+}
+
+a.btn-link-icon:hover {
+    font-weight: 600;
+    color: White;
+}
+
+/*.btn-link-icon {
     color: White;
 }
 
     .btn-link-icon a:hover {
         color: black;
+    }*/
+
+/*a, .btn-link {
+    color: black;
+}
+
+    .btn-link a:hover {
+        color: black;
+        font-weight: 600;
     }
+*/
+
+.nav-link-menu {
+    color: black;
+}
+
+a.nav-link-menu:hover {
+    color: #0056b3 !important;
+    background-color: #F4F4F4;
+    border-radius: 5px;
+}
 
 .btn-primary {
     color: #fff;

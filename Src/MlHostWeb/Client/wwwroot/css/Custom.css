@@ -28,3 +28,14 @@ td {
     font-size: 0.9rem;
     border: 0 !important;
 }
+
+.page-title {
+    font-weight: 600;
+    line-height: 1.2;
+    font-size: 1.75rem;
+}
+
+.page-subTitle {
+    font-size: .7rem;
+    font-weight: 500;
+}

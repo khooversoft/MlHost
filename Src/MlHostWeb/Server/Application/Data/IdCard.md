@@ -1,6 +1,5 @@
-﻿### ID Card
+﻿The ID Card model is a highly specialized model, designed to help understand user's ask for ID Card.
 
-ID Card model is a highly specialized model, designed to help understand user's ask for ID Card.
 
 #### Fine Tuned Model for Premera
 ID Card model serves to demonstrate how we can chain models together.

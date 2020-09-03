@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MlHostWeb.Client.Services
+namespace MlHostWeb.Client.Application.Menu
 {
-    public class NavMenuItem
+    public class MenuButton : IMenuItem
     {
-        public NavMenuItem(string text, string href, string iconName)
+        public MenuButton(string text, Func<Task> onClick, string iconName)
         {
             Text = text;
-            Href = href;
+            OnClick = onClick;
             IconName = iconName;
         }
 
         public string Text { get; }
-        public string Href { get; }
+        public Func<Task> OnClick { get; }
         public string IconName { get; }
     }
 }

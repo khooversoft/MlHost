@@ -1,0 +1,24 @@
+﻿@page "/details/{versionId}"
+
+<PageHeader VersionId="@VersionId" />
+
+<PageMenu VersionId="@VersionId" />
+
+<div class="mt-md-2">
+    <table class="table">
+        <tbody>
+            <tr>
+                <td class="table-col0 table-padding">Name</td>
+                <td class="table-padding">@ModelItem.Name</td>
+            </tr>
+            <tr>
+                <td class="table-col0 table-padding">Version ID</td>
+                <td class="table-padding">@ModelItem.VersionId</td>
+            </tr>
+            <tr>
+                <td class="table-col0 table-padding">Model Url</td>
+                <td class="table-padding">@ModelItem.ModelUrl</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

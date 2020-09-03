@@ -17,15 +17,9 @@ namespace MlHostWeb.Client.Services
         private readonly HttpClient _httpClient;
         private Guid _instance = Guid.NewGuid();
 
-        public ModelConfiguration(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
+        public ModelConfiguration(HttpClient httpClient) => _httpClient = httpClient;
 
-        public async Task Initialize()
-        {
-            _configuration ??= (await _httpClient.GetFromJsonAsync<Configuration>("api/config"));
-        }
+        public async Task Initialize() => _configuration ??= (await _httpClient.GetFromJsonAsync<Configuration>("api/config"));
 
         public ModelItem GetModel(string versionId)
         {

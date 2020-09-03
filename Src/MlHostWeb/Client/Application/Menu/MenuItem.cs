@@ -7,7 +7,25 @@ namespace MlHostWeb.Client.Application.Menu
 {
     public class MenuItem : IMenuItem
     {
-        public string Text { get; set; }
-        public string Href { get; set; }
+        public MenuItem(string text, string href, string iconName)
+        {
+            Text = text;
+            Href = href;
+            IconName = iconName;
+        }
+
+        public MenuItem(string text, string iconName, string href, MenuItem[] children)
+        {
+            Text = text;
+            Href = href;
+            IconName = iconName;
+            Children = children;
+        }
+
+        public string Text { get; }
+        public string Href { get; }
+        public string IconName { get; }
+
+        public MenuItem[] Children { get; set; }
     }
 }

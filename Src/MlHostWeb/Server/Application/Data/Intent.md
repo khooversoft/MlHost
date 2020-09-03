@@ -1,12 +1,9 @@
-﻿### Intent
+﻿The General NLP Intent model designed to understand user's general ask.
 
-General natural language process Intent model designed to understand user's general ask.
 
 #### General Intent Models
 Intent classification is a subset of a larger capability, known as categorical classification. Within DCX we are referring to the
 classification of language.
-
-
 
 
 #### Fine Tuned Model for Premera

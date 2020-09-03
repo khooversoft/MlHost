@@ -1,6 +1,5 @@
-﻿### Sentiment
+﻿The NLP Model to understand user's sentiment.
 
-NLP Model to understand user's sentiment.
 
 #### General Sentiment Models
 Examine an utterance and return a binary 0 or 1, 0 = negative, 1 = positive

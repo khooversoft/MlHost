@@ -1,6 +1,4 @@
-﻿### Emotion
-
-Emotion NLP model is designed help understand the user's emotional signals.
+﻿The Emotion NLP model is designed help understand the user's emotional signals.
 
 Emotion detection is the spiritual successor to sentiment analysis.
 

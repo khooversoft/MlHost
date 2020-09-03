@@ -2,23 +2,4 @@
 @using MlHostWeb.Client.Services;
 @inject ModelConfiguration ModelConfiguration;
 
-@if (loaded == false)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <DisplayMarkdown Id="Home.md" />
-}
-
-
-@code {
-    private bool loaded = false;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await ModelConfiguration.Initialize();
-
-        loaded = true;
-    }
-}
+<DisplayMarkdown Id="Home.md" />

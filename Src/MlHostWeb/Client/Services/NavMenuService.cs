@@ -1,4 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using MlHostWeb.Client.Application;
+using MlHostWeb.Client.Application.Menu;
+using MlHostWeb.Client.Application.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +13,23 @@ namespace MlHostWeb.Client.Services
     {
         public NavMenuService() { }
 
-        public IReadOnlyList<NavMenuItem> GetItems() => new[]
+        public IReadOnlyList<MenuItem> GetLeftMenuItems() => new[]
         {
-            //new NavMenuItem("Models", "models", "oi-layers"),
-            new NavMenuItem("Intent", "model/intent-v1", "oi-list-rich"),
-            new NavMenuItem("Emotion", "model/emotion-v2", "oi-list-rich"),
-            new NavMenuItem("Sentiment", "model/sentiment-v2", "oi-list-rich"),
-            new NavMenuItem("ID Card", "model/idcard-v1", "oi-list-rich"),
+            new MenuItem("Home", string.Empty, "oi-home"),
+
+            new MenuItem("ML Models", "oi-layers", "mlmodels", new []
+            {
+                new MenuItem("Intent", "model/intent-v1", "oi-list-rich"),
+                new MenuItem("Emotion", "model/emotion-v2", "oi-list-rich"),
+                new MenuItem("Sentiment", "model/sentiment-v2", "oi-list-rich"),
+                new MenuItem("ID Card", "model/idcard-v1", "oi-list-rich"),
+            }),
+
+            new MenuItem("BOT", string.Empty, "oi-fork"),
         };
+
+        //public IReadOnlyList<BreadcrumbItem> BreadcrumbItems { get; set; }
+
+        public IReadOnlyList<IMenuItem> PageMenuItems { get; set; }
     }
 }

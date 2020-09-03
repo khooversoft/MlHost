@@ -19,16 +19,20 @@ namespace MlHostWeb.Client
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-            builder.Services.AddSingleton<NavMenuService>();
-            builder.Services.AddScoped<ClientContentService>();
-            builder.Services.AddScoped<ModelConfiguration>();
+            builder.Services.AddScoped<NavMenuService>();
+            builder.Services.AddSingleton<ClientContentService>();
+            builder.Services.AddSingleton<ModelConfiguration>();
             builder.Services.AddSingleton<IJson, Json>();
+            builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
             builder.RootComponents.Add<App>("app");
 
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            var host = builder.Build();
 
-            await builder.Build().RunAsync();
+            ModelConfiguration modelConfiguration = host.Services.GetRequiredService<ModelConfiguration>();
+            await modelConfiguration.Initialize();
+
+            await host.RunAsync();
         }
     }
 }

@@ -18,4 +18,10 @@
     <ProjectReference Include="..\Shared\MlHostWeb.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Components\Breadcrumb - Copy.razor.cs">
+      <DependentUpon>Breadcrumb.razor.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,40 @@
+﻿@using MlHostWeb.Client.Services;
+@using MlHostWeb.Client.Application.Menu;
+@inject NavMenuService _navMenuService
+
+<div class="row m-1">
+    @foreach (var menuItem in _navMenuService.PageMenuItems)
+    {
+        switch (menuItem)
+        {
+            case MenuItem item:
+                <NavLink class="nav-link nav-link-menu float-right" href=@item.Href>
+                    <span class="oi @item.IconName"></span> @item.Text
+                </NavLink>
+                break;
+
+            case MenuButton button:
+                <NavLink @onclick=@button.OnClick class="nav-link nav-link-menu float-right">
+                    <span class="oi @button.IconName"></span> @button.Text
+                </NavLink>
+                break;
+
+            case MenuDivider divider:
+                <div class="nav-item border-left m-1 border-secondary float-right"></div>
+                break;
+        }
+    }
+</div>
+<div class="border-bottom mb-4">
+</div>
+
+
+@code {
+    [Parameter]
+    public string VersionId { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+    }
+}

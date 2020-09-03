@@ -1,4 +1,5 @@
 ﻿@using Services;
+@using MlHostWeb.Client.Application.Menu;
 @inject NavMenuService _navMenuService;
 
 <div class="top-row pl-4 navbar">
@@ -8,39 +9,35 @@
     </a>
 
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
-        <span class="navbar-toggler-icon"></span>
+        <span class="oi oi-menu"></span>
+        @*<span class="navbar-toggler-icon"></span>*@
     </button>
 </div>
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <ul class="nav flex-column">
-        <li class="nav-item">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </li>
-        <li class="nav-item">
-            <NavLink class="nav-link" href="mlmodels" Match="NavLinkMatch.All">
-                <span class="oi oi-layers" aria-hidden="true"></span> ML Models
-            </NavLink>
-            <ul class="nav flex-column">
+        @foreach (var item in NavMenuItems)
+        {
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href=@item.Href Match="NavLinkMatch.All">
+                    <span class="oi @item.IconName" aria-hidden="true"></span> @item.Text
+                </NavLink>
 
-                @foreach (var item in NavMenuItems)
+                @if (item.Children != null)
                 {
-                    <li class="nav-item px-3">
-                        <NavLink class="nav-link" href=@item.Href>
-                            <span class="oi @item.IconName" aria-hidden="true"></span> @item.Text
-                        </NavLink>
-                    </li>
+                    <ul class="nav flex-column">
+                        @foreach (var childItem in item.Children)
+                        {
+                            <li class="nav-item px-3">
+                                <NavLink class="nav-link" href=@childItem.Href>
+                                    <span class="oi @childItem.IconName" aria-hidden="true"></span> @childItem.Text
+                                </NavLink>
+                            </li>
+                        }
+                    </ul>
                 }
-
-            </ul>
-        </li>
-        <li class="nav-item">
-            <NavLink class="nav-link" href="bots" Match="NavLinkMatch.All">
-                <span class="oi oi-fork" aria-hidden="true"></span> BOT
-            </NavLink>
-        </li>
+            </li>
+        }
     </ul>
 </div>
 
@@ -54,5 +51,5 @@
         collapseNavMenu = !collapseNavMenu;
     }
 
-    private IReadOnlyList<NavMenuItem> NavMenuItems => _navMenuService.GetItems();
+    private IReadOnlyList<MenuItem> NavMenuItems => _navMenuService.GetLeftMenuItems();
 }
