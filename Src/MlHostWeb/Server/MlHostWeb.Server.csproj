@@ -9,6 +9,7 @@
     <None Remove="Application\Data\Emotion.md" />
     <None Remove="Application\Data\Home.md" />
     <None Remove="Application\Data\IdCard.md" />
+    <None Remove="Application\Data\Intent.details.md" />
     <None Remove="Application\Data\Intent.md" />
     <None Remove="Application\Data\MlModel.md" />
     <None Remove="Application\Data\Sentiment.md" />
@@ -19,6 +20,7 @@
     <EmbeddedResource Include="Application\Data\Emotion.md" />
     <EmbeddedResource Include="Application\Data\Home.md" />
     <EmbeddedResource Include="Application\Data\IdCard.md" />
+    <EmbeddedResource Include="Application\Data\Intent.details.md" />
     <EmbeddedResource Include="Application\Data\Intent.md" />
     <EmbeddedResource Include="Application\Data\MlModel.md" />
     <EmbeddedResource Include="Application\Data\Sentiment.md" />

@@ -1,8 +1,10 @@
 ﻿@page "/tryit/{versionId}"
 
+@using MlHostWeb.Client.Application;
+
 <PageHeader VersionId="@VersionId" />
 
-<PageMenu VersionId="@VersionId" />
+<ModelPageMenu VersionId="@VersionId" PageId=@Constants.Pages.TryIt />
 
 <div class="mt-md-2">
     <EditForm OnSubmit="SubmitForm" Model="ModelInput">
@@ -12,13 +14,22 @@
                 <input @bind="ModelInput.Question" type="text" class="form-control" id="question" placeholder="Enter question for model" />
             </div>
 
-            <button type="submit" class="btn btn-primary">Submit</button>
+            @if (IsExecuting)
+            {
+                <button class="btn btn-success disabled" disabled>
+                    <span class="spinner-border" style="width: 1.5rem; height: 1.5rem;" role="status"></span>&nbsp; Executing...
+                </button>
+            }
+            else
+            {
+                <button type="submit" class="btn btn-success">Submit</button>
+            }
         </div>
     </EditForm>
 
     <hr />
 
     <div class="editor">
-        <textarea @bind=ModelInput.Result placeholder="model result" rows="10" style="width:100%" readonly></textarea>
+        <textarea @bind=ModelInput.Result placeholder="model result" rows="20" style="width:100%" readonly></textarea>
     </div>
 </div>

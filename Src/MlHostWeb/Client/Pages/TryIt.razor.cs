@@ -37,21 +37,12 @@ namespace MlHostWeb.Client.Pages
 
         public ModelQuestion ModelInput { get; set; } = new ModelQuestion();
 
+        public bool IsExecuting { get; set; }
+
 
         protected override void OnParametersSet()
         {
             ModelItem = ModelConfiguration.GetModel(VersionId);
-
-            //NavMenuService.BreadcrumbItems = new[] { new BreadcrumbItem { Text = ModelItem.Name, Href = $"model/{VersionId}" } };
-
-            NavMenuService.PageMenuItems = new IMenuItem[]
-            {
-                new MenuItem("Overview", $"model/{VersionId}", "oi-list-rich"),
-                new MenuItem("Details", $"details/{VersionId}", "oi-list"),
-                new MenuDivider(),
-                new MenuButton("Swagger", async () => await ShowSwagger(), "oi-code"),
-            };
-
             base.OnParametersSet();
         }
 
@@ -62,26 +53,26 @@ namespace MlHostWeb.Client.Pages
 
         protected async Task SubmitForm()
         {
-            Console.WriteLine($"{nameof(Model)}:{nameof(SubmitForm)} - ModelItem={(ModelItem != null ? "OK (notNull)" : "null")}");
-
             var request = new ModelRequest
             {
                 Sentence = ModelInput.Question,
             };
 
-            Console.WriteLine($"Question: {ModelInput.Question}");
-
             try
             {
+                IsExecuting = true;
+                StateHasChanged();
+
                 HttpResponseMessage httpResponseMessage = await Http.PostAsJsonAsync(ModelItem.ModelUrl, request);
+
+                string contentJson = await httpResponseMessage.Content.ReadAsStringAsync();
 
                 if (httpResponseMessage.StatusCode != System.Net.HttpStatusCode.OK)
                 {
-                    ModelInput.Result = $"Returned StatusCode={httpResponseMessage.StatusCode}";
+                    ModelInput.Result = $"Returned StatusCode={httpResponseMessage.StatusCode}, content={contentJson}";
                     return;
                 }
 
-                string contentJson = await httpResponseMessage.Content.ReadAsStringAsync();
                 PredictResponse predictResponse = Json.Deserialize<PredictResponse>(contentJson);
 
                 ModelInput.Result = Json.SerializeWithIndent(predictResponse);
@@ -90,6 +81,11 @@ namespace MlHostWeb.Client.Pages
             {
                 ModelInput.Result = $"Cannot connect to {ModelItem.ModelUrl}";
                 return;
+            }
+            finally
+            {
+                IsExecuting = false;
+                StateHasChanged();
             }
         }
 

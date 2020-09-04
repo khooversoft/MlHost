@@ -7,5 +7,6 @@ namespace MlHostWeb.Client.Application.Menu
 {
     public interface IMenuItem
     {
+        public bool Enabled { get; }
     }
 }

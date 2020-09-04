@@ -1,0 +1,50 @@
+﻿@using MlHostWeb.Shared;
+@using MlHostWeb.Client.Application.Menu;
+@using MlHostWeb.Client.Services;
+@using MlHostWeb.Client.Application;
+
+@inject IJSRuntime _jsRuntime;
+@inject ModelConfiguration _modelConfiguration;
+
+<PageMenu VersionId="@VersionId" MenuCollection="@MenuCollection" />
+
+@code {
+    [Parameter]
+    public string VersionId { get; set; }
+
+    [Parameter]
+    public string PageId { get; set; }
+
+    public MenuCollection MenuCollection { get; set; }
+
+    private ModelItem ModelItem { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        ModelItem = _modelConfiguration.GetModel(VersionId);
+
+        MenuCollection = new MenuCollection()
+    {
+            new MenuItem("Overview", $"model/{VersionId}", "oi-list-rich", !IsOverview),
+            new MenuItem("Try It", $"tryit/{VersionId}", "oi-aperture", !IsTryIt),
+            new MenuItem("Details", $"details/{VersionId}", "oi-list", !IsDetails),
+            new MenuDivider(),
+            new MenuButton("Swagger", async () => await ShowSwagger(), "oi-code", true),
+            new MenuItem("Logs", $"modellogs/{VersionId}", "oi-excerpt", !IsModelLogs),
+        };
+
+        base.OnParametersSet();
+    }
+
+    private async Task ShowSwagger()
+    {
+        await _jsRuntime.InvokeAsync<object>("open", ModelItem.SwaggerUrl, "_blank");
+    }
+}
+
+@code {
+    private bool IsOverview => PageId == Constants.Pages.Model;
+    private bool IsTryIt => PageId == Constants.Pages.TryIt;
+    private bool IsDetails => PageId == Constants.Pages.Details;
+    private bool IsModelLogs => PageId == Constants.Pages.ModelLogs;
+}

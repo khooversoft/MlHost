@@ -25,31 +25,13 @@ a.btn-link-icon:hover {
     color: White;
 }
 
-/*.btn-link-icon {
-    color: White;
-}
-
-    .btn-link-icon a:hover {
-        color: black;
-    }*/
-
-/*a, .btn-link {
-    color: black;
-}
-
-    .btn-link a:hover {
-        color: black;
-        font-weight: 600;
-    }
-*/
-
 .nav-link-menu {
     color: black;
 }
 
 a.nav-link-menu:hover {
     color: #0056b3 !important;
-    background-color: #F4F4F4;
+    background-color: #D1D1D1;
     border-radius: 5px;
 }
 

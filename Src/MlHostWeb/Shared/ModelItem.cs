@@ -14,5 +14,7 @@ namespace MlHostWeb.Shared
         public string ModelUrl { get; set; }
         public string SwaggerUrl { get; set; }
         public string DocId { get; set; }
+        public string DetailDocId { get; set; }
+        public string LogUrl { get; set; }
     }
 }

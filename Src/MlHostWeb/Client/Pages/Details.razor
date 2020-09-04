@@ -1,8 +1,14 @@
 ﻿@page "/details/{versionId}"
 
+@using MlHostWeb.Shared;
+@using MlHostWeb.Client.Services;
+@using MlHostWeb.Client.Application;
+
+@inject ModelConfiguration _modelConfiguration;
+
 <PageHeader VersionId="@VersionId" />
 
-<PageMenu VersionId="@VersionId" />
+<ModelPageMenu VersionId="@VersionId" PageId=@Constants.Pages.Details />
 
 <div class="mt-md-2">
     <table class="table">
@@ -22,3 +28,24 @@
         </tbody>
     </table>
 </div>
+
+@if (ModelItem.DetailDocId != null)
+{
+    <div class="border-top pt-3">
+        <DisplayMarkdown Id=@(ModelItem.DetailDocId) />
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public string VersionId { get; set; }
+
+    private ModelItem ModelItem { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        ModelItem = _modelConfiguration.GetModel(VersionId);
+        base.OnParametersSet();
+    }
+}

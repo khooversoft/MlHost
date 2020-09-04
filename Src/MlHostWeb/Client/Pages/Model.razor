@@ -1,49 +1,27 @@
 ﻿@page "/model/{versionId}"
 
+@using MlHostWeb.Shared;
+@using MlHostWeb.Client.Services;
+@using MlHostWeb.Client.Application; 
+
+@inject ModelConfiguration _modelConfiguration;
+
 <PageHeader VersionId="@VersionId" />
 
-<PageMenu VersionId="@VersionId" />
+<ModelPageMenu VersionId="@VersionId" PageId=@Constants.Pages.Model />
 
 <DisplayMarkdown Id=@(ModelItem.DocId) />
 
-@*<hr />
 
-<div class="mt-md-2">
-    <table class="table">
-        <tbody>
-            <tr>
-                <td class="table-col0 table-padding">Name</td>
-                <td class="table-padding">@ModelItem.Name</td>
-            </tr>
-            <tr>
-                <td class="table-col0 table-padding">Version ID</td>
-                <td class="table-padding">@ModelItem.VersionId</td>
-            </tr>
-            <tr>
-                <td class="table-col0 table-padding">Model Url</td>
-                <td class="table-padding">@ModelItem.ModelUrl</td>
-            </tr>
-        </tbody>
-    </table>
+@code {
+    [Parameter]
+    public string VersionId { get; set; }
 
-    <hr class="mt-md-4" />
+    private ModelItem ModelItem { get; set; }
 
-    <EditForm OnSubmit="SubmitForm" Model="ModelInput">
-        <div class="simple-form">
-            <div class="form-group">
-                <label for="question">Question</label>
-                <input @bind="ModelInput.Question" type="text" class="form-control" id="question" placeholder="Enter question for model" />
-            </div>
-
-            <button type="submit" class="btn btn-primary">Submit</button>
-            <button @onclick="ShowSwagger" class="btn btn-info float-right">Swagger</button>
-        </div>
-    </EditForm>
-
-    <hr />
-
-    <div class="editor">
-        <textarea @bind=ModelInput.Result placeholder="model result" rows="10" style="width:100%" readonly></textarea>
-    </div>
-</div>*@
-
+    protected override void OnParametersSet()
+    {
+        ModelItem = _modelConfiguration.GetModel(VersionId);
+        base.OnParametersSet();
+    }
+}

@@ -15,21 +15,17 @@ namespace MlHostWeb.Client.Services
 
         public IReadOnlyList<MenuItem> GetLeftMenuItems() => new[]
         {
-            new MenuItem("Home", string.Empty, "oi-home"),
+            new MenuItem("Home", string.Empty, "oi-home", true),
 
             new MenuItem("ML Models", "oi-layers", "mlmodels", new []
             {
-                new MenuItem("Intent", "model/intent-v1", "oi-list-rich"),
-                new MenuItem("Emotion", "model/emotion-v2", "oi-list-rich"),
-                new MenuItem("Sentiment", "model/sentiment-v2", "oi-list-rich"),
-                new MenuItem("ID Card", "model/idcard-v1", "oi-list-rich"),
+                new MenuItem("Intent", "model/intent-v1", "oi-list-rich", true),
+                new MenuItem("Emotion", "model/emotion-v2", "oi-list-rich", true),
+                new MenuItem("Sentiment", "model/sentiment-v2", "oi-list-rich", true),
+                new MenuItem("ID Card", "model/idcard-v1", "oi-list-rich", true),
             }),
 
-            new MenuItem("BOT", string.Empty, "oi-fork"),
+            new MenuItem("BOT", string.Empty, "oi-fork", true),
         };
-
-        //public IReadOnlyList<BreadcrumbItem> BreadcrumbItems { get; set; }
-
-        public IReadOnlyList<IMenuItem> PageMenuItems { get; set; }
     }
 }

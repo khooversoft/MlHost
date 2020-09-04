@@ -35,6 +35,8 @@ namespace MlHostWeb.Server.Controllers
                         ModelUrl = "http://localhost:5000/api/question",
                         SwaggerUrl = "http://localhost:5000/swagger",
                         DocId = "Intent.md",
+                        DetailDocId = "Intent.details.md",
+                        LogUrl = "http://localhost:5000/api/ping/logs",
                     },
                     new ModelItem
                     {
@@ -43,6 +45,7 @@ namespace MlHostWeb.Server.Controllers
                         ModelUrl = "http://localhost:5000/api/question",
                         SwaggerUrl = "http://localhost:5000/swagger",
                         DocId = "Emotion.md",
+                        LogUrl = "http://localhost:5000/api/ping/logs",
                     },
                     new ModelItem
                     {
@@ -51,6 +54,7 @@ namespace MlHostWeb.Server.Controllers
                         ModelUrl = "http://localhost:5000/api/question",
                         SwaggerUrl = "http://localhost:5000/swagger",
                         DocId = "IdCard.md",
+                        LogUrl = "http://localhost:5000/api/ping/logs",
                     },
                     new ModelItem
                     {
@@ -59,6 +63,7 @@ namespace MlHostWeb.Server.Controllers
                         ModelUrl = "http://localhost:5000/api/question",
                         SwaggerUrl = "http://localhost:5000/swagger",
                         DocId = "Sentiment.md",
+                        LogUrl = "http://localhost:5000/api/ping/logs",
                     },
                 }
             };

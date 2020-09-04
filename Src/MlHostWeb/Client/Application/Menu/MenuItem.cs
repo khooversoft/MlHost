@@ -7,11 +7,12 @@ namespace MlHostWeb.Client.Application.Menu
 {
     public class MenuItem : IMenuItem
     {
-        public MenuItem(string text, string href, string iconName)
+        public MenuItem(string text, string href, string iconName, bool enabled)
         {
             Text = text;
             Href = href;
             IconName = iconName;
+            Enabled = enabled;
         }
 
         public MenuItem(string text, string iconName, string href, MenuItem[] children)
@@ -19,12 +20,15 @@ namespace MlHostWeb.Client.Application.Menu
             Text = text;
             Href = href;
             IconName = iconName;
+            Enabled = true;
+
             Children = children;
         }
 
         public string Text { get; }
         public string Href { get; }
         public string IconName { get; }
+        public bool Enabled { get; }
 
         public MenuItem[] Children { get; set; }
     }

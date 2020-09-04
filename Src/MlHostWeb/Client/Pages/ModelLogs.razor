@@ -1,0 +1,26 @@
+﻿@page "/modellogs/{versionId}"
+
+@using MlHostWeb.Client.Application;
+
+<PageHeader VersionId="@VersionId" />
+
+<ModelPageMenu VersionId="@VersionId" PageId=@Constants.Pages.ModelLogs />
+
+<div class="mt-md-2">
+    @if (IsExecuting)
+    {
+        <button class="btn btn-success disabled" disabled>
+            <span class="spinner-border" style="width: 1.5rem; height: 1.5rem;" role="status"></span>&nbsp; Executing...
+        </button>
+    }
+    else
+    {
+        <button @onclick="GetLogs" class="btn btn-success">Refresh</button>
+    }
+
+    <hr />
+
+    <div class="editor">
+        <textarea @bind=Result placeholder="model result" rows="20" style="width:100%" readonly></textarea>
+    </div>
+</div>

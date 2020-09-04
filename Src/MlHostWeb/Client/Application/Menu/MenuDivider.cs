@@ -7,5 +7,6 @@ namespace MlHostWeb.Client.Application.Menu
 {
     public class MenuDivider : IMenuItem
     {
+        public bool Enabled => true;
     }
 }
