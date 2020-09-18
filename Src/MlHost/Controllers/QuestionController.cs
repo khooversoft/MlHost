@@ -19,15 +19,13 @@ namespace MlHost.Controllers
         private readonly ILogger<QuestionController> _logger;
         private readonly IQuestion _question;
         private readonly IExecutionContext _executionContext;
-        private readonly IOption _option;
         private readonly IJson _json;
 
-        public QuestionController(ILogger<QuestionController> logger, IQuestion question, IExecutionContext executionContext, IOption option, IJson json)
+        public QuestionController(ILogger<QuestionController> logger, IQuestion question, IExecutionContext executionContext, IJson json)
         {
             _logger = logger;
             _question = question;
             _executionContext = executionContext;
-            _option = option;
             _json = json;
         }
 

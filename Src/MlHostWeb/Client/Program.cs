@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using MlHostWeb.Client.Services;
 using Toolbox.Services;
 using MlHostWeb.Client.Application;
+using Radzen;
 
 namespace MlHostWeb.Client
 {
@@ -24,6 +25,10 @@ namespace MlHostWeb.Client
             builder.Services.AddSingleton<ModelConfiguration>();
             builder.Services.AddSingleton<IJson, Json>();
             builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+            builder.Services.AddScoped<DialogService>();
+            builder.Services.AddScoped<NotificationService>();
+            builder.Services.AddScoped<TooltipService>();
 
             builder.RootComponents.Add<App>("app");
 

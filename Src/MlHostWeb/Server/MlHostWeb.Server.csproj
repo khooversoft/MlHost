@@ -1,10 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
+    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Configs\dev-config.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Application\Data\About.md" />
     <None Remove="Application\Data\BOT.md" />
     <None Remove="Application\Data\Emotion.md" />
     <None Remove="Application\Data\Home.md" />
@@ -18,12 +25,14 @@
   <ItemGroup>
     <EmbeddedResource Include="Application\Data\BOT.md" />
     <EmbeddedResource Include="Application\Data\Emotion.md" />
+    <EmbeddedResource Include="Application\Data\About.md" />
     <EmbeddedResource Include="Application\Data\Home.md" />
     <EmbeddedResource Include="Application\Data\IdCard.md" />
     <EmbeddedResource Include="Application\Data\Intent.details.md" />
     <EmbeddedResource Include="Application\Data\Intent.md" />
     <EmbeddedResource Include="Application\Data\MlModel.md" />
     <EmbeddedResource Include="Application\Data\Sentiment.md" />
+    <EmbeddedResource Include="Configs\dev-config.json" />
   </ItemGroup>
 
   <ItemGroup>

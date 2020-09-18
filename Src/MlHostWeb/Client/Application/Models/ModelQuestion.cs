@@ -10,6 +10,5 @@ namespace MlHostWeb.Client.Application.Models
     {
         [Required]
         public string Question { get; set; }
-        public string Result { get; set; }
     }
 }

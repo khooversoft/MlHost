@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace MlHostApi.Models
@@ -13,5 +14,15 @@ namespace MlHostApi.Models
         public IList<Intent>? Intents { get; set; }
 
         public IList<Intent>? Intent { get; set; }
+
+        public IList<Intent> GetTopIntents() => (Intent ?? Intents ?? Array.Empty<Intent>())
+            .OrderByDescending(x => x.Score)
+            .Take(5)
+            .OrderBy(x => x.Score)
+            .ToList();
+
+        public IList<Intent> GetIntents() => (Intent ?? Intents ?? Array.Empty<Intent>())
+            .OrderByDescending(x => x.Score)
+            .ToList();
     }
 }

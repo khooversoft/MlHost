@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MlHostWeb.Server.Application;
 using MlHostWeb.Server.Services;
 using MlHostWeb.Shared;
 
@@ -14,10 +15,12 @@ namespace MlHostWeb.Server.Controllers
     [ApiController]
     public class Config : ControllerBase
     {
+        private readonly IOption _option;
         private readonly IContentService _contentService;
 
-        public Config(IContentService contentService)
+        public Config(IOption option, IContentService contentService)
         {
+            _option = option;
             _contentService = contentService;
         }
 
@@ -26,46 +29,7 @@ namespace MlHostWeb.Server.Controllers
         {
             return new Configuration
             {
-                Models = new[]
-                {
-                    new ModelItem
-                    {
-                        Name = "Intent",
-                        VersionId = "intent-v1",
-                        ModelUrl = "http://localhost:5000/api/question",
-                        SwaggerUrl = "http://localhost:5000/swagger",
-                        DocId = "Intent.md",
-                        DetailDocId = "Intent.details.md",
-                        LogUrl = "http://localhost:5000/api/ping/logs",
-                    },
-                    new ModelItem
-                    {
-                        Name = "Emotion",
-                        VersionId = "emotion-v2",
-                        ModelUrl = "http://localhost:5000/api/question",
-                        SwaggerUrl = "http://localhost:5000/swagger",
-                        DocId = "Emotion.md",
-                        LogUrl = "http://localhost:5000/api/ping/logs",
-                    },
-                    new ModelItem
-                    {
-                        Name = "IdCard",
-                        VersionId = "idcard-v1",
-                        ModelUrl = "http://localhost:5000/api/question",
-                        SwaggerUrl = "http://localhost:5000/swagger",
-                        DocId = "IdCard.md",
-                        LogUrl = "http://localhost:5000/api/ping/logs",
-                    },
-                    new ModelItem
-                    {
-                        Name = "Sentiment",
-                        VersionId = "sentiment-v2",
-                        ModelUrl = "http://localhost:5000/api/question",
-                        SwaggerUrl = "http://localhost:5000/swagger",
-                        DocId = "Sentiment.md",
-                        LogUrl = "http://localhost:5000/api/ping/logs",
-                    },
-                }
+                Models = _option.Models.ToList(),
             };
         }
 

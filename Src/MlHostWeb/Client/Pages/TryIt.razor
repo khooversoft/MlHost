@@ -1,6 +1,7 @@
 ﻿@page "/tryit/{versionId}"
 
 @using MlHostWeb.Client.Application;
+@using MlHostApi.Models;
 
 <PageHeader VersionId="@VersionId" />
 
@@ -29,7 +30,44 @@
 
     <hr />
 
-    <div class="editor">
-        <textarea @bind=ModelInput.Result placeholder="model result" rows="20" style="width:100%" readonly></textarea>
-    </div>
+    @switch (Context.RunState)
+    {
+        case RunState.Startup:
+            break;
+
+        case RunState.Message:
+            <div class="alert @(Context.Error ? "alert-danger" : "alert-warning")" role="alert">
+                @Context.Message
+            </div>
+            break;
+
+        case RunState.Result:
+            <div class="row">
+                <div class="col-md-12 p-4">
+                    <RadzenChart>
+                        <RadzenPieSeries Data="@Context.Response.GetTopIntents()" CategoryProperty="Label" ValueProperty="Score" />
+                    </RadzenChart>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row">
+                <div class="p-4">
+                    <RadzenGrid AllowFiltering="false" AllowPaging="false" PageSize="1" AllowSorting="true" Data="@Context.Response.GetIntents()" TItem="Intent" ColumnWidth="200px">
+                        <Columns>
+                            <RadzenGridColumn TItem="Intent" Property="Label" Title="Label" />
+                            <RadzenGridColumn TItem="Intent" Property="Score" Title="Score" />
+                        </Columns>
+                    </RadzenGrid>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="editor">
+                <textarea @bind=Context.Result placeholder="model result" rows="20" style="width:100%" readonly></textarea>
+            </div>
+            break;
+    }
 </div>

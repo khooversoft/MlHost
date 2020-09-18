@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -65,5 +66,14 @@ namespace Toolbox.Tools
         }
 
         public static SubjectScope<T> ToSubjectScope<T>(this T subject) where T : class => new SubjectScope<T>(subject.VerifyNotNull(nameof(subject)));
+
+        public static T Bind<T>(this IConfiguration configuration) where T : new()
+        {
+            configuration.VerifyNotNull(nameof(configuration));
+
+            var option = new T();
+            configuration.Bind(option, x => x.BindNonPublicProperties = true);
+            return option;
+        }
     }
 }

@@ -5,6 +5,7 @@ using MlHostWeb.Client.Application.Menu;
 using MlHostWeb.Client.Application.Models;
 using MlHostWeb.Client.Services;
 using MlHostWeb.Shared;
+using Radzen;
 using System;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -39,10 +40,12 @@ namespace MlHostWeb.Client.Pages
 
         public bool IsExecuting { get; set; }
 
+        public RunContext Context { get; set; }
 
         protected override void OnParametersSet()
         {
             ModelItem = ModelConfiguration.GetModel(VersionId);
+            Context = new RunContext();
             base.OnParametersSet();
         }
 
@@ -69,17 +72,24 @@ namespace MlHostWeb.Client.Pages
 
                 if (httpResponseMessage.StatusCode != System.Net.HttpStatusCode.OK)
                 {
-                    ModelInput.Result = $"Returned StatusCode={httpResponseMessage.StatusCode}, content={contentJson}";
+                    if (contentJson.IndexOf("start", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        Context.SetMessage("Service is starting, please wait and try again.  You can see more details in 'Log'");
+                    }
+                    else
+                    {
+                        Context.SetError($"Returned StatusCode={httpResponseMessage.StatusCode}, content={contentJson}");
+                    }
                     return;
                 }
 
                 PredictResponse predictResponse = Json.Deserialize<PredictResponse>(contentJson);
 
-                ModelInput.Result = Json.SerializeWithIndent(predictResponse);
+                Context.SetResult(predictResponse, Json.SerializeWithIndent(predictResponse));
             }
             catch
             {
-                ModelInput.Result = $"Cannot connect to {ModelItem.ModelUrl}";
+                Context.SetError($"Cannot connect to {ModelItem.ModelUrl}");
                 return;
             }
             finally
@@ -92,6 +102,61 @@ namespace MlHostWeb.Client.Pages
         private class ModelRequest
         {
             public string Sentence { get; set; }
+        }
+
+        public enum RunState
+        {
+            Startup,
+            Message,
+            Result
+        }
+
+        public class RunContext
+        {
+            public RunContext() { }
+
+            public RunState RunState { get; private set; }
+
+            public bool Error { get; private set; }
+
+            public string Message { get; private set; }
+
+            public string Result { get; set; }
+
+            public PredictResponse Response { get; set; }
+
+            public void Start() => RunState = RunState.Startup;
+
+            public void SetResult(PredictResponse response, string result)
+            {
+                Clear();
+                RunState = RunState.Result;
+                Result = result;
+                Response = response;
+            }
+
+            public void SetMessage(string message)
+            {
+                Clear();
+                RunState = RunState.Message;
+                Message = message;
+            }
+
+            public void SetError(string errorMessage)
+            {
+                Clear();
+                RunState = RunState.Message;
+                Error = true;
+                Message = errorMessage;
+            }
+
+            private void Clear()
+            {
+                Error = false;
+                Message = null;
+                Result = null;
+                Response = null;
+            }
         }
     }
 }

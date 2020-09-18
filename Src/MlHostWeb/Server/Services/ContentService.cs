@@ -17,7 +17,7 @@ namespace MlHostWeb.Server.Services
 
         public string GetDocHtml(string id)
         {
-            if (_cache.TryGetValue(id, out string html)) return html;
+            if (_cache.TryGetValue(id, out string? html)) return html;
 
             return AddResource(id);
         }
@@ -26,7 +26,7 @@ namespace MlHostWeb.Server.Services
         {
             string path = $"MlHostWeb.Server.Application.Data.{id}";
 
-            using Stream resource = Assembly.GetAssembly(typeof(ContentService)).GetManifestResourceStream(path);
+            using Stream? resource = Assembly.GetAssembly(typeof(ContentService))?.GetManifestResourceStream(path);
             if (resource == null) throw new ArgumentException($"Cannot find doc {id}");
 
             using StreamReader reader = new StreamReader(resource);

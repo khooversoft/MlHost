@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Debug;
+using MlHostWeb.Server.Application;
+using Toolbox.Application;
 
 namespace MlHostWeb.Server
 {
@@ -13,11 +12,30 @@ namespace MlHostWeb.Server
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            IOption option = new OptionBuilder()
+                .SetArgs(args)
+                .Build();
+
+            CreateHostBuilder(args, option)
+                .Build()
+                .Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
+        internal static IHostBuilder CreateHostBuilder(string[] args, IOption option) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureServices(services =>
+                {
+                    services.AddSingleton(option);
+                })
+                .ConfigureLogging(builder =>
+                {
+                    if (option.Environment.ConvertToEnvironment() == RunEnvironment.Dev)
+                    {
+                        builder.AddDebug();
+                        builder.AddFilter<DebugLoggerProvider>(x => true);
+                        builder.AddFilter(x => true);
+                    }
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

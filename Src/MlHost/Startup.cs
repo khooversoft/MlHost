@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,6 +9,7 @@ using MlHost.Services;
 using MlHost.Tools;
 using NSwag;
 using System;
+using Toolbox.Application;
 using Toolbox.Services;
 
 namespace MlHost
@@ -58,20 +60,19 @@ namespace MlHost
             }));
         }
 
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, Application.IOption option)
         {
             loggerFactory.AddProvider(new TelemetryMemoryLoggerProvider(TelemetryMemory));
 
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() || option.RunEnvironment == RunEnvironment.Dev)
             {
                 app.UseDeveloperExceptionPage();
             }
-            //else
-            //{
-            //    app.UseHttpsRedirection();
-            //}
+            else
+            {
+                app.UseHttpsRedirection();
+            }
 
             app.UseRouting();
             app.UseCors(_policyName);

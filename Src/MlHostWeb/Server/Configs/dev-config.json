@@ -1,0 +1,37 @@
+﻿{
+  "Models": [
+    {
+      "Name": "Intent",
+      "VersionId": "intent-v1",
+      "ModelUrl": "http://localhost:5000/api/question",
+      "SwaggerUrl": "http://localhost:5000/swagger",
+      "DocId": "Intent.md",
+      "DetailDocId": "Intent.details.md",
+      "LogUrl": "http://localhost:5000/api/ping/logs"
+    },
+    {
+      "Name": "Emotion",
+      "VersionId": "emotion-v2",
+      "ModelUrl": "http://localhost:5000/api/question",
+      "SwaggerUrl": "http://localhost:5000/swagger",
+      "DocId": "Emotion.md",
+      "LogUrl": "http://localhost:5000/api/ping/logs"
+    },
+    {
+      "Name": "IdCard",
+      "VersionId": "idcard-v1",
+      "ModelUrl": "http://localhost:5000/api/question",
+      "SwaggerUrl": "http://localhost:5000/swagger",
+      "DocId": "IdCard.md",
+      "LogUrl": "http://localhost:5000/api/ping/logs"
+    },
+    {
+      "Name": "Sentiment",
+      "VersionId": "sentiment-v2",
+      "ModelUrl": "http://localhost:5000/api/question",
+      "SwaggerUrl": "http://localhost:5000/swagger",
+      "DocId": "Sentiment.md",
+      "LogUrl": "http://localhost:5000/api/ping/logs"
+    }
+  ]
+}

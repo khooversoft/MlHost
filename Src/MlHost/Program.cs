@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using Toolbox.Logging;
 using Toolbox.Services;
 using Toolbox.Tools;
+using Toolbox.Application;
 
 [assembly: InternalsVisibleTo("MlHost.Test")]
 
@@ -35,11 +36,18 @@ namespace MlHost
                 .ConfigureServices(services =>
                 {
                     services.AddSingleton(option);
-                    //services.AddApplicationInsightsTelemetry();
+
+                    if (option.RunEnvironment != RunEnvironment.Dev)
+                    {
+                        services.AddApplicationInsightsTelemetry();
+                    }
                 })
                 .ConfigureLogging(builder =>
                 {
-                    //builder.AddFilter<Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider>("", LogLevel.Trace);
+                    if (option.RunEnvironment != RunEnvironment.Dev)
+                    {
+                        builder.AddFilter<Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider>("", LogLevel.Trace);
+                    }
 
                     if (option.LogFile.ToNullIfEmpty() != null)
                     {
@@ -54,6 +62,11 @@ namespace MlHost
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+
+                    if (option.RunEnvironment == RunEnvironment.Dev)
+                    {
+                        webBuilder.UseUrls($"http://localhost:{option.Port}");
+                    }
                 });
     }
 }

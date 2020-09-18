@@ -1,15 +1,16 @@
-﻿namespace MlHost.Application
+﻿using Toolbox.Application;
+
+namespace MlHost.Application
 {
     public interface IOption
     {
-        string? ServiceUri { get; }
-
-        string? PackageFile { get; }
-
+        string Environment { get; }
         bool KillProcess { get; }
-
-        int MaxRequests { get; }
-
         string? LogFile { get; }
+        int MaxRequests { get; }
+        string? PackageFile { get; }
+        int Port { get; }
+        RunEnvironment RunEnvironment { get; }
+        string ServiceUri { get; }
     }
 }

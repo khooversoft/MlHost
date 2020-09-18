@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Toolbox.Tools;
+using Toolbox.Application;
 
 namespace MlHost.Application
 {
@@ -10,15 +11,8 @@ namespace MlHost.Application
             option.VerifyNotNull(nameof(option));
 
             option.ServiceUri.VerifyNotEmpty($"{nameof(option.ServiceUri)} is missing");
-        }
-
-        public static Option Bind(this IConfiguration configuration)
-        {
-            configuration.VerifyNotNull(nameof(configuration));
-
-            var option = new Option();
-            configuration.Bind(option, x => x.BindNonPublicProperties = true);
-            return option;
+            option.Environment.VerifyNotEmpty($"{nameof(option.Environment)} is missing");
+            option.Environment.ConvertToEnvironment().VerifyAssert(x => x != RunEnvironment.Unknown, $"Invalid run environment {option.Environment}");
         }
     }
 }
