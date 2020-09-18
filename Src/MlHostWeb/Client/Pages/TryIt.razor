@@ -36,7 +36,8 @@
             break;
 
         case RunState.Message:
-            <div class="alert @(Context.Error ? "alert-danger" : "alert-warning")" role="alert">
+        case RunState.Error:
+            <div class="alert @(Context.RunState == RunState.Error ? "alert-danger" : "alert-warning")" role="alert">
                 @Context.Message
             </div>
             break;
@@ -52,9 +53,11 @@
 
             <hr />
 
+            <button @onclick="SaveDataToCsv" class="btn btn-success">Export</button>
+
             <div class="row">
                 <div class="p-4">
-                    <RadzenGrid AllowFiltering="false" AllowPaging="false" PageSize="1" AllowSorting="true" Data="@Context.Response.GetIntents()" TItem="Intent" ColumnWidth="200px">
+                    <RadzenGrid AllowFiltering="false" AllowPaging="true" PageSize="5" AllowSorting="true" Data="@Context.Response.GetIntents()" TItem="Intent" ColumnWidth="200px">
                         <Columns>
                             <RadzenGridColumn TItem="Intent" Property="Label" Title="Label" />
                             <RadzenGridColumn TItem="Intent" Property="Score" Title="Score" />

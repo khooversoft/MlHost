@@ -18,7 +18,6 @@ namespace MlHostApi.Models
         public IList<Intent> GetTopIntents() => (Intent ?? Intents ?? Array.Empty<Intent>())
             .OrderByDescending(x => x.Score)
             .Take(5)
-            .OrderBy(x => x.Score)
             .ToList();
 
         public IList<Intent> GetIntents() => (Intent ?? Intents ?? Array.Empty<Intent>())

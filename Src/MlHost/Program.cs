@@ -12,6 +12,8 @@ using Toolbox.Logging;
 using Toolbox.Services;
 using Toolbox.Tools;
 using Toolbox.Application;
+using System;
+using System.Reflection;
 
 [assembly: InternalsVisibleTo("MlHost.Test")]
 
@@ -21,6 +23,9 @@ namespace MlHost
     {
         public static void Main(string[] args)
         {
+            Console.WriteLine(new Option().HostVersionTitle());
+            Console.WriteLine();
+
             IOption option = new OptionBuilder()
                 .AddCommandLine(args)
                 .AddJsonFile("appsettings.json")

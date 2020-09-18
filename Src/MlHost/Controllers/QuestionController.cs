@@ -20,13 +20,15 @@ namespace MlHost.Controllers
         private readonly IQuestion _question;
         private readonly IExecutionContext _executionContext;
         private readonly IJson _json;
+        private readonly IOption _option;
 
-        public QuestionController(ILogger<QuestionController> logger, IQuestion question, IExecutionContext executionContext, IJson json)
+        public QuestionController(ILogger<QuestionController> logger, IQuestion question, IExecutionContext executionContext, IJson json, IOption option)
         {
             _logger = logger;
             _question = question;
             _executionContext = executionContext;
             _json = json;
+            _option = option;
         }
 
         /// <summary>
@@ -79,6 +81,7 @@ namespace MlHost.Controllers
 
             var response = new PingResponse
             {
+                Version = _option.HostVersion(),
                 Status = _executionContext.State.ToString(),
             };
 

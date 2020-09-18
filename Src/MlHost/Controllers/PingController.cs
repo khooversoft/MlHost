@@ -15,11 +15,13 @@ namespace MlHost.Controllers
     {
         private readonly IExecutionContext _executionContext;
         private readonly ITelemetryMemory _telemetryMemory;
+        private readonly IOption _option;
 
-        public PingController(IExecutionContext executionContext, ITelemetryMemory telemetryMemory)
+        public PingController(IExecutionContext executionContext, ITelemetryMemory telemetryMemory, IOption option)
         {
             _executionContext = executionContext;
             _telemetryMemory = telemetryMemory;
+            _option = option;
         }
 
         /// <summary>
@@ -38,6 +40,7 @@ namespace MlHost.Controllers
         {
             var response = new PingResponse
             {
+                Version = _option.HostVersion(),
                 Status = _executionContext.State.ToString(),
             };
 
@@ -56,6 +59,7 @@ namespace MlHost.Controllers
 
             var response = new PingLogs
             {
+                Version = _option.HostVersion(),
                 Count = logs.Count,
                 Messages = logs
                     .Reverse()

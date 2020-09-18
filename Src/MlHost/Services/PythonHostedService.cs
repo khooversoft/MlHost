@@ -51,6 +51,7 @@ namespace MlHost.Services
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
+            _logger.LogInformation(_option.HostVersionTitle());
             _logger.LogInformation("Starting python service");
 
             _ = Task.Run(() => Run());

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using MlHostWeb.Client.Application;
 using MlHostWeb.Client.Application.Menu;
 using MlHostWeb.Client.Services;
 using MlHostWeb.Shared;
@@ -30,12 +31,13 @@ namespace MlHostWeb.Client.Pages
 
         public bool IsExecuting { get; set; }
 
-        public string Result { get; set; }
+        public RunContext Context { get; set; }
 
 
         protected override void OnParametersSet()
         {
             ModelItem = ModelConfiguration.GetModel(VersionId);
+            Context = new RunContext();
 
             base.OnParametersSet();
         }
@@ -56,18 +58,61 @@ namespace MlHostWeb.Client.Pages
                 StateHasChanged();
 
                 PingLogs pingLogs = await Http.GetFromJsonAsync<PingLogs>(ModelItem.LogUrl);
-
-                Result = Json.SerializeWithIndent(pingLogs);
+                Context.SetMessages(pingLogs.Count, pingLogs.Messages);
             }
             catch
             {
-                Result = $"Cannot connect to {ModelItem.LogUrl}";
-                return;
+                Context.SetError($"Cannot connect to {ModelItem.LogUrl}");
             }
             finally
             {
                 IsExecuting = false;
                 StateHasChanged();
+            }
+        }
+
+        public class RunContext
+        {
+            public RunState RunState { get; private set; }
+
+            public int? Count { get; private set; }
+
+            public IList<MessageItem> Messages { get; private set; }
+
+            public string ErrorMessage { get; private set; }
+
+            public void SetMessages(int count, IEnumerable<string> messages)
+            {
+                Clear();
+                RunState = RunState.Result;
+                Count = count;
+                Messages = messages.Select((x, i) => new MessageItem(i, x)).ToList();
+            }
+
+            public void SetError(string errorMessage)
+            {
+                Clear();
+                RunState = RunState.Error;
+                ErrorMessage = errorMessage;
+            }
+
+            private void Clear()
+            {
+                RunState = RunState.Startup;
+                Count = null;
+                Messages = null;
+            }
+
+            public class MessageItem
+            {
+                public MessageItem(int index, string message)
+                {
+                    Index = index;
+                    Message = message;
+                }
+
+                public int Index { get; }
+                public string Message { get; }
             }
         }
 

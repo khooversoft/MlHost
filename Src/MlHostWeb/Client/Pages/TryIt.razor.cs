@@ -1,14 +1,17 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MlHostApi.Models;
+using MlHostWeb.Client.Application;
 using MlHostWeb.Client.Application.Menu;
 using MlHostWeb.Client.Application.Models;
 using MlHostWeb.Client.Services;
 using MlHostWeb.Shared;
 using Radzen;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text;
 using System.Threading.Tasks;
 using Toolbox.Services;
 
@@ -99,16 +102,17 @@ namespace MlHostWeb.Client.Pages
             }
         }
 
+        protected async Task SaveDataToCsv()
+        {
+            var data = Context.Response.GetIntents()
+                .Aggregate("Label,Score" + Environment.NewLine, (a, x) => a += $"{x.Label},{x.Score}{Environment.NewLine}");
+
+            await JsRuntime.InvokeAsync<object>("FileSaveAs", "mlresponse.csv", data);
+        }
+
         private class ModelRequest
         {
             public string Sentence { get; set; }
-        }
-
-        public enum RunState
-        {
-            Startup,
-            Message,
-            Result
         }
 
         public class RunContext
@@ -116,8 +120,6 @@ namespace MlHostWeb.Client.Pages
             public RunContext() { }
 
             public RunState RunState { get; private set; }
-
-            public bool Error { get; private set; }
 
             public string Message { get; private set; }
 
@@ -145,14 +147,13 @@ namespace MlHostWeb.Client.Pages
             public void SetError(string errorMessage)
             {
                 Clear();
-                RunState = RunState.Message;
-                Error = true;
+                RunState = RunState.Error;
                 Message = errorMessage;
             }
 
             private void Clear()
             {
-                Error = false;
+                RunState = RunState.Startup;
                 Message = null;
                 Result = null;
                 Response = null;

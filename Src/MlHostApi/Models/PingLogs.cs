@@ -7,6 +7,8 @@ namespace MlHostApi.Models
 {
     public class PingLogs
     {
+        public string? Version { get; set; }
+
         public int Count { get; set; }
 
         public IList<string>? Messages { get; set; }
