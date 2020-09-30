@@ -6,7 +6,7 @@ using System.Text;
 using Toolbox.Services;
 using Toolbox.Tools;
 
-namespace MlHostSdk.Package
+namespace MlHostSdk.Models
 {
     public partial class MlPackageManifest
     {

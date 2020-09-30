@@ -10,13 +10,19 @@ namespace FakeModelServer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SubmitController : ControllerBase
+    public class PredictController : ControllerBase
     {
-        private static Intent[] _intents = Enumerable.Range(0, 10)
+        private static Intent[] _testResults = new[]
+        {
+            new Intent { Label = "HAPPINESS", Score = 0.9824827 },
+            new Intent { Label = "LOVE", Score = 0.009116333 },
+        };
+
+        private static Intent[] _fakeIntents = Enumerable.Range(0, 10)
             .Select(x => new Intent
             {
                 Label = $"Label_{x}",
-                Score = 1.0f - (Math.Sqrt(x) / 10)
+                Score = 1.0f - (Math.Sqrt(x + 2) / 10)
             })
             .ToArray();
 
@@ -31,7 +37,9 @@ namespace FakeModelServer.Controllers
                     Version = "1.0"
                 },
                 Request = request.Request,
-                Intents = _intents,
+                Intents = _testResults
+                    .Concat(_fakeIntents)
+                    .ToArray(),
             };
         }
     }

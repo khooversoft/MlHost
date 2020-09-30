@@ -70,53 +70,6 @@ namespace Toolbox.Tools
             }
         }
 
-        //public static void CompressFiles(string zipFilePath, CancellationToken token, params string[] fileFolders)
-        //{
-        //    zipFilePath.VerifyNotEmpty(nameof(zipFilePath));
-        //    fileFolders.VerifyAssert(x => x.Length > 0, "No fileFolder(s) specified");
-
-        //    using var stream = new FileStream(zipFilePath, FileMode.Create);
-        //    using var zipArchive = new ZipArchive(stream, ZipArchiveMode.Create, false);
-
-        //    var pushFiles = fileFolders
-        //        .Select(x => getFileFolder(x));
-
-        //    var stack = new Stack<(string folder, string file)>(pushFiles);
-
-        //    while(stack.TryPop(out (string folder, string file) fileFolder))
-        //    {
-        //        string filePath = Path.Combine(fileFolder.folder, fileFolder.file);
-
-        //        FileAttributes attr = File.GetAttributes(filePath);
-        //        if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
-        //        {
-        //            pushFolderFiles(filePath);
-        //            continue;
-        //        }
-
-        //        ZipArchiveEntry zipArchiveEntry = zipArchive.CreateEntry(fileFolder.file);
-        //        zipArchive.CreateEntryFromFile(Path.Combine(fileFolder.folder, fileFolder.file), fileFolder.file);
-        //    }
-
-
-        //    (string folder, string file) getFileFolder(string fileFolder, string? baseFolder = null)
-        //    {
-        //        string folder = Path.GetDirectoryName(baseFolder ?? fileFolder)!;
-        //        string file = fileFolder.Substring(folder.Length);
-
-        //        return (folder, file);
-        //    }
-
-        //    void pushFolderFiles(string folderPath)
-        //    {
-        //        string[] files = Directory.GetFiles(folderPath, "*.*");
-
-        //        files
-        //            .Select(x => getFileFolder(x, folderPath))
-        //            .ForEach(stack.Push);
-        //    }
-        //}
-
         public static void CompressFiles(string zipFilePath, CancellationToken token, Action<FileActionProgress>? monitor = null, params CopyTo[] files)
         {
             zipFilePath.VerifyNotEmpty(nameof(zipFilePath));

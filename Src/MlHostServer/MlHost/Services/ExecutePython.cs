@@ -1,7 +1,9 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Operations;
 using Microsoft.Extensions.Logging;
 using MlHost.Application;
 using MlHost.Tools;
+using MlHostSdk.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -45,7 +47,11 @@ namespace MlHost.Services
             _logger.LogInformation($"Starting python child process, deployment folder={_executionContext.DeploymentFolder}");
 
             var tcs = new TaskCompletionSource<bool>();
-            ModelExecute modelExecute = GetExecutableAndCommand();
+
+            ModelExecute modelExecute = 
+                ReadManifest()
+                ?? CheckIfRunExist()
+                ?? throw new InvalidOperationException("No support for starting model");
 
             _localProcess = new LocalProcessBuilder()
             {
@@ -89,52 +95,40 @@ namespace MlHost.Services
             .VerifyAssert(x => x.Length > 0, $"Invalid {nameof(searchFor)}, must have at least 1 element")
             .All(x => (lineData ?? string.Empty).IndexOf(x, StringComparison.OrdinalIgnoreCase) >= 0);
 
-        private ModelExecute GetExecutableAndCommand()
-        {
-            ModelConfiguration modelConfiguration = GetModelConfiguration();
-            return GetExecute(modelConfiguration) ?? Python(modelConfiguration);
-        }
-
-        private ModelConfiguration GetModelConfiguration()
+        private ModelExecute? ReadManifest()
         {
             string metadataFile = Path.Combine(_executionContext.DeploymentFolder!, "metadata.json")
                 .VerifyAssert<string, FileNotFoundException>(x => File.Exists(x), x => x);
 
             string json = File.ReadAllText(metadataFile);
-            return _json.Deserialize<ModelConfiguration>(json);
+
+            MlPackageManifest manifest = _json.Deserialize<MlPackageManifest>(json)
+                .VerifyNotNull($"Error in parsing {nameof(MlPackageManifest)}");
+
+            return ParseRunCmd(manifest);
         }
 
-        private ModelExecute? GetExecute(ModelConfiguration modelConfiguration)
+        private ModelExecute? CheckIfRunExist()
         {
-            if (string.IsNullOrWhiteSpace(modelConfiguration.Execute)) return null;
+            string fullPath = Path.Combine(_executionContext.DeploymentFolder!, "run.ps1")
+                .VerifyAssert<string, FileNotFoundException>(x => File.Exists(x), x => x);
 
-            int spaceIndex = modelConfiguration.Execute.IndexOf(' ');
-            if (spaceIndex < 0) return new ModelExecute(modelConfiguration.Execute, null);
+            return new ModelExecute("powershell.exe", $"-File {fullPath}");
+        }
 
-            string executePath = modelConfiguration.Execute.Substring(0, spaceIndex).Trim();
-            string arguments = modelConfiguration.Execute.Substring(spaceIndex + 1).Trim();
+        private ModelExecute? ParseRunCmd(MlPackageManifest manifest)
+        {
+            if (manifest.RunCmd.IsEmpty()) return null;
+
+            // Read RunCmd and parse
+            int spaceIndex = manifest.RunCmd.IndexOf(' ');
+            if (spaceIndex < 0) return new ModelExecute(manifest.RunCmd, null);
+
+            string executePath = manifest.RunCmd.Substring(0, spaceIndex).Trim();
+            string arguments = manifest.RunCmd.Substring(spaceIndex + 1).Trim();
 
             executePath = Path.Combine(_executionContext.DeploymentFolder!, executePath);
             return new ModelExecute(executePath, arguments);
-        }
-
-        private ModelExecute Python(ModelConfiguration modelConfiguration)
-        {
-            const string pythonText = "python";
-
-            string executableFolder = modelConfiguration.Python
-                ?.VerifyAssert(x => x.ToNullIfEmpty() != null, $"{pythonText} is empty")!;
-
-            string executablePath = Path.Combine(_executionContext.DeploymentFolder!, executableFolder, "python.exe")
-                .VerifyAssert<string, FileNotFoundException>(x => File.Exists(x), x => x);
-
-            return new ModelExecute(executableFolder, "-m langserve");
-        }
-
-        private class ModelConfiguration
-        {
-            public string Python { get; set; } = null!;
-            public string? Execute { get; set; }
         }
 
         private struct ModelExecute

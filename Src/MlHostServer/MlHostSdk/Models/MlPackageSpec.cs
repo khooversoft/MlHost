@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Toolbox.Models;
 
-namespace MlHostSdk.Package
+namespace MlHostSdk.Models
 {
     public class MlPackageSpec
     {

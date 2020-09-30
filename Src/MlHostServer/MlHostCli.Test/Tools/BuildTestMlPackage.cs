@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging.Abstractions;
 using MlHostCli.Activity;
 using MlHostCli.Application;
+using MlHostSdk.Models;
 using MlHostSdk.Package;
 using System;
 using System.Collections.Generic;

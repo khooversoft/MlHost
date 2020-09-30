@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using MlHostSdk.Models;
 using MlHostSdk.Package;
 using MlHostSdk.Tools;
 using System;
@@ -14,7 +15,7 @@ namespace MlHostCli.Application
         private static readonly IReadOnlyList<Action<Option>> _scenarios = new List<Action<Option>>
         {
             // Scenarios are listed in priority order
-            option => Verify(option.Upload, () =>
+            option => RuleFor(option.Upload, () =>
             {
                 LoadSpecFile(option);
                 option.PackageFile.VerifyNotEmpty($"{nameof(option.PackageFile)} file is required for {nameof(option.Upload)}");
@@ -23,7 +24,7 @@ namespace MlHostCli.Application
                 VerifyStore(option);
             }),
 
-            option => Verify(option.Download, () =>
+            option => RuleFor(option.Download, () =>
             {
                 option.PackageFile.VerifyNotEmpty($"{nameof(option.PackageFile)} is required for {nameof(option.Download)}");
                 option.PackageFile.VerifyAssert(x => option.Force || !File.Exists(x), $"{nameof(option.PackageFile)} file exist.  To overwrite use the 'Force' option");
@@ -31,13 +32,13 @@ namespace MlHostCli.Application
                 VerifyStore(option);
             }),
 
-            option => Verify(option.Delete, () =>
+            option => RuleFor(option.Delete, () =>
             {
                 VerifyModelId(option);
                 VerifyStore(option);
             }),
 
-            option => Verify(option.Bind, () =>
+            option => RuleFor(option.Bind, () =>
             {
                 option.VsProject.VerifyNotEmpty($"{nameof(option.VsProject)} is required");
                 option.VsProject.VerifyAssert(x => Path.GetExtension(x).ToNullIfEmpty() != null, $"{option.VsProject} is not a VS CS project file");
@@ -45,14 +46,14 @@ namespace MlHostCli.Application
                 VerifyStore(option);
             }),
 
-            option => Verify(option.Swagger, () =>
+            option => RuleFor(option.Swagger, () =>
             {
                 option.ModelName?.ToLower().VerifyStoreVector($"{nameof(option.ModelName)}  is required");
                 option.Environment?.ToLower().VerifyStoreVector($"{nameof(option.Environment)}  is required");
                 option.SwaggerFile.VerifyNotEmpty($"{nameof(option.SwaggerFile)} is required");
             }),
 
-            option => Verify(option.Build, () =>
+            option => RuleFor(option.Build, () =>
             {
                 option.SpecFile.VerifyNotEmpty($"{nameof(option.SpecFile)} is required");
                 option.SpecFile.VerifyAssert(x => File.Exists(x), $"{option.SpecFile} does not exist");
@@ -85,7 +86,7 @@ namespace MlHostCli.Application
             return option;
         }
 
-        private static void Verify(bool test, Action testOption)
+        private static void RuleFor(bool test, Action testOption)
         {
             if (test) testOption();
         }

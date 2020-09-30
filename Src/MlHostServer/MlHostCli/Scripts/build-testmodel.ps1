@@ -15,45 +15,25 @@
 	Path of execute for fake model server
 #>
 
-Param(
-    [string] $CliBinPath,
-
-	[string] $SpecFile,
-
-	[string] $PackageFile,
-
-    [string] $ModelExePath
-)
-
 #$debugpreference = "Continue";
 $ErrorActionPreference = "Stop";
 $currentLocation = $PSScriptRoot;
 
-if( !$CliBinPath )
-{
-	$CliBinPath = [System.IO.Path]::Combine($currentLocation, "..\bin\Release\netcoreapp3.1\MlHostCli.exe");
-}
+# Clean all bin and obj folders in the ML Host Server projects
 
-if( !(Test-Path $CliBinPath) )
-{
-	Write-Error "Cannot find MlHostCli.exe at $CliBinPath";
-	return;
-}
 
-if( !$SpecFile )
-{
-	$SpecFile = [System.IO.Path]::Combine($currentLocation, "..\..\MlHost\MlPackage\test-model.mlPackageSpec.json");
-}
 
-if( !$PackageFile )
-{
-	$PackageFile = [System.IO.Path]::Combine($currentLocation, "..\..\MlHost\MlPackage\RunModel.mlPackage");
-}
+& dotnet build ..\..\MlHost.sln --configuration release;
+& dotnet publish ..\..\..\Tools\FakeModelServer\FakeModelServer.csproj --configuration release
 
-if( !$ModelExePath )
-{
-	$ModelExePath = [System.IO.Path]::Combine($currentLocation, "..\..\..\Tools\FakeModelServer\bin\Release\netcoreapp3.1\win-x64\publish\FakeModelServer.exe");
-}
+# ..\..\
+Get-ChildItem ..\.. -Directory -Include bin,obj -Recurse | Remove-Item -Recurse -Force
+
+
+$CliBinPath = [System.IO.Path]::Combine($currentLocation, "..\bin\Release\netcoreapp3.1\MlHostCli.exe");
+$SpecFile = [System.IO.Path]::Combine($currentLocation, "..\..\MlHost\MlPackage\test-model.mlPackageSpec.json");
+$PackageFile = [System.IO.Path]::Combine($currentLocation, "..\..\MlHost\MlPackage\RunModel.mlPackage");
+$ModelExePath = [System.IO.Path]::Combine($currentLocation, "..\..\..\Tools\FakeModelServer\bin\Release\netcoreapp3.1\win-x64\publish\FakeModelServer.exe");
 
 
 # Write out spec json file
@@ -74,9 +54,6 @@ $spec = @{
 
 $json = $spec | ConvertTo-Json;
 $json | Out-File $specFile;
-
-& dotnet build ..\..\MlHost.sln --configuration release;
-& dotnet publish ..\..\..\Tools\FakeModelServer\FakeModelServer.csproj --configuration release
 
 & $CliBinPath Build SpecFile=$specFile;
 
