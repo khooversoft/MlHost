@@ -1,0 +1,17 @@
+{
+  "PackageFile": "d:\\ml-models\\test\\{modelName}\\FakeModel_v1.mlPackage",
+  //"PackageFile": "adls://ml-packages/{modelName}/FakeModel_v1.mlPackage",
+
+  "Mainifest": {
+    "ModelName": "Testing",
+    "VersionId": "fake_model_v1",
+    "RunCmd": "FakeModelServer.exe"
+  },
+
+  "Copy": [
+    {
+      "source": "{fakeModelExeFilePath}",
+      "destination": "\\"
+    }
+  ]
+}

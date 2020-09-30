@@ -1,0 +1,25 @@
+{
+  //"Run": true,
+  "Append": true,
+  "Input": "D:\\Work\\PremeraListens39K.csv",
+  "QuestionColumnName": "Comment",
+  "Output": "D:\\Work\\PremeraListens39K_processed.csv",
+  "Tasks": 5,
+  "LogFile": "D:\\Work\\log\\PremeraListens39K",
+  //"MaxCount": 20,
+
+  "Models": [
+    {
+      "Uri": "http://localhost:5000/api/question",
+      "Name": "Intent"
+    },
+    {
+      "uri": "http://localhost:5010/api/question",
+      "name": "emotion"
+    },
+    {
+      "Uri": "http://localhost:5011/api/question",
+      "Name": "Sentiment"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "MlHostCli": {
+      "commandName": "Project",
+      "commandLineArgs": "build specfile=D:\\ML-Models\\Build\\idcard-classifier-v1.mlPackageSpec.json",
+      "environmentVariables": {
+        "RunAs": "CurrentUser"
+      }
+    }
+  }
+}

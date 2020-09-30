@@ -1,0 +1,23 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:51204",
+      "sslPort": 44376
+    }
+  },
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "MlHost": {
+      "commandName": "Project",
+      "commandLineArgs": "LogFile=d:\\work\\mlhost\\intent PackageFile=D:\\ML-Models\\v3\\intent-classifier-v3.mlPackage",
+      "launchUrl": "weatherforecast",
+      "environmentVariables": {
+        "RunAs": "CurrentUser",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+    }
+  }
+}

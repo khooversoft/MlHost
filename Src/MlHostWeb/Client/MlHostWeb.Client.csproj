@@ -15,8 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MlHostApi\MlHostApi.csproj" />
-    <ProjectReference Include="..\..\Toolbox\Toolbox.csproj" />
+    <ProjectReference Include="..\..\MlHostServer\MlHostSdk\MlHostSdk.csproj" />
+    <ProjectReference Include="..\..\Tools\Toolbox\Toolbox.csproj" />
     <ProjectReference Include="..\Shared\MlHostWeb.Shared.csproj" />
   </ItemGroup>
 

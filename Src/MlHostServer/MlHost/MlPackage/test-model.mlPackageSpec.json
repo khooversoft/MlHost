@@ -1,0 +1,14 @@
+{
+  "Manifest": {
+    "VersionId": "fakeModel_v1",
+    "ModelName": "test",
+    "RunCmd": "FakeModelServer.exe"
+  },
+  "PackageFile": "D:\\Sources\\MlHost\\Src\\MlHostServer\\MlHostCli\\Scripts\\..\\..\\MlHost\\MlPackage\\RunModel.mlPackage",
+  "Copy": [
+    {
+      "Destination": "FakeModelServer.exe",
+      "Source": "D:\\Sources\\MlHost\\Src\\MlHostServer\\MlHostCli\\Scripts\\..\\..\\..\\Tools\\FakeModelServer\\bin\\Release\\netcoreapp3.1\\win-x64\\publish\\FakeModelServer.exe"
+    }
+  ]
+}

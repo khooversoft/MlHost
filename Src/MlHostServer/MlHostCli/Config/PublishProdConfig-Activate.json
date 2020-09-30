@@ -1,0 +1,11 @@
+{
+  "KeyVault": {
+    "KeyVaultName": "dev-hbt-keyvault-w2-01",
+    "KeyName": "devmlservices-accountkey"
+  },
+
+  "Store": {
+    "AccountName": "devmlservices",
+    "ContainerName": "ml-packages"
+  }
+}

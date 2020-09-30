@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MlProcess": {
+      "commandName": "Project",
+      "commandLineArgs": "ConfigFile=D:\\Sources\\MlHost\\Src\\MlProcess\\Config\\LuisToV1-Intent.json"
+    }
+  }
+}

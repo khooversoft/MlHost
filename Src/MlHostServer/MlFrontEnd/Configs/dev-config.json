@@ -1,0 +1,18 @@
+{
+  //"SecretId": "MlFrontEnd",
+
+  "MlModels": [
+    {
+      "VersionId": "intent-v3",
+      "Uri": "http://localhost:5040/api/submit",
+      "RunningUri": "http://localhost:5040/ping/running",
+      "ReadyUri": "http://localhost:5040/ping/ready"
+    },
+    {
+      "VersionId": "idcard-v1",
+      "Uri": "http://localhost:5041/api/submit",
+      "RunningUri": "http://localhost:5041/ping/running",
+      "ReadyUri": "http://localhost:5041/ping/ready"
+    }
+  ]
+}
