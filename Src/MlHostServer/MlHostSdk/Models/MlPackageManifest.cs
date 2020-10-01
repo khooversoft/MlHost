@@ -1,14 +1,12 @@
-﻿using MlHostSdk.Tools;
+﻿using Azure.Storage.Blobs.Models;
+using MlHostSdk.Tools;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using Toolbox.Services;
-using Toolbox.Tools;
 
 namespace MlHostSdk.Models
 {
-    public partial class MlPackageManifest
+    public class MlPackageManifest
     {
         public string PackageVersion { get; set; } = "1.0.0.0";
 
@@ -17,5 +15,7 @@ namespace MlHostSdk.Models
         public string VersionId { get; set; } = null!;
 
         public string RunCmd { get; set; } = null!;
+
+        public string StartSignal { get; set; } = null!;
     }
 }

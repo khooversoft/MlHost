@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MlHost.Application;
+using MlHost.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -49,10 +50,11 @@ namespace MlHost.Services
             {
                 try
                 {
-                    FileTools.DeleteDirectory(folder);
+                    Directory.Delete(folder, true);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    _logger.LogInformation(ex, $"Cannot delete folder {folder}");
                     // Swallow exception, clearing is just a best attempt
                 }
             }
@@ -89,7 +91,7 @@ namespace MlHost.Services
                     default:
                         _logger.LogInformation($"Deploying from resource to {_executionContext.DeploymentFolder}");
                         ZipArchiveTools.ExtractZipFileFromResource(
-                            typeof(PythonHostedService),
+                            typeof(MlHostedService),
                             "MlHost.MlPackage.RunModel.mlPackage",
                             _executionContext.DeploymentFolder!,
                             _executionContext.TokenSource.Token,

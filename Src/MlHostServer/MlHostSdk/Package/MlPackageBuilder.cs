@@ -15,8 +15,9 @@ namespace MlHostSdk.Package
 {
     public class MlPackageBuilder
     {
-        private const string _manifestFileName = "mlPackage.manifest.json";
         private string? _specFileBase;
+
+        public static string ManifestFileName { get; } = "mlPackage.manifest.json";
 
         public MlPackageSpec Option { get; set; } = null!;
 
@@ -72,13 +73,13 @@ namespace MlHostSdk.Package
 
         private CopyTo WriteManifest()
         {
-            string filePath = Path.Combine(Path.GetTempPath(), _manifestFileName);
+            string filePath = Path.Combine(Path.GetTempPath(), ManifestFileName);
             Option.Manifest.WriteToFile(filePath);
 
             return new CopyTo
             {
                 Source = filePath,
-                Destination = _manifestFileName,
+                Destination = ManifestFileName,
             };
         }
     }

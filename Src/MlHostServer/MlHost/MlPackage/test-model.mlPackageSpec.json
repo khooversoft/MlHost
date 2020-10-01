@@ -1,6 +1,7 @@
 {
   "Manifest": {
     "VersionId": "fakeModel_v1",
+    "StartSignal": "Running on",
     "ModelName": "test",
     "RunCmd": "FakeModelServer.exe"
   },

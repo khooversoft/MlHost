@@ -72,11 +72,11 @@ namespace MlHostCli.Application
                         configFile = v.ConfigFile;
                         continue;
 
-                    case Option v when v.Store?.AccountKey == null && v.SecretId.ToNullIfEmpty() != null && secretId == null:
+                    case Option v when v.Store?.AccountKey.ToNullIfEmpty() == null && v.SecretId.ToNullIfEmpty() != null && secretId == null:
                         secretId = v.SecretId;
                         continue;
 
-                    case Option v when v.Store?.AccountKey.ToNullIfEmpty() != null && accountKey == null:
+                    case Option v when v.IsRequireStore && v.Store?.AccountKey.ToNullIfEmpty() == null && accountKey == null:
                         accountKey = GetAccountKeyFromKeyVault(option);
                         if (accountKey != null) continue;
                         break;

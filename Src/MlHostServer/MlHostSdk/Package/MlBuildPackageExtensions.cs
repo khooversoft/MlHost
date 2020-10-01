@@ -35,6 +35,7 @@ namespace MlHostSdk.Package
             option.ModelName.VerifyNotEmpty($"{nameof(option.ModelName)} is required");
             option.VersionId.VerifyNotEmpty($"{nameof(option.VersionId)} is required");
             option.RunCmd.VerifyNotEmpty($"{nameof(option.RunCmd)} is required");
+            option.StartSignal.VerifyNotEmpty($"{nameof(option.StartSignal)} is required");
         }
 
         public static void WriteToFile(this MlPackageManifest mlPackageManifest, string filePath)

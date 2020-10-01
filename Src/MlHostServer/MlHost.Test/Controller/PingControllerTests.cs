@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MlHost.Services;
+using MlHost.Models;
 using MlHost.Test.Application;
+using MlHostSdk.Api;
 using MlHostSdk.Models;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Toolbox.Services;
@@ -36,6 +36,18 @@ namespace MlHost.Test.Controller
             pingResponse.Should().NotBeNull();
             pingResponse.Status.Should().NotBeNullOrEmpty();
             pingResponse.Status.Func(x => _validResponses.Contains(x!)).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public async Task GivenTestModel_WhenGetLogs_ShouldResponsed()
+        {
+            TestWebsiteHost host = await TestApplication.GetHost();
+            await host.WaitForStartup();
+
+            PingLogs pingLogs = await host.Client.GetMlLogs();
+            pingLogs.Should().NotBeNull();
+            pingLogs.Messages.Should().NotBeNull();
+            pingLogs.Messages!.Count.Should().BeGreaterThan(0);
         }
     }
 }

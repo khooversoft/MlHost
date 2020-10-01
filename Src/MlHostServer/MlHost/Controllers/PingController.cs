@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MlHost.Application;
-using MlHost.Services;
+using MlHost.Models;
 using MlHost.Tools;
 using MlHostSdk.Models;
 using NSwag.Annotations;

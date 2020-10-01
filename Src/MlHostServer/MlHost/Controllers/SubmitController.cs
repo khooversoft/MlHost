@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MlHost.Application;
+using MlHost.Models;
 using MlHost.Services;
 using MlHostSdk.Models;
 using NSwag.Annotations;
@@ -19,12 +20,12 @@ namespace MlHost.Controllers
     public class SubmitController : ControllerBase
     {
         private readonly ILogger<SubmitController> _logger;
-        private readonly IQuestion _question;
+        private readonly IPredictService _question;
         private readonly IExecutionContext _executionContext;
         private readonly IJson _json;
         private readonly IOption _option;
 
-        public SubmitController(ILogger<SubmitController> logger, IQuestion question, IExecutionContext executionContext, IJson json, IOption option)
+        public SubmitController(ILogger<SubmitController> logger, IPredictService question, IExecutionContext executionContext, IJson json, IOption option)
         {
             _logger = logger;
             _question = question;
@@ -61,7 +62,7 @@ namespace MlHost.Controllers
                 case ExecutionState.Running:
                     try
                     {
-                        PredictResponse hostResponse = await _question.Ask(new Question { Sentence = request.Sentence });
+                        PredictResponse hostResponse = await _question.Submit(new Question { Sentence = request.Request ?? request.Sentence });
                         _logger.LogInformation($"{nameof(Submit)} answer: {_json.Serialize(hostResponse)}");
 
                         var result = new PredictResponse

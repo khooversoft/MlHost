@@ -2,7 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MlHost.Test.Application;
 using MlHostSdk.Models;
+using MlHostSdk.Api;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
@@ -17,58 +19,53 @@ namespace MlHost.Test.Controller
         [TestMethod]
         public async Task GivenTestModel_WhenUsed_ShouldResponed()
         {
+            TestWebsiteHost host = await TestApplication.GetHost();
+            await host.WaitForStartup();
+
             var request = new PredictRequest
             {
-                Request = "I am happy",
+                Request = "I am sad",
             };
 
-            await ExecutePredict(request);
+            PredictResponse predictResponse = await host.Client.PostMlRequest(request);
+            Verify(predictResponse, request.Request);
         }
 
         [TestMethod]
         public async Task GivenTestModelOldApi_WhenUsed_ShouldResponed()
         {
+            TestWebsiteHost host = await TestApplication.GetHost();
+            await host.WaitForStartup();
+
             var question = new PredictRequest
             {
                 Sentence = "I am happy",
             };
 
-            await ExecutePredict(question);
+#pragma warning disable CS0618 // Type or member is obsolete
+            PredictResponse predictResponse = await host.Client.PostMlQuestion(question);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            Verify(predictResponse, question.Sentence);
         }
 
-        private async Task ExecutePredict(PredictRequest predictRequest)
+
+        private void Verify(PredictResponse predictResponse, string request)
         {
-            TestWebsiteHost host = await TestApplication.GetHost();
-            await host.WaitForStartup();
-
-            IJson jsonSerializer = host.Resolve<IJson>();
-
-            HttpResponseMessage response = await host.Client.PostAsJsonAsync("api/question", predictRequest);
-            var responseString = await response.Content.ReadAsStringAsync();
-            responseString.Should().NotBeNullOrEmpty();
-
-            PredictResponse predictResponse = jsonSerializer.Deserialize<PredictResponse>(responseString);
             predictResponse.Should().NotBeNull();
 
-            predictResponse.Request.Should().Be(predictRequest.Sentence);
+            predictResponse.Request.Should().Be(request);
 
             predictResponse.Model.Should().NotBeNull();
-            predictResponse.Model!.Name.Should().Be("emote-sent");
-            predictResponse.Model!.Version.Should().Be("0.1");
+            predictResponse.Model!.Name.Should().Be("fakeModel");
+            predictResponse.Model!.Version.Should().Be("1.0");
 
             predictResponse.Intents.Should().NotBeNull();
-            predictResponse.Intents!.Count.Should().Be(2);
-            predictResponse.Intents![0].Label.Should().Be("HAPPINESS");
-            predictResponse.Intents![0].Score.Should().Be(0.9824827);
-            predictResponse.Intents![1].Label.Should().Be("LOVE");
-            predictResponse.Intents![1].Score.Should().Be(0.009116333);
-
-            var logResponse = await host.Client.GetAsync("api/ping/Logs");
-            logResponse.EnsureSuccessStatusCode();
-
-            string logResponseString = await logResponse.Content.ReadAsStringAsync();
-            logResponseString.Should().NotBeNullOrEmpty();
-
+            predictResponse.Intents!.Count.Should().BeGreaterThan(2);
+            predictResponse.Intents.First().Label.Should().Be("HAPPINESS");
+            predictResponse.Intents.First().Score.Should().Be(0.9824827);
+            predictResponse.Intents.Last().Label.Should().Be("LOVE");
+            predictResponse.Intents.Last().Score.Should().Be(0.009116333);
         }
     }
 }

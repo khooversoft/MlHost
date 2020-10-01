@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
-    <PublishTrimmed>true></PublishTrimmed>
+    <PublishTrimmed>true&gt;</PublishTrimmed>
     <UserSecretsId>56573bb7-f7df-49cd-ad24-0d617c0cc8cc</UserSecretsId>
   </PropertyGroup>
 

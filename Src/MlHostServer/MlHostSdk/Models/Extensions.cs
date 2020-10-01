@@ -21,17 +21,7 @@ namespace MlHostSdk.Models
         {
             return predictRequest != null &&
                 (predictRequest.Request.ToNullIfEmpty() ?? predictRequest.Sentence.ToNullIfEmpty()) != null;
-
         }
-
-        //public static IList<Intent> GetTopIntents(this PredictResponse response) => (response.Intents ?? response.Intents ?? Array.Empty<Intent>())
-        //    .OrderByDescending(x => x.Score)
-        //    .Take(5)
-        //    .ToList();
-
-        //public static IList<Intent> GetIntents(this PredictResponse response) => (response.Intents ?? response.Intents ?? Array.Empty<Intent>())
-        //    .OrderByDescending(x => x.Score)
-        //    .ToList();
 
         public static string GetRequest(this PredictRequest predictRequest)
         {

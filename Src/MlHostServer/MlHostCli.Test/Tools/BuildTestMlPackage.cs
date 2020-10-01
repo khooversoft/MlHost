@@ -41,7 +41,8 @@ namespace MlHostCli.Test.Tools
                 {
                     ModelName = "test",
                     VersionId = "test_model_v1",
-                    RunCmd = "bin\\FakeModelServer.exe"
+                    RunCmd = "bin\\FakeModelServer.exe",
+                    StartSignal = "Running on",
                 },
                 Copy = new[]
                 {

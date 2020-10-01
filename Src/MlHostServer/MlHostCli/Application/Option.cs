@@ -41,6 +41,8 @@ namespace MlHostCli.Application
         public ISecretFilter? SecretFilter { get; set; }
 
         public IPropertyResolver? PropertyResolver { get; set; }
+
+        public bool IsRequireStore => Upload | Download | Delete;
     }
 
 }

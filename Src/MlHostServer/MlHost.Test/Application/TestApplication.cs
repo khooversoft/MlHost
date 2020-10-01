@@ -20,7 +20,7 @@ namespace MlHost.Test.Application
 
             try
             {
-                return _currentHost = _currentHost ?? new TestWebsiteHost().StartApiServer();
+                return _currentHost ??= new TestWebsiteHost().StartApiServer();
             }
             finally
             {

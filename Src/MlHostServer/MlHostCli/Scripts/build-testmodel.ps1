@@ -19,16 +19,16 @@
 $ErrorActionPreference = "Stop";
 $currentLocation = $PSScriptRoot;
 
-# Clean all bin and obj folders in the ML Host Server projects
+# ..\..\
+Write-Host "All bin and obj folders in the ML Host Server projects..."
+Get-ChildItem ..\..\ -Directory -Include bin,obj -Recurse | Remove-Item -Recurse -Force
 
-
+Write-Host "Rebuild all release and public fake server..."
+Write-Host "***"
+Write-Host "***"
 
 & dotnet build ..\..\MlHost.sln --configuration release;
 & dotnet publish ..\..\..\Tools\FakeModelServer\FakeModelServer.csproj --configuration release
-
-# ..\..\
-Get-ChildItem ..\.. -Directory -Include bin,obj -Recurse | Remove-Item -Recurse -Force
-
 
 $CliBinPath = [System.IO.Path]::Combine($currentLocation, "..\bin\Release\netcoreapp3.1\MlHostCli.exe");
 $SpecFile = [System.IO.Path]::Combine($currentLocation, "..\..\MlHost\MlPackage\test-model.mlPackageSpec.json");
@@ -43,6 +43,7 @@ $spec = @{
         "ModelName" = "test"
         "VersionId" = "fakeModel_v1"
         "RunCmd" = "FakeModelServer.exe"
+        "StartSignal" = "Running on"
     }
     "Copy" = @(
         @{

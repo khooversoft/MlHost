@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.6.0" />
     <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.4.0" />
+    <PackageReference Include="System.Net.Http.Json" Version="3.2.1" />
   </ItemGroup>
 
   <ItemGroup>

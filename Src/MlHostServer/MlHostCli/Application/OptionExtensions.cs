@@ -66,6 +66,7 @@ namespace MlHostCli.Application
                 .ForEach(x => x(option));
 
             (
+                option.Bind ||
                 option.Upload ||
                 option.Download ||
                 option.Delete ||

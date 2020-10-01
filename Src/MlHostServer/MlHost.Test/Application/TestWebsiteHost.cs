@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MlHost.Application;
-using MlHost.Services;
+using MlHost.Models;
 using MlHostSdk.Models;
 using System;
 using System.Net.Http;

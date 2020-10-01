@@ -1,4 +1,5 @@
 using FakeModelServer.Application;
+using FakeModelServer.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,7 +15,9 @@ namespace FakeModelServer
                 .SetArgs(args)
                 .Build();
 
-            CreateHostBuilder(args, option).Build().Run();
+            CreateHostBuilder(args, option)
+                .Build()
+                .Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args, IOption option) =>
@@ -33,6 +36,10 @@ namespace FakeModelServer
                 {
                     webBuilder.UseStartup<Startup>();
                     webBuilder.UseUrls($"http://localhost:{option.Port}");
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddHostedService<StartupNotifyService>();
                 });
     }
 }

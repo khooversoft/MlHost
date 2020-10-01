@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MlHost.Models;
 using MlHost.Services;
 using MlHost.Tools;
 using NSwag;
@@ -32,13 +33,14 @@ namespace MlHost
         {
             services.AddSingleton(TelemetryMemory);
             services.AddControllers();
-            services.AddSingleton<IQuestion, QuestionService>();
+            services.AddSingleton<IPredictService, PredictService>();
             services.AddSingleton<IExecutionContext, ExecutionContext>();
-            services.AddSingleton<IExecutePython, ExecutePython>();
+            services.AddSingleton<IExecuteModel, ExecuteModel>();
             services.AddSingleton<IJson, Json>();
             services.AddSingleton<IDeployPackage, DeployPackage>();
+            services.AddSingleton<ICleanupProcess, CleanupProcess>();
 
-            services.AddHostedService<PythonHostedService>();
+            services.AddHostedService<MlHostedService>();
 
             services.AddSwaggerDocument(config =>
             {

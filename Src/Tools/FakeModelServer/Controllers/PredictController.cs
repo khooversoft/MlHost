@@ -8,7 +8,7 @@ using MlHostSdk.Models;
 
 namespace FakeModelServer.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("predict")]
     [ApiController]
     public class PredictController : ControllerBase
     {
@@ -36,7 +36,7 @@ namespace FakeModelServer.Controllers
                     Name = "fakeModel",
                     Version = "1.0"
                 },
-                Request = request.Request,
+                Request = request.Request ?? request.Sentence,
                 Intents = _testResults
                     .Concat(_fakeIntents)
                     .ToArray(),
