@@ -21,12 +21,14 @@ namespace MlHostCli.Activity
             _logger = logger;
         }
 
-        public Task Delete(CancellationToken token)
+        public async Task Delete(CancellationToken token)
         {
             var modelId = new ModelId(_option.ModelName!, _option.VersionId!);
 
             _logger.LogInformation($"Deleting model {modelId}");
-            return _modelRepository.Delete(modelId, token);
+            bool deleted = await _modelRepository.Delete(modelId, token);
+
+            if (!deleted) _logger.LogInformation($"The {modelId} does not exist");
         }
     }
 }

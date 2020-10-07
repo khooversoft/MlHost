@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Routing.Constraints;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using MlFrontEnd.Application;
+using MlHostSdk.Api;
 using MlHostSdk.Models;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -20,19 +19,15 @@ namespace MlFrontEnd.Services
         private readonly ConcurrentDictionary<string, HttpClient> _clients = new ConcurrentDictionary<string, HttpClient>(StringComparer.OrdinalIgnoreCase);
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IOption _option;
-        private readonly IJson _json;
         private readonly ILogger<HostProxyService> _logger;
-        //private readonly CancellationToken _cancellationToken;
 
-        public HostProxyService(IHttpClientFactory httpClientFactory, IOption option, IJson json, ILogger<HostProxyService> logger)
+        public HostProxyService(IHttpClientFactory httpClientFactory, IOption option, ILogger<HostProxyService> logger)
         {
             _httpClientFactory = httpClientFactory;
             _option = option;
-            _json = json;
             _logger = logger;
-            //_cancellationToken = cancellationToken;
 
-            foreach(var item in _option.Hosts)
+            foreach (var item in _option.Hosts)
             {
                 _clients.TryAdd(item.VersionId, _httpClientFactory.CreateClient(item.VersionId))
                     .VerifyAssert(x => x == true, $"Failed to add http client for {item.VersionId}");
@@ -48,15 +43,27 @@ namespace MlFrontEnd.Services
 
             _logger.LogTrace($"{nameof(Submit)}: Calling model {versionId}, Url={httpClient!.BaseAddress}");
 
-            HttpResponseMessage httpResponseMessage = await httpClient.PostAsJsonAsync((string?)null, predictRequest, cancellationToken);
-            httpResponseMessage.EnsureSuccessStatusCode();
-
             try
             {
-                string json = await httpResponseMessage.Content.ReadAsStringAsync();
-                return _json.Deserialize<PredictResponse>(json);
+                PredictResponse response = await httpClient.PostMlRequest(predictRequest);
+
+                return new PredictResponse
+                {
+                    Model = new Model
+                    {
+                        Name = response.Model?.Name,
+                        Version = response.Model?.Version,
+                    },
+
+                    Request = response.Request,
+
+                    Intents = (response.Intents ?? Array.Empty<Intent>())
+                        .OrderByDescending(x => x.Score)
+                        .Take(predictRequest.IntentLimit ?? response.Intents?.Count ?? 0)
+                        .ToList(),
+                };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, $"Format error for failed call to model {versionId}, Url={httpClient!.BaseAddress}");
                 return null;

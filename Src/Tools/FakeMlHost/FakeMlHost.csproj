@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\MlHostServer\MlHostSdk\MlHostSdk.csproj" />
+    <ProjectReference Include="..\Toolbox\Toolbox.csproj" />
+  </ItemGroup>
+
+</Project>

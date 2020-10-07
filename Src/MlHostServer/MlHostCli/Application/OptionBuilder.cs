@@ -6,9 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Toolbox.Models;
 using Toolbox.Services;
 using Toolbox.Tools;
+using Toolbox.Application;
 
 namespace MlHostCli.Application
 {
@@ -44,6 +46,7 @@ namespace MlHostCli.Application
             string? configFile = null;
             string? secretId = null;
             string? accountKey = null;
+            string? environment = null;
             Option option = null!;
 
             string createAccountKeyCommand(string accountKey) => $"{nameof(option.Store)}:{nameof(option.Store.AccountKey)}=" + accountKey;
@@ -54,6 +57,7 @@ namespace MlHostCli.Application
             {
                 option = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
+                    .Func(x => GetEnvironmentConfig(environment) switch { Stream v => x.AddJsonStream(v), _ => x })
                     .Func(x => configFile.ToNullIfEmpty() switch { string v => x.AddJsonFile(configFile), _ => x })
                     .Func(x => secretId.ToNullIfEmpty() switch { string v => x.AddUserSecrets(v), _ => x })
                     .AddCommandLine(args.Concat(accountKey switch { string v => new[] { createAccountKeyCommand(accountKey) }, _ => Enumerable.Empty<string>() }).ToArray())
@@ -72,7 +76,7 @@ namespace MlHostCli.Application
                         configFile = v.ConfigFile;
                         continue;
 
-                    case Option v when v.Store?.AccountKey.ToNullIfEmpty() == null && v.SecretId.ToNullIfEmpty() != null && secretId == null:
+                    case Option v when v.Store?.AccountKey.ToNullIfEmpty() == null && !v.SecretId.IsEmpty() && secretId == null:
                         secretId = v.SecretId;
                         continue;
 
@@ -80,6 +84,10 @@ namespace MlHostCli.Application
                         accountKey = GetAccountKeyFromKeyVault(option);
                         if (accountKey != null) continue;
                         break;
+
+                    case Option v when environment == null:
+                        environment = option.Environment;
+                        continue;
                 }
 
                 break;
@@ -125,6 +133,19 @@ namespace MlHostCli.Application
                 option.DumpConfigurations();
                 throw;
             }
+        }
+
+        private Stream? GetEnvironmentConfig(string? environment)
+        {
+            if (environment == null) return null;
+
+            string resourceId = environment
+                .ConvertToEnvironment()
+                .ConvertToResourceId();
+
+            return Assembly.GetAssembly(typeof(OptionBuilder))
+                !.GetManifestResourceStream(resourceId)
+                .VerifyNotNull($"{resourceId} not found");
         }
     }
 }

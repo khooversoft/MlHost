@@ -23,5 +23,18 @@ namespace MlHostSdk.Api
                 .GetContent<PredictResponse>();
 
         public static async Task<PingLogs> GetMlLogs(this HttpClient httpClient) => await httpClient.GetFromJsonAsync<PingLogs>("api/ping/Logs");
+
+        public static async Task<BatchResponse> PostMlBatchRequest(this HttpClient httpClient, BatchRequest batchRequest) =>
+            await httpClient.PostAsJsonAsync("api/submit", batchRequest)
+                .GetContent<BatchResponse>();
+
+        public static async Task<PingResponse> Ping(this HttpClient httpClient) =>
+            await httpClient.GetFromJsonAsync<PingResponse>("api/ping");
+
+        public static async Task<PingResponse> Running(this HttpClient httpClient) =>
+            await httpClient.GetFromJsonAsync<PingResponse>("api/ping/running");
+
+        public static async Task<PingResponse> Ready(this HttpClient httpClient) =>
+            await httpClient.GetFromJsonAsync<PingResponse>("api/ping/ready");
     }
 }

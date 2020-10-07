@@ -2,7 +2,7 @@
   "profiles": {
     "MlHostCli": {
       "commandName": "Project",
-      "commandLineArgs": "build specfile=D:\\ML-Models\\Build\\idcard-classifier-v1.mlPackageSpec.json",
+      "commandLineArgs": "build upload secretid=mlhostcli.exe SpecFile=D:\\ML-Models\\V2-Packages\\emotional-sentiment-v1\\emotional.mlPackageSpec.json",
       "environmentVariables": {
         "RunAs": "CurrentUser"
       }

@@ -1,51 +1,40 @@
-﻿<#
+<#
 .DESCRIPTION
-	Execute MlHostCli to download a ML Model from ADLS
-
-.PARAMETER ModelName
-	Name of the model (lower alpha numeric, '-').  Example: "sentiment"
-
-.PARAMETER VersionId
-	Name of the version (lower alpha numeric, '-').  Example: "sentiment-demo"
-
-.PARAMETER PackagePath
-	Path to ML Package
+	Generate ML Test model to be used with intergration tests, uses fake model
 
 .PARAMETER CliBinPath
-	Path to the MlHostCli.EXE utility (uploads the ML Model)
+	Path where ML Host CLI exceute is
 
-.PARAMETER ConfigFile
-	Path to the configuration file, stores Key Vault and Store configurations.
+.PARAMETER SpecFile
+	Path where ML Package Specification file is store
 
-.PARAMETER Force
-	Overwrite ML package in ADLS.
+.PARAMETER PackageFile
+	Where to write ML Package
+
+.PARAMETER ModelExePath
+	Path of execute for fake model server
 #>
 
 Param(
 	[Parameter(Mandatory)]
-	[string] $ModelName,
+    [string] $SpecPath,
+    
+    [switch] $UseSecretId,
 
-	[Parameter(Mandatory)]
-	[string] $VersionId,
-
-	[Parameter(Mandatory)]
-	[string] $PackagePath,
-
-	[string] $CliBinPath,
-
-	[string] $ConfigFile,
-
-	[switch] $Force
+	[string] $Configuration = "debug"
 )
 
 #$debugpreference = "Continue";
 $ErrorActionPreference = "Stop";
 $currentLocation = $PSScriptRoot;
 
-if( !$CliBinPath )
+if( !(Test-Path $SpecPath) )
 {
-	$CliBinPath = [System.IO.Path]::Combine($currentLocation, "..\bin\Release\netcoreapp3.1\MlHostCli.exe");
+	Write-Error "Cannot find $SpecPath";
+	return;
 }
+
+$CliBinPath = [System.IO.Path]::Combine($currentLocation, "..\bin\$Configuration\netcoreapp3.1\MlHostCli.exe");
 
 if( !(Test-Path $CliBinPath) )
 {
@@ -53,28 +42,10 @@ if( !(Test-Path $CliBinPath) )
 	return;
 }
 
-if( !$ConfigFile )
+if( $UseSecretId )
 {
-	$currentLocation = Get-Location;
-	$ConfigFile = [System.IO.Path]::Combine($currentLocation, "..\Config\PublishProdConfig-Activate.json");
+    $SecretCmd = "SecretId=MlHostCli.exe";
 }
 
-if( !(Test-Path $ConfigFile) )
-{
-	Write-Error "Cannot find configuration file at $ConfigFile";
-	return;
-}
-
-if( !(Test-Path $PackagePath) )
-{
-	Write-Error "Cannot find ML Package at $PackagePath";
-	return;
-}
-
-if( $Force )
-{
-	$forceCmd = "Force=true"
-}
-
-& $CliBinPath Upload ModelName=$ModelName VersionId=$VersionId PackageFile=$PackagePath ConfigFile=$ConfigFile $forceCmd;
+& $CliBinPath Build Delete Upload $SecretCmd SpecFile=$SpecPath;
 

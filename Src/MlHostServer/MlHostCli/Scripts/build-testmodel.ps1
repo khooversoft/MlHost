@@ -1,18 +1,6 @@
 <#
 .DESCRIPTION
-	Generate ML Test model to be used with intergration tests, uses fake model
-
-.PARAMETER CliBinPath
-	Path where ML Host CLI exceute is
-
-.PARAMETER SpecFile
-	Path where ML Package Specification file is store
-
-.PARAMETER PackageFile
-	Where to write ML Package
-
-.PARAMETER ModelExePath
-	Path of execute for fake model server
+	CLear, build, publish, and build test ML model used for testing
 #>
 
 #$debugpreference = "Continue";
@@ -20,7 +8,7 @@ $ErrorActionPreference = "Stop";
 $currentLocation = $PSScriptRoot;
 
 # ..\..\
-Write-Host "All bin and obj folders in the ML Host Server projects..."
+Write-Host "Clear our all bin and obj folders in the ML Host Server projects..."
 Get-ChildItem ..\..\ -Directory -Include bin,obj -Recurse | Remove-Item -Recurse -Force
 
 Write-Host "Rebuild all release and public fake server..."

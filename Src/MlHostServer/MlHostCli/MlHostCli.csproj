@@ -5,23 +5,19 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Nullable>enable</Nullable>
     <UserSecretsId>MlHostCli.exe</UserSecretsId>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
+    <Version>2.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Config\FakeHostBuild.json" />
-    <None Remove="Config\SwaggerMaster.json" />
+    <None Remove="Configs\dev-config.json" />
+    <None Remove="Configs\SwaggerMaster.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Config\FakeHostBuild.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Config\SwaggerMaster.json" />
+    <EmbeddedResource Include="Configs\dev-config.json" />
+    <EmbeddedResource Include="Configs\SwaggerMaster.json" />
   </ItemGroup>
 
   <ItemGroup>

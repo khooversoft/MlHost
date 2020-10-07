@@ -11,7 +11,7 @@
   "profiles": {
     "MlHost": {
       "commandName": "Project",
-      "commandLineArgs": "LogFile=d:\\work\\mlhost\\intent PackageFile=D:\\ML-Models\\v3\\intent-classifier-v3.mlPackage",
+      "commandLineArgs": "PackageFile=D:\\ML-Models\\V2-Packages\\idcard-classifier-v1\\idcard-classifier-v1a.mlPackage Port=5000 ModelPort=5020",
       "launchUrl": "weatherforecast",
       "environmentVariables": {
         "RunAs": "CurrentUser",

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using MlHostSdk.Repository;
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace MlHostCli.Test.Application
         /// </summary>
         public static ModelFixture GetModelFixture()
         {
-            lock(_lock)
+            lock (_lock)
             {
                 if (_current != null) return _current;
 
@@ -52,7 +53,7 @@ namespace MlHostCli.Test.Application
                 config.Bind(blobStoreOption, x => x.BindNonPublicProperties = true);
                 blobStoreOption.Verify();
 
-                return _current = new ModelFixture(new DatalakeModelStore(new DatalakeStore(blobStoreOption), new Json()));
+                return _current = new ModelFixture(new DatalakeModelStore(new DatalakeStore(blobStoreOption, new NullLogger<DatalakeStore>()), new Json()));
             }
         }
     }

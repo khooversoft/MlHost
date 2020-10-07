@@ -38,13 +38,5 @@ namespace Toolbox.Repository
                 CreatedOn = subject.CreatedOn,
             };
         }
-
-        public static void Verify(this StoreOption? storeOption)
-        {
-            storeOption.VerifyNotNull("StoreOption is required");
-            storeOption!.ContainerName.VerifyNotEmpty($"{nameof(storeOption.ContainerName)} is missing");
-            storeOption!.AccountName.VerifyNotEmpty($"{nameof(storeOption.AccountName)} is missing");
-            storeOption!.AccountKey.VerifyNotEmpty($"{nameof(storeOption.AccountKey)} is missing");
-        }
     }
 }

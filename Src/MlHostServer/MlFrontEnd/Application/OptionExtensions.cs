@@ -16,8 +16,7 @@ namespace MlFrontEnd.Application
             option.VerifyNotNull(nameof(option));
 
             option.Environment
-                .VerifyNotEmpty("Environment is required")
-                .VerifyAssert(x => x.ConvertToEnvironment() != RunEnvironment.Unknown, "Invalid environment");
+                .VerifyNotEmpty("Environment is required");
 
             option.Hosts
                 .VerifyNotNull("Host is required")
@@ -30,25 +29,34 @@ namespace MlFrontEnd.Application
                 .ForEach(x => x.Verify());
         }
 
-        public static string ConvertToResourceId(this RunEnvironment subject) => subject switch
+        public static string? ConvertToResourceId(this RunEnvironment subject) => subject switch
         {
             RunEnvironment.Dev => $"{baseId}.dev-config.json",
             RunEnvironment.Acpt => $"{baseId}.acpt-config.json",
             RunEnvironment.Prod => $"{baseId}.prod-config.json",
 
-            _ => throw new InvalidOperationException(),
+            _ => null,
         };
-
-        //public static HostOption GetHostOption(this IOption option, string versionId) => option.VerifyNotNull(nameof(option))
-        //    .Hosts
-        //    .Where(x => string.Equals(x.VersionId, versionId, StringComparison.OrdinalIgnoreCase))
-        //    .FirstOrDefault();
 
         public static void Verify(this HostOption hostOption)
         {
             hostOption.VerifyNotNull("Host is required");
             hostOption.VersionId.VerifyNotEmpty("VersionId is required");
             hostOption.Uri.VerifyNotEmpty($"Uri for {hostOption.VersionId} is required");
+        }
+
+        public static void DumpConfigurations(this IOption option)
+        {
+            const int maxWidth = 80;
+
+            option.GetConfigValues()
+                .Select(x => "  " + x)
+                .Prepend(new string('=', maxWidth))
+                .Prepend("Current configurations")
+                .Prepend(string.Empty)
+                .Append(string.Empty)
+                .Append(string.Empty)
+                .ForEach(x => Console.WriteLine(x));
         }
     }
 }

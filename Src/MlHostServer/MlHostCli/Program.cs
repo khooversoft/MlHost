@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Toolbox.Repository;
 using Toolbox.Services;
 using Toolbox.Tools;
+using System.Security.Cryptography.X509Certificates;
 
 [assembly: InternalsVisibleTo("MlHostCli.Test")]
 
@@ -32,13 +33,13 @@ namespace MlHostCli
             }
             catch (ArgumentException ex)
             {
-                Console.WriteLine("Error: " + ex.Message);
+                Console.WriteLine("*Error: " + ex.Message + ex.ToString());
                 DisplayStartDetails(args);
             }
+            catch (TaskCanceledException) { }
             catch (Exception ex)
             {
                 Console.WriteLine("Unhanded exception: " + ex.ToString());
-                DisplayStartDetails(args);
             }
 
             return _error;
@@ -79,16 +80,16 @@ namespace MlHostCli
 
                 var activities = new Func<Task>[]
                 {
+                    () => option.Build ? container.Resolve<BuildActivity>().Build(cancellationTokenSource.Token) : Task.CompletedTask,
+                    () => option.Delete ? container.Resolve<DeleteModelActivity>().Delete(cancellationTokenSource.Token) : Task.CompletedTask,
                     () => option.Upload ? container.Resolve<UploadModelActivity>().Upload(cancellationTokenSource.Token) : Task.CompletedTask,
                     () => option.Download ? container.Resolve<DownloadModelActivity>().Download(cancellationTokenSource.Token) : Task.CompletedTask,
-                    () => option.Delete ? container.Resolve<DeleteModelActivity>().Delete(cancellationTokenSource.Token) : Task.CompletedTask,
                     () => option.Bind ? container.Resolve<BindActivity>().Bind(cancellationTokenSource.Token) : Task.CompletedTask,
                     () => option.Swagger ? container.Resolve<BuildSwaggerActivity>().Write(cancellationTokenSource.Token) : Task.CompletedTask,
-                    () => option.Build ? container.Resolve<BuildActivity>().Build(cancellationTokenSource.Token) : Task.CompletedTask,
                 };
 
                 await activities
-                    .ForEachAsync(async x => await x());
+                    .ForEachAsync(async x => await x(), cancellationTokenSource.Token);
             }
 
             Console.WriteLine();
@@ -111,10 +112,11 @@ namespace MlHostCli
             var loggerFactory = LoggerFactory.Create(configure => configure.AddConsole());
             builder.RegisterInstance(loggerFactory).As<ILoggerFactory>().SingleInstance();
             builder.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>)).InstancePerDependency();
-            
+
             if (option.Store != null)
             {
-                builder.RegisterInstance(new DatalakeStore(option.Store)).As<IDatalakeStore>();
+                builder.RegisterInstance(option.Store);
+                builder.RegisterType<DatalakeStore>().As<IDatalakeStore>().InstancePerLifetimeScope();
                 builder.RegisterType<DatalakeModelStore>().As<IModelStore>().InstancePerLifetimeScope();
 
                 builder.RegisterType<DeleteModelActivity>();

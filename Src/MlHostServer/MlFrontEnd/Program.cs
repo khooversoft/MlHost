@@ -24,6 +24,8 @@ namespace MlHostFrontEnd
                 .SetArgs(args)
                 .Build();
 
+            option.DumpConfigurations();
+
             CreateHostBuilder(args, option)
                 .Build()
                 .Run();
@@ -37,7 +39,7 @@ namespace MlHostFrontEnd
                 })
                 .ConfigureLogging(config =>
                 {
-                    if( option.RunEnvironment == RunEnvironment.Dev)
+                    if (option.RunEnvironment == RunEnvironment.Dev)
                     {
                         config
                             .AddConsole()
@@ -48,7 +50,11 @@ namespace MlHostFrontEnd
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    if (option.ApplicationUrl != null) webBuilder.UseUrls(option.ApplicationUrl);
+
+                    if (option.RunEnvironment == RunEnvironment.Dev)
+                    {
+                        if (option.ApplicationUrl != null) webBuilder.UseUrls(option.ApplicationUrl);
+                    }
                 });
     }
 }

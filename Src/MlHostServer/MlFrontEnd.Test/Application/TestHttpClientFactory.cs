@@ -10,9 +10,9 @@ namespace MlFrontEnd.Test.Application
 {
     internal class TestHttpClientFactory : IHttpClientFactory
     {
-        private readonly ConcurrentDictionary<string, TestMlHost> _hosts = new ConcurrentDictionary<string, TestMlHost>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, TestFakeMlHost> _hosts = new ConcurrentDictionary<string, TestFakeMlHost>(StringComparer.OrdinalIgnoreCase);
 
-        public TestHttpClientFactory(IEnumerable<KeyValuePair<string, TestMlHost>> hosts)
+        public TestHttpClientFactory(IEnumerable<KeyValuePair<string, TestFakeMlHost>> hosts)
         {
             hosts.VerifyNotNull(nameof(hosts));
 

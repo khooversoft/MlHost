@@ -18,17 +18,9 @@ namespace MlFrontEnd.Application
 
         public string? ConfigFile { get; set; }
 
-        public OptionBuilder SetArgs(params string[] args)
-        {
-            Args = args.ToArray();
-            return this;
-        }
+        public OptionBuilder SetArgs(params string[] args) => this.Action(x => x.Args = args.ToArray());
 
-        public OptionBuilder SetConfigFile(string configFile)
-        {
-            ConfigFile = configFile;
-            return this;
-        }
+        public OptionBuilder SetConfigFile(string configFile) => this.Action(x => x.ConfigFile = configFile);
 
         public IOption Build()
         {
@@ -43,8 +35,8 @@ namespace MlFrontEnd.Application
                 .Select(x => switchNames.Contains(x, StringComparer.OrdinalIgnoreCase) ? x + "=true" : x)
                 .ToArray();
 
-            string? secretId = null;
-            Option option = new Option();
+            string? environment = null;
+            Option option;
 
             // Because ordering or placement on critical configuration can different, loop through a process
             // of building the correct configuration.  Pattern cases below are in priority order.
@@ -52,17 +44,15 @@ namespace MlFrontEnd.Application
             {
                 option = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddEnvironmentVariables("MlFrontEnd_")
-                    .Func(x => GetEnvironmentConfig(option) switch { Stream v => x.AddJsonStream(v), _ => x })
-                    .Func(x => secretId.ToNullIfEmpty() switch { string v => x.AddUserSecrets(v), _ => x })
+                    .Func(x => GetEnvironmentConfig(environment) switch { Stream v => x.AddJsonStream(v), _ => x })
                     .AddCommandLine(args)
                     .Build()
                     .Bind<Option>();
 
                 switch (option)
                 {
-                    case Option v when v.SecretId.ToNullIfEmpty() != null && secretId == null:
-                        secretId = v.SecretId;
+                    case Option v when option.Environment.ToNullIfEmpty() != null && environment == null:
+                        environment = option.Environment;
                         continue;
                 }
 
@@ -75,16 +65,18 @@ namespace MlFrontEnd.Application
             return option;
         }
 
-        private Stream? GetEnvironmentConfig(Option option)
+        private Stream? GetEnvironmentConfig(string? environment)
         {
-            if (option?.Environment?.ToNullIfEmpty() == null) return null;
+            if (environment == null) return null;
 
-            string resourceId = option.Environment
+            string? resourceId = environment
                 .ConvertToEnvironment()
                 .ConvertToResourceId();
 
+            if (resourceId.IsEmpty()) return null;
+
             return Assembly.GetAssembly(typeof(OptionBuilder))
-                !.GetManifestResourceStream(resourceId)
+                !.GetManifestResourceStream(resourceId!)
                 .VerifyNotNull($"{resourceId} not found");
         }
     }

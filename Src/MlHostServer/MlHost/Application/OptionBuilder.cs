@@ -3,6 +3,8 @@ using System;
 using System.Linq;
 using Toolbox.Tools;
 using Toolbox.Application;
+using System.Collections.Generic;
+using Toolbox.Services;
 
 namespace MlHost.Application
 {
@@ -28,6 +30,14 @@ namespace MlHost.Application
 
             option.Verify();
             option.RunEnvironment = option.Environment.ConvertToEnvironment();
+
+            option.PropertyResolver = new PropertyResolver(new[]
+            {
+                new KeyValuePair<string, string>("port", option.Port.ToString()),
+                new KeyValuePair<string, string>("modelPort", option.ModelPort.ToString()),
+                new KeyValuePair<string, string>("serviceUri", option.ServiceUri),
+                new KeyValuePair<string, string>("runEnvironment", option.RunEnvironment.ToString()),
+            });
 
             return option;
         }

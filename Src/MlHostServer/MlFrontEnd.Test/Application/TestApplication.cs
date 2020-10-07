@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Concurrent;
@@ -15,10 +16,10 @@ namespace MlFrontEnd.Test.Application
     [TestClass]
     public static class TestApplication
     {
-        private static readonly ConcurrentDictionary<string, TestMlHost> _hosts = new ConcurrentDictionary<string, TestMlHost>(StringComparer.OrdinalIgnoreCase);
-        private static TestFrontendHost? _testFrontendHost;
-        private static readonly SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
+        private static readonly ConcurrentDictionary<string, TestFakeMlHost> _hosts = new ConcurrentDictionary<string, TestFakeMlHost>(StringComparer.OrdinalIgnoreCase);
         private static ILogger? _logger;
+        private static TestFrontendHost? _testFrontendHost;
+        private static readonly object _lock = new object();
 
         static TestApplication()
         {
@@ -26,59 +27,12 @@ namespace MlFrontEnd.Test.Application
                 .CreateLogger("test");
         }
 
-        internal static ILogger? CreateLogger() => _logger;
-
-        internal static async Task<TestFrontendHost> StartHosts(string[] versionIds)
+        internal static IReadOnlyList<string> VersionIds { get; } = new[]
         {
-            if (_testFrontendHost != null) return _testFrontendHost;
-
-            versionIds
-                .VerifyNotNull(nameof(versionIds))
-                .VerifyAssert(x => x.Length > 0, $"{nameof(versionIds)} list is empty");
-
-            await _lock.WaitAsync();
-
-            try
-            {
-                TestMlHost[] hosts = await Task.WhenAll<TestMlHost>(versionIds.Select(x => GetMlHost(x)));
-
-                IReadOnlyList<KeyValuePair<string, TestMlHost>> hostList = versionIds
-                    .Zip(hosts, (o, i) => new KeyValuePair<string, TestMlHost>(o, i))
-                    .ToArray();
-
-                //IReadOnlyList<KeyValuePair<string, TestMlHost>> hostList = new[]
-                //{
-                //    new KeyValuePair<string, TestMlHost>(versionIds[0], null!),
-                //};
-
-                return _testFrontendHost = new TestFrontendHost()
-                    .StartApiServer(hostList);
-            }
-            finally
-            {
-                _lock.Release();
-            }
-        }
-
-        private static async Task<TestMlHost> GetMlHost(string versionId)
-        {
-            versionId.VerifyNotEmpty(nameof(versionId));
-
-            if (_hosts.TryGetValue(versionId, out TestMlHost? testMlHost)) return testMlHost;
-
-            _logger.LogInformation($"Starting server {versionId}");
-
-            var testHost = new TestMlHost();
-            _hosts.TryAdd(versionId, testHost)
-                .VerifyAssert(x => x == true, "Failed to add");
-
-            testHost.StartApiServer();
-
-            _logger.LogInformation($"Waiting for server {versionId} to start");
-            await testHost.WaitForStartup();
-
-            return testHost;
-        }
+            "model_1",
+            "model_2",
+            "model_3",
+        };
 
         [AssemblyCleanup]
         public static void Cleanup()
@@ -89,6 +43,38 @@ namespace MlFrontEnd.Test.Application
                 .ForEach(x => x.Shutdown());
 
             _hosts.Clear();
+        }
+
+        internal static ILogger? CreateLogger() => _logger;
+
+        internal static TestFrontendHost StartHosts()
+        {
+            lock (_lock)
+            {
+                if (_testFrontendHost != null) return _testFrontendHost;
+
+                VersionIds
+                    .ForEach(x => GetMlHost(x));
+
+                return _testFrontendHost = new TestFrontendHost()
+                    .StartApiServer(_hosts.ToList());
+            }
+        }
+
+        private static void GetMlHost(string versionId)
+        {
+            versionId.VerifyNotEmpty(nameof(versionId));
+
+            if (_hosts.TryGetValue(versionId, out TestFakeMlHost? testMlHost)) return;
+
+            _logger.LogInformation($"Starting server {versionId}");
+
+            var testHost = new TestFakeMlHost(versionId);
+
+            _hosts.TryAdd(versionId, testHost)
+                .VerifyAssert(x => x == true, "Failed to add");
+
+            testHost.StartApiServer();
         }
     }
 }

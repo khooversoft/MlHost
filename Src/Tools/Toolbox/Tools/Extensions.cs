@@ -33,7 +33,7 @@ namespace Toolbox.Tools
         public static T VerifyAssert<T, TException>(this T subject, Func<T, bool> test, Func<T, string> message) where TException : Exception => test(subject) switch
         {
             true => subject,
-            _ => throw (Exception)Activator.CreateInstance(typeof(T), message(subject))!
+            _ => throw (Exception)Activator.CreateInstance(typeof(TException), message(subject))!
         };
 
         public static TResult Func<T, TResult>(this T subject, Func<T, TResult> function) => function.VerifyNotNull(nameof(subject))(subject);
@@ -47,24 +47,28 @@ namespace Toolbox.Tools
             return subject;
         }
 
-        public static void ForEach<T>(this IEnumerable<T> subjects, Action<T> action)
+        public static void ForEach<T>(this IEnumerable<T> subjects, Action<T> action, CancellationToken token = default)
         {
             subjects.VerifyNotNull(nameof(subjects));
             action.VerifyNotNull(nameof(action));
 
             foreach (var item in subjects)
             {
+                if (token.IsCancellationRequested) return;
+
                 action(item);
             }
         }
 
-        public static async Task ForEachAsync<T>(this IEnumerable<T> subjects, Func<T, Task> action)
+        public static async Task ForEachAsync<T>(this IEnumerable<T> subjects, Func<T, Task> action, CancellationToken token = default)
         {
             subjects.VerifyNotNull(nameof(subjects));
             action.VerifyNotNull(nameof(action));
 
             foreach (var item in subjects)
             {
+                if (token.IsCancellationRequested) return;
+
                 await action(item);
             }
         }

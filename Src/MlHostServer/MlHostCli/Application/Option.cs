@@ -1,6 +1,7 @@
 ﻿using MlHostSdk.Package;
 using System.Collections;
 using System.Collections.Generic;
+using Toolbox.Application;
 using Toolbox.Models;
 using Toolbox.Services;
 
@@ -29,10 +30,11 @@ namespace MlHostCli.Application
         public string? SecretId { get; set; }
 
         public string? PackageFile { get; set; }
-
-        public string? Environment { get; set; }
         public string? SwaggerFile { get; set; }
         public string? SpecFile { get; set; }
+
+        public string? Environment { get; set; } = "dev";
+        public RunEnvironment RunEnvironment { get; set; } = RunEnvironment.Unknown;
 
         public StoreOption? Store { get; set; }
 
@@ -44,5 +46,4 @@ namespace MlHostCli.Application
 
         public bool IsRequireStore => Upload | Download | Delete;
     }
-
 }

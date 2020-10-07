@@ -1,0 +1,10 @@
+{
+    "KeyVault": {
+        "KeyVaultName": "mltest-kv",
+        "KeyName": "mlteststoragev1-accountkey"
+    },
+    "Store": {
+        "AccountName": "mltestadlsv1",
+        "ContainerName": "mldatamodels"
+    }
+}

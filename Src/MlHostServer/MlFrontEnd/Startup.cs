@@ -15,6 +15,8 @@ using MlFrontEnd.Application;
 using MlFrontEnd.Services;
 using Polly;
 using Polly.Extensions.Http;
+using Toolbox.Application;
+using Toolbox.Services;
 
 namespace MlHostFrontEnd
 {
@@ -34,10 +36,7 @@ namespace MlHostFrontEnd
 
             services.AddSingleton<BatchService>();
             services.AddSingleton<HostProxyService>();
-
-            //services.AddHttpClient<HostProxyService>()
-            //    .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
-            //    .AddPolicyHandler(GetRetryPolicy());
+            services.AddSingleton<IJson, Json>();
 
             // Create HttpClient factory for each version Id
             using ServiceProvider service = services.BuildServiceProvider();
@@ -46,21 +45,26 @@ namespace MlHostFrontEnd
             foreach(var item in option.Hosts)
             {
                 services
-                    .AddHttpClient(item.VersionId, httpClient => httpClient.BaseAddress = new Uri(item.Uri))
-                        .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
-                        .AddPolicyHandler(GetRetryPolicy());
+                    .AddHttpClient(item.VersionId, httpClient => httpClient.BaseAddress = new Uri(item.Uri));
+
+                //services
+                //    .AddHttpClient(item.VersionId, httpClient => httpClient.BaseAddress = new Uri(item.Uri))
+                //        .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
+                //        .AddPolicyHandler(GetRetryPolicy());
             }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOption option)
         {
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() || option.RunEnvironment == RunEnvironment.Dev)
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseHttpsRedirection();
+            else
+            {
+                app.UseHttpsRedirection();
+            }
 
             app.UseRouting();
 

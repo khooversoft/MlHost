@@ -28,6 +28,8 @@ namespace MlHost
                 .SetJsonFile("appsettings.json")
                 .Build();
 
+            option.DumpConfigurations();
+
             CreateHostBuilder(args, option)
                 .Build()
                 .Run();
@@ -46,19 +48,23 @@ namespace MlHost
                 })
                 .ConfigureLogging(builder =>
                 {
-                    if (option.RunEnvironment != RunEnvironment.Dev)
+                    switch (option.RunEnvironment)
                     {
-                        builder.AddFilter<Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider>("", LogLevel.Trace);
+                        case RunEnvironment.Dev:
+                            builder.AddConsole();
+                            builder.AddDebug();
+                            builder.AddFilter<DebugLoggerProvider>(x => true);
+                            break;
+
+                        default:
+                            builder.AddFilter<Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider>("", LogLevel.Trace);
+                            break;
                     }
 
                     if (option.LogFile.ToNullIfEmpty() != null)
                     {
                         builder.AddFile(Path.GetDirectoryName(option.LogFile)!, Path.GetFileNameWithoutExtension(option.LogFile)!);
                     }
-
-                    builder.AddDebug();
-                    builder.AddFilter<DebugLoggerProvider>(x => true);
-                    builder.AddFilter(x => true);
 
                 })
                 .ConfigureWebHostDefaults(webBuilder =>

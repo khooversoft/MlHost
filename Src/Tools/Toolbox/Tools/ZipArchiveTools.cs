@@ -65,7 +65,8 @@ namespace Toolbox.Tools
 
                 monitor?.Invoke(new FileActionProgress(zipFiles.Length, ++fileCount));
 
-                Path.Combine(toFolder, zipFile.FilePath)
+                Path.Combine(toFolder, zipFile.FilePath
+                    .VerifyAssert(x => !x.StartsWith("\\"), $"Invalid zip file path {zipFile.FilePath}"))
                     .Action(x => zipFile.ExtractToFile(x));
             }
         }
@@ -83,9 +84,6 @@ namespace Toolbox.Tools
             {
                 if (token.IsCancellationRequested) return;
 
-                string entryName = file.Destination.StartsWith("\\") ? file.Destination : "\\" + file.Destination;
-
-                ZipArchiveEntry zipArchiveEntry = zipArchive.CreateEntry(entryName);
                 zipArchive.CreateEntryFromFile(file.Source, file.Destination);
 
                 monitor?.Invoke(new FileActionProgress(files.Length, ++fileCount));

@@ -22,10 +22,10 @@
     "text/json"
   ],
   "paths": {
-    "/api/Question": {
+    "/api/Submit": {
       "post": {
         "tags": [
-          "Question"
+          "Submit"
         ],
         "summary": "Predict",
         "description": "Executes ML Model and returns intents",

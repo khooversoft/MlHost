@@ -10,9 +10,5 @@ namespace MlFrontEnd.Application
         public string VersionId { get; set; } = null!;
 
         public string Uri { get; set; } = null!;
-
-        public string? RunningUri { get; set; }
-
-        public string? ReadyUri { get; set; }
     }
 }

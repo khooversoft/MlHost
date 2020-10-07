@@ -1,0 +1,22 @@
+{
+  "Hosts": [
+    {
+      "VersionId": "idcard-classifier-v1",
+      "Uri": "http://localhost:5021/api/submit",
+      "RunningUri": "http://localhost:5021/ping/running",
+      "ReadyUri": "http://localhost:5021/ping/ready"
+    },
+    {
+      "VersionId": "intent-classifier-v3",
+      "Uri": "http://localhost:5022/api/submit",
+      "RunningUri": "http://localhost:5022/ping/running",
+      "ReadyUri": "http://localhost:5022/ping/ready"
+    },
+    {
+      "VersionId": "emotional-sentiment-v1",
+      "Uri": "http://localhost:5023/api/submit",
+      "RunningUri": "http://localhost:5023/ping/running",
+      "ReadyUri": "http://localhost:5023/ping/ready"
+    }
+  ]
+}

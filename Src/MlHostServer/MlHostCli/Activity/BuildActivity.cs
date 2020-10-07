@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Toolbox.Services;
+using Toolbox.Tools;
 
 namespace MlHostCli.Activity
 {
@@ -25,14 +26,18 @@ namespace MlHostCli.Activity
         {
             _logger.LogInformation($"Building ML Package defined by {_option.SpecFile}");
 
-            int totalFileCount = new MlPackageBuilder()
-                .ReadOption(_option.SpecFile!)
-                .Build(x =>
-                {
-                    if (x.Count % 1000 == 0) _logger.LogInformation($"Processed {x.Count} files");
-                });
+            BuildResults results;
 
-            _logger.LogInformation($"Processed {_option.SpecFile} file, total files {totalFileCount}");
+            using (var reporting = new Reporter(nameof(Build), x => $"{x:#,###} count", _logger))
+            {
+                results = new MlPackageBuilder()
+                    .ReadSpecFile(_option.SpecFile!)
+                    .Build(x => reporting.SetValue(x.Count), token);
+            }
+
+            _logger.LogInformation($"Completed processed of {_option.SpecFile}");
+            _logger.LogInformation($"Processed {results.Option.PackageFile} file, total files {results.FileCount}");
+
             return Task.CompletedTask;
         }
     }

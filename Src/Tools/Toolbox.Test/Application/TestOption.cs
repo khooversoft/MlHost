@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using System.IO;
 using System.Threading;
 using Toolbox.Models;
@@ -19,7 +20,7 @@ namespace Toolbox.Test.Application
             return _datalakeRepository;
 
             DatalakeStore get() => GetBlobStoreOption()
-                .Func(x => new DatalakeStore(x));
+                .Func(x => new DatalakeStore(x, new NullLogger<DatalakeStore>()));
         }
 
         private static StoreOption GetBlobStoreOption()

@@ -1,0 +1,17 @@
+{
+    "Request": "I am happy",
+    "Models": [
+        {
+            "VersionId": "idcard-classifier-v1",
+            "IntentLimit": 1
+        },
+        {
+            "VersionId": "intent-classifier-v3",
+            "IntentLimit": 1
+        },
+        {
+            "VersionId": "emotional-sentiment-v1",
+            "IntentLimit": 1
+        }
+    ]
+}

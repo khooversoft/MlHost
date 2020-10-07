@@ -8,10 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Configs\acpt-config.json" />
     <Content Remove="Configs\dev-config.json" />
+    <Content Remove="Configs\prod-config.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Configs\acpt-config.json" />
+    <EmbeddedResource Include="Configs\prod-config.json" />
     <EmbeddedResource Include="Configs\dev-config.json" />
   </ItemGroup>
 

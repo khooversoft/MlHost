@@ -1,18 +1,16 @@
 {
-  //"SecretId": "MlFrontEnd",
-
-  "MlModels": [
+  "Hosts": [
     {
-      "VersionId": "intent-v3",
-      "Uri": "http://localhost:5040/api/submit",
-      "RunningUri": "http://localhost:5040/ping/running",
-      "ReadyUri": "http://localhost:5040/ping/ready"
+      "VersionId": "idcard-classifier-v1",
+      "Uri": "http://localhost:5000",
     },
     {
-      "VersionId": "idcard-v1",
-      "Uri": "http://localhost:5041/api/submit",
-      "RunningUri": "http://localhost:5041/ping/running",
-      "ReadyUri": "http://localhost:5041/ping/ready"
+      "VersionId": "intent-classifier-v3",
+      "Uri": "http://localhost:5001",
+    },
+    {
+      "VersionId": "emotional-sentiment-v1",
+      "Uri": "http://localhost:5002",
     }
   ]
 }

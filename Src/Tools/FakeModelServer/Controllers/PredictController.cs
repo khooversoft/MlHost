@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FakeModelServer.Application;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MlHostSdk.Models;
+using Toolbox.Tools;
 
 namespace FakeModelServer.Controllers
 {
@@ -25,6 +27,13 @@ namespace FakeModelServer.Controllers
                 Score = 1.0f - (Math.Sqrt(x + 2) / 10)
             })
             .ToArray();
+
+        private readonly IOption _option;
+
+        public PredictController(IOption option)
+        {
+            _option = option;
+        }
 
         [HttpPost]
         public PredictResponse Post([FromBody] PredictRequest request)

@@ -29,7 +29,7 @@ namespace MlHost.Services
             _limit = new SemaphoreSlim(_option.MaxRequests);
         }
 
-        public async Task<PredictResponse> Submit(Question request)
+        public async Task<PredictResponse> Submit(Question question)
         {
             _httpClient.VerifyNotNull($"{nameof(PredictService)} has been disposed");
 
@@ -37,13 +37,17 @@ namespace MlHost.Services
 
             try
             {
-                _logger.LogTrace($"Sending question '{_json.Serialize(request)}' to model.");
+                string requestUri = _option.PropertyResolver.Resolve(_option.ServiceUri);
+
+                _logger.LogInformation($"Sending question '{_json.Serialize(question)}' to model at {requestUri}.");
 
                 var sw = Stopwatch.StartNew();
-                PredictResponse predictResponse = await _httpClient.PostAsJsonAsync(_option.ServiceUri, request)
+                PredictResponse predictResponse = await _httpClient.PostAsJsonAsync(requestUri, question)
                     .GetContent<PredictResponse>();
 
-                _logger.LogInformation($"Receive answer '{_json.Serialize(predictResponse)}' from model for question '{request.Sentence}', ms={sw.ElapsedMilliseconds}");
+                predictResponse.Request ??= question.Sentence;
+
+                _logger.LogInformation($"Receive answer '{_json.Serialize(predictResponse)}' from model for question '{question.Sentence}', ms={sw.ElapsedMilliseconds}");
                 return predictResponse;
             }
             finally

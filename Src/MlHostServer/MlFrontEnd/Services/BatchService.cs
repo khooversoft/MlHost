@@ -40,13 +40,13 @@ namespace MlFrontEnd.Services
             };
         }
 
-        public async Task<IReadOnlyList<PredictResponse?>> Submit(ExecuteRequest[] executeRequests, string request, CancellationToken token)
+        public async Task<IReadOnlyList<PredictResponse?>> Submit(IReadOnlyList<ExecuteRequest> executeRequests, string request, CancellationToken token)
         {
             executeRequests.VerifyNotNull(nameof(executeRequests));
-            executeRequests.VerifyAssert(x => x.Length > 0, "Host option is required");
-            request.VerifyNotNull(nameof(request));
+            executeRequests.VerifyAssert(x => x.Count > 0, "Host option is required");
+            request.VerifyNotEmpty(nameof(request));
 
-            _logger.LogTrace($"{nameof(Submit)}: Calling {executeRequests.Length} models");
+            _logger.LogTrace($"{nameof(Submit)}: Calling {executeRequests.Count} models");
 
             Task<PredictResponse?>[] tasks = executeRequests
                 .Select(x => _hostProxyService.Submit(x.ModelRequest.VersionId!, new PredictRequest

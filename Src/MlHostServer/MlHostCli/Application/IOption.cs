@@ -1,4 +1,5 @@
-﻿using Toolbox.Models;
+﻿using Toolbox.Application;
+using Toolbox.Models;
 using Toolbox.Services;
 
 namespace MlHostCli.Application
@@ -24,9 +25,11 @@ namespace MlHostCli.Application
         string? SecretId { get; }
 
         string? PackageFile { get; }
-        string? Environment { get; }
         string? SwaggerFile { get; }
         string? SpecFile { get; }
+
+        string? Environment { get; }
+        RunEnvironment RunEnvironment { get; }
 
         StoreOption? Store { get; }
 

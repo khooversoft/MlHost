@@ -40,7 +40,7 @@ namespace MlFrontEnd.Controllers
         {
             _logger.LogInformation($"{nameof(Question)}: {_json.Serialize(request)}");
 
-            if (request.IsValidRequest()) return StatusCode((int)HttpStatusCode.BadRequest);
+            if (!request.IsValidRequest()) return StatusCode((int)HttpStatusCode.BadRequest);
 
             return await _batchService.Submit(request, token);
         }

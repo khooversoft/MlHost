@@ -13,7 +13,7 @@ namespace MlHostSdk.Repository
 
         Task Download(ModelId modelId, string toFile, CancellationToken token);
 
-        Task Delete(ModelId modelId, CancellationToken token);
+        Task<bool> Delete(ModelId modelId, CancellationToken token);
 
         Task<bool> Exist(ModelId modelId, CancellationToken token);
 

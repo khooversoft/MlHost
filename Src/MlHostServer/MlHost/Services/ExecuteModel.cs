@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MlHost.Application;
 using MlHost.Models;
 using MlHostSdk.Package;
 using MlHostSdk.Types;
@@ -7,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Toolbox.Tools;
+using Toolbox.Services;
 
 namespace MlHost.Services
 {
@@ -16,13 +18,15 @@ namespace MlHost.Services
     internal class ExecuteModel : IExecuteModel
     {
         private readonly ILogger<ExecuteModel> _logger;
+        private readonly IOption _option;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IExecutionContext _executionContext;
         private SubjectScope<LocalProcess>? _localProcess;
 
-        public ExecuteModel(ILoggerFactory loggerFactory, IExecutionContext executionContext)
+        public ExecuteModel(IOption option, ILoggerFactory loggerFactory, IExecutionContext executionContext)
         {
             _logger = loggerFactory.CreateLogger<ExecuteModel>();
+            _option = option;
             _loggerFactory = loggerFactory;
             _executionContext = executionContext;
         }
@@ -84,13 +88,13 @@ namespace MlHost.Services
 
         private ModelExecuteDetails? ReadManifest()
         {
-            var manifestFile = new MlPackageManifestFile(Path.Combine(_executionContext.DeploymentFolder!, MlPackageBuilder.ManifestFileName));
+            MlPackageManifestFile manifestFile = new MlPackageManifestFile(Path.Combine(_executionContext.DeploymentFolder!, MlPackageBuilder.ManifestFileName));
 
             return new ModelExecuteDetails
             {
-                ExecutePath = manifestFile.RunCmd,
-                Arguments = manifestFile.Arguments,
-                StartSignal = manifestFile.MlPackageManifest.StartSignal,
+                ExecutePath = _option.PropertyResolver.Resolve(manifestFile.RunCmd),
+                Arguments = _option.PropertyResolver.Resolve(manifestFile.Arguments),
+                StartSignal = _option.PropertyResolver.Resolve(manifestFile.MlPackageManifest.StartSignal),
             };
         }
 
@@ -102,7 +106,7 @@ namespace MlHost.Services
             return new ModelExecuteDetails
             {
                 ExecutePath = "powershell.exe",
-                Arguments = $"-File {fullPath}",
+                Arguments = $"-File {_option.PropertyResolver.Resolve(fullPath)}",
             };
         }
 

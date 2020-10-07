@@ -19,10 +19,10 @@ namespace MlHostCli.Activity
         private readonly IOption _option;
         private readonly IModelStore _modelRepository;
         private readonly ILogger<UploadModelActivity> _logger;
+
         private static readonly IReadOnlyList<string> _validFiles = new string[]
         {
-            "app.py",
-            "python-3.8.1.amd64",
+            "mlPackage.manifest.json",
         };
 
         public UploadModelActivity(IOption option, IModelStore modelRepository, ILogger<UploadModelActivity> logger)
@@ -47,14 +47,12 @@ namespace MlHostCli.Activity
             using Stream zipStream = new FileStream(_option.PackageFile!, FileMode.Open);
             using ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read, false);
 
-            Func<string, string?> getRootName = x => x.Split('/', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-
             zipArchive.Entries
-                .Select(x => getRootName(x.FullName))
+                .Select(x => x.FullName)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .Join(_validFiles, x => x, x => x, (o, i) => (o, i))
                 .Count()
-                .VerifyAssert(x => x == 2, $"Zip file is missing the required file and folder {string.Join(", ", _validFiles)}");
+                .VerifyAssert(x => x == 1, $"Zip file is missing the required file and folder {string.Join(", ", _validFiles)}");
         }
     }
 }

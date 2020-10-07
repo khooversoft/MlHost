@@ -20,8 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Tools\FakeMlHost\FakeMlHost.csproj" />
     <ProjectReference Include="..\MlFrontEnd\MlFrontEnd.csproj" />
-    <ProjectReference Include="..\MlHost\MlHost.csproj" />
   </ItemGroup>
 
 </Project>

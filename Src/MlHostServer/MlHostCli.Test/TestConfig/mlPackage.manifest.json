@@ -1,0 +1,7 @@
+{
+  "packageVersion": "1.0.0.0",
+  "modelName": "intent",
+  "versionId": "intent-classifier-v1a",
+  "runCmd": "python-3.8.1.amd64\\python.exe -m langserve --port {modelPort}",
+  "startSignal": "Running on"
+}
