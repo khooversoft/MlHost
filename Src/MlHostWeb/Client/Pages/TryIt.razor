@@ -1,0 +1,76 @@
+﻿@page "/model/{modelName}/tryit"
+
+@using MlHostWeb.Client.Application;
+@using MlHostSdk.Models;
+
+<PageHeader ModelName="@ModelName" />
+
+<ModelPageMenu ModelName="@ModelName" PageId=@Constants.Pages.TryIt />
+
+<div class="mt-md-2">
+    <EditForm OnSubmit="SubmitForm" Model="ModelInput">
+        <div class="simple-form">
+            <div class="form-group">
+                <label for="question">Question</label>
+                <input @bind="ModelInput.Question" type="text" class="form-control" id="question" placeholder="Enter question for model" />
+            </div>
+
+            @if (IsExecuting)
+            {
+                <button class="btn btn-success disabled" disabled>
+                    <span class="spinner-border" style="width: 1.5rem; height: 1.5rem;" role="status"></span>&nbsp; Executing...
+                </button>
+            }
+            else
+            {
+                <button type="submit" class="btn btn-success">Submit</button>
+            }
+        </div>
+    </EditForm>
+
+    <hr />
+
+    @switch (Context.RunState)
+    {
+        case RunState.Startup:
+            break;
+
+        case RunState.Message:
+        case RunState.Error:
+            <div class="alert @(Context.RunState == RunState.Error ? "alert-danger" : "alert-warning")" role="alert">
+                @Context.Message
+            </div>
+            break;
+
+        case RunState.Result:
+            <div class="row">
+                <div class="col-md-12 p-4">
+                    <RadzenChart>
+                        <RadzenPieSeries Data="@Context.Response.GetTopIntents()" CategoryProperty="Label" ValueProperty="Score" />
+                    </RadzenChart>
+                </div>
+            </div>
+
+            <hr />
+
+            <button @onclick="SaveDataToCsv" class="btn btn-success">Export</button>
+
+            <div class="row">
+                <div class="p-4">
+                    <RadzenGrid AllowFiltering="false" AllowPaging="true" PageSize="5" AllowSorting="true" Data="@Context.Response.GetIntents()" TItem="Intent" ColumnWidth="200px">
+                        <Columns>
+                            <RadzenGridColumn TItem="Intent" Property="Label" Title="Label" />
+                            <RadzenGridColumn TItem="Intent" Property="Score" Title="Score" />
+                        </Columns>
+                    </RadzenGrid>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="editor">
+                <textarea @bind=Context.Result placeholder="model result" rows="20" style="width:100%" readonly></textarea>
+            </div>
+            break;
+    }
+</div>

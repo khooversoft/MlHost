@@ -30,7 +30,7 @@ namespace MlFrontEnd.Services
             _logger.LogTrace($"{nameof(Submit)}: Executing batch");
 
             ExecuteRequest[] executeRequests = _option.Hosts
-                .Join(batchRequest.Models, x => x.VersionId, x => x.VersionId, (host, request) => new ExecuteRequest(request, host), StringComparer.OrdinalIgnoreCase)
+                .Join(batchRequest.Models, x => x.ModelName, x => x.ModelName, (host, request) => new ExecuteRequest(request, host), StringComparer.OrdinalIgnoreCase)
                 .ToArray();
 
             return new BatchResponse
@@ -49,7 +49,7 @@ namespace MlFrontEnd.Services
             _logger.LogTrace($"{nameof(Submit)}: Calling {executeRequests.Count} models");
 
             Task<PredictResponse?>[] tasks = executeRequests
-                .Select(x => _hostProxyService.Submit(x.ModelRequest.VersionId!, new PredictRequest
+                .Select(x => _hostProxyService.Submit(x.ModelRequest.ModelName!, new PredictRequest
                 {
                     Request = request,
                     IntentLimit = x.ModelRequest.IntentLimit

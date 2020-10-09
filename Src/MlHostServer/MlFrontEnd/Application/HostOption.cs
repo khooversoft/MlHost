@@ -7,7 +7,7 @@ namespace MlFrontEnd.Application
 {
     public class HostOption
     {
-        public string VersionId { get; set; } = null!;
+        public string ModelName { get; set; } = null!;
 
         public string Uri { get; set; } = null!;
     }

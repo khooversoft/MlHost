@@ -1,0 +1,47 @@
+﻿@page "/model/{modelName}/details"
+
+@using MlHostWeb.Shared;
+@using MlHostWeb.Client.Services;
+@using MlHostWeb.Client.Application;
+
+@inject ModelConfiguration _modelConfiguration;
+
+<PageHeader ModelName="@ModelName" />
+
+<ModelPageMenu ModelName="@ModelName" PageId=@Constants.Pages.Details />
+
+<div class="mt-md-2">
+    <table class="table">
+        <tbody>
+            <tr>
+                <td class="table-col0 table-padding">Name</td>
+                <td class="table-padding">@ModelItem.Name</td>
+            </tr>
+            <tr>
+                <td class="table-col0 table-padding">Model Url</td>
+                <td class="table-padding">@ModelItem.ModelUrl</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+@if (ModelItem.DetailDocId != null)
+{
+    <div class="border-top pt-3">
+        <DisplayMarkdown Id=@(ModelItem.DetailDocId) />
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public string ModelName { get; set; }
+
+    private ModelItem ModelItem { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        ModelItem = _modelConfiguration.GetModel(ModelName);
+        base.OnParametersSet();
+    }
+}

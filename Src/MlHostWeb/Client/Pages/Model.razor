@@ -1,0 +1,30 @@
+﻿@page "/model/{modelName}"
+
+@using MlHostWeb.Shared;
+@using MlHostWeb.Client.Services;
+@using MlHostWeb.Client.Application; 
+@using Toolbox.Tools;
+
+@inject ModelConfiguration _modelConfiguration;
+
+<PageHeader ModelName="@ModelName" />
+
+<ModelPageMenu ModelName="@ModelName" PageId=@Constants.Pages.Model />
+
+<DisplayMarkdown Id=@(ModelItem.DocId) />
+
+
+@code {
+    [Parameter]
+    public string ModelName { get; set; }
+
+    private ModelItem ModelItem { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        ModelItem = _modelConfiguration.GetModel(ModelName)
+            .VerifyNotNull($"Invalid version ID {ModelName}");
+
+        base.OnParametersSet();
+    }
+}

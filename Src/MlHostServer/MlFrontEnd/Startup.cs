@@ -45,7 +45,7 @@ namespace MlHostFrontEnd
             foreach(var item in option.Hosts)
             {
                 services
-                    .AddHttpClient(item.VersionId, httpClient => httpClient.BaseAddress = new Uri(item.Uri));
+                    .AddHttpClient(item.ModelName, httpClient => httpClient.BaseAddress = new Uri(item.Uri));
 
                 //services
                 //    .AddHttpClient(item.VersionId, httpClient => httpClient.BaseAddress = new Uri(item.Uri))

@@ -1,0 +1,54 @@
+﻿@using Services;
+@using MlHostWeb.Client.Application.Menu;
+@inject NavMenuService _navMenuService;
+
+<div class="top-row pl-4 navbar">
+    <a class="navbar-brand btn-link-icon" href="">
+        <img src="/Images/Scout2.png" class="img-thumbnail img-fluid program-icon" />
+        Scout
+    </a>
+
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="oi oi-menu"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        @foreach (var item in NavMenuItems)
+        {
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href=@item.Href Match="NavLinkMatch.All">
+                    <span class="oi @item.IconName" aria-hidden="true"></span> @item.Text
+                </NavLink>
+
+                @if (item.Children != null)
+                {
+                    <ul class="nav flex-column">
+                        @foreach (var childItem in item.Children)
+                        {
+                            <li class="nav-item px-3">
+                                <NavLink class="nav-link" href=@childItem.Href>
+                                    <span class="oi @childItem.IconName" aria-hidden="true"></span> @childItem.Text
+                                </NavLink>
+                            </li>
+                        }
+                    </ul>
+                }
+            </li>
+        }
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    private IReadOnlyList<MenuItem> NavMenuItems => _navMenuService.GetLeftMenuItems();
+}

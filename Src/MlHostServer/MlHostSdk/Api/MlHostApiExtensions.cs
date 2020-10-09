@@ -31,10 +31,10 @@ namespace MlHostSdk.Api
         public static async Task<PingResponse> Ping(this HttpClient httpClient) =>
             await httpClient.GetFromJsonAsync<PingResponse>("api/ping");
 
-        public static async Task<PingResponse> Running(this HttpClient httpClient) =>
+        public static async Task<PingResponse> PingRunning(this HttpClient httpClient) =>
             await httpClient.GetFromJsonAsync<PingResponse>("api/ping/running");
 
-        public static async Task<PingResponse> Ready(this HttpClient httpClient) =>
+        public static async Task<PingResponse> PingReady(this HttpClient httpClient) =>
             await httpClient.GetFromJsonAsync<PingResponse>("api/ping/ready");
     }
 }

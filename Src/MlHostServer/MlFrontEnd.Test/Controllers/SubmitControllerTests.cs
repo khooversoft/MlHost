@@ -26,7 +26,7 @@ namespace MlFrontEnd.Test.Controllers
                 Request = "I am happy",
                 Models = TestApplication.VersionIds.Select(x => new ModelRequest
                 {
-                    VersionId = x,
+                    ModelName = x,
                     IntentLimit = 1,
                 }).ToList(),
             };

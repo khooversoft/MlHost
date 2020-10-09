@@ -1,0 +1,25 @@
+﻿{
+  "Models": [
+    {
+      "Name": "IdCard",
+      "ModelUrl": "http://localhost:5010",
+      "DocId": "IdCard.md"
+    },
+    {
+      "Name": "Intent",
+      "ModelUrl": "http://localhost:5011",
+      "DocId": "Intent.md",
+      "DetailDocId": "Intent.details.md"
+    },
+    {
+      "Name": "Emotion",
+      "ModelUrl": "http://localhost:5012",
+      "DocId": "Emotion.md"
+    }
+    //{
+    //  "Name": "Sentiment",
+    //  "ModelUrl": "http://localhost:5000/api/question",
+    //  "DocId": "Sentiment.md",
+    //}
+  ]
+}

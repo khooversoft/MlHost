@@ -1,18 +1,16 @@
 {
-  "ApplicationUrl": "http://localhost:5030",
-
   "Hosts": [
     {
-      "VersionId": "idcard-classifier-v1",
-      "Uri": "http://localhost:5000"
+      "ModelName": "idcard",
+      "Uri": "http://localhost:5010"
     },
     {
-      "VersionId": "intent-classifier-v3",
-      "Uri": "http://localhost:5001"
+      "ModelName": "intent",
+      "Uri": "http://localhost:5011"
     },
     {
-      "VersionId": "emotional-sentiment-v1",
-      "Uri": "http://localhost:5002"
+      "ModelName": "emotional",
+      "Uri": "http://localhost:5012"
     }
   ]
 }

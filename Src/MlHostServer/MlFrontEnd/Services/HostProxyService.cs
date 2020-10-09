@@ -29,8 +29,8 @@ namespace MlFrontEnd.Services
 
             foreach (var item in _option.Hosts)
             {
-                _clients.TryAdd(item.VersionId, _httpClientFactory.CreateClient(item.VersionId))
-                    .VerifyAssert(x => x == true, $"Failed to add http client for {item.VersionId}");
+                _clients.TryAdd(item.ModelName, _httpClientFactory.CreateClient(item.ModelName))
+                    .VerifyAssert(x => x == true, $"Failed to add http client for {item.ModelName}");
             }
         }
 

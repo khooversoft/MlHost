@@ -1,0 +1,19 @@
+﻿@using MlHostWeb.Client.Services;
+@inject ClientContentService _clientContentService;
+
+<div>
+    <p>@((MarkupString)Html)</p>
+</div>
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private string Html { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Html = await _clientContentService.GetDocHtml(Id);
+    }
+}

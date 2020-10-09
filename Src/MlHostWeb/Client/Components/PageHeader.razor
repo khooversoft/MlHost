@@ -1,0 +1,32 @@
+﻿@using MlHostWeb.Client.Services;
+@inject ModelConfiguration _modelConfiguration;
+
+<div>
+    <div class="page-title">@Header</div>
+
+    @if (SubHeader != null)
+    {
+        <div class="page-subTitle">@SubHeader</div>
+    }
+</div>
+
+<div class="border-bottom mt-2 mb-1"></div>
+
+
+@code {
+    [Parameter]
+    public string ModelName { get; set; }
+
+    private string Header { get; set; }
+
+    private string SubHeader { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        var modelItem = _modelConfiguration.GetModel(ModelName);
+        Header = modelItem.Name;
+        SubHeader = "Machine Model";
+
+        base.OnParametersSet();
+    }
+}

@@ -31,7 +31,7 @@ namespace MlHostFrontEnd
                 .Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args, IOption option) =>
+        internal static IHostBuilder CreateHostBuilder(string[] args, IOption option) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices(services =>
                 {
@@ -53,7 +53,7 @@ namespace MlHostFrontEnd
 
                     if (option.RunEnvironment == RunEnvironment.Dev)
                     {
-                        if (option.ApplicationUrl != null) webBuilder.UseUrls(option.ApplicationUrl);
+                        if (option.Port != null) webBuilder.UseUrls($"http://localhost:{(int)option.Port}");
                     }
                 });
     }

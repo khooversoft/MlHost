@@ -1,0 +1,71 @@
+﻿@page "/model/{modelName}/logs"
+
+@using MlHostWeb.Client.Application;
+@using Toolbox.Tools;
+
+<PageHeader ModelName="@ModelName" />
+
+<ModelPageMenu ModelName="@ModelName" PageId=@Constants.Pages.ModelLogs />
+
+<div class="mt-md-2">
+    @if (IsExecuting)
+    {
+        <button class="btn btn-success disabled" disabled>
+            <span class="spinner-border" style="width: 1.5rem; height: 1.5rem;" role="status"></span>&nbsp; Executing...
+        </button>
+    }
+    else
+    {
+        <button @onclick="GetLogs" class="btn btn-success">Refresh</button>
+    }
+
+    <hr />
+
+    @switch (Context.RunState)
+    {
+        case RunState.Startup:
+            break;
+
+        case RunState.Error:
+            <div class="alert alert-danger" role="alert">
+                @Context.ErrorMessage
+            </div>
+            break;
+
+        case RunState.Result:
+            <hr />
+
+            <div class="mt-md-2">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td class="table-col0 table-padding">Count</td>
+                            <td class="table-padding">@Context.Count</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <hr />
+
+            <div class="row">
+                <div class="p-4">
+                    <RadzenGrid AllowFiltering="false" AllowPaging="true" PageSize="20" AllowSorting="true" Data="@Context.Messages" TItem="RunContext.MessageItem" ColumnWidth="200px">
+                        <Columns>
+                            <RadzenGridColumn TItem="RunContext.MessageItem" Property="Index" Title="#" Width="10px" />
+                            <RadzenGridColumn TItem="RunContext.MessageItem" Property="Message" Title="Detail" />
+                        </Columns>
+                    </RadzenGrid>
+                </div>
+            </div>
+            break;
+
+    }
+
+
+    @*<hr />
+
+        <div class="editor">
+            <textarea @bind=Result placeholder="model result" rows="20" style="width:100%" readonly></textarea>
+        </div>*@
+</div>

@@ -1,0 +1,39 @@
+﻿@using MlHostWeb.Client.Services;
+@using MlHostWeb.Client.Application.Menu;
+@inject NavMenuService _navMenuService
+
+<div class="row m-1">
+    @foreach (var menuItem in MenuCollection)
+    {
+        switch (menuItem)
+        {
+            case MenuItem item:
+                <NavLink class=@Class(item) href=@item.Href>
+                    <span class="oi @item.IconName"></span> @item.Text
+                </NavLink>
+                break;
+
+            case MenuButton button:
+                <NavLink @onclick=@button.OnClick class=@Class(button)>
+                    <span class="oi @button.IconName"></span> @button.Text
+                </NavLink>
+                break;
+
+            case MenuDivider divider:
+                <div class="nav-item border-left m-1 border-secondary float-right"></div>
+                break;
+        }
+    }
+</div>
+
+<div class="border-bottom mb-4"></div>
+
+
+@code {
+    [Parameter]
+    public MenuCollection MenuCollection { get; set; }
+
+    private string Disabled(IMenuItem menuItem) => menuItem.Enabled ? string.Empty : "disabled";
+
+    private string Class(IMenuItem menuItem) => $"nav-link nav-link-menu float-right {Disabled(menuItem)}";
+}

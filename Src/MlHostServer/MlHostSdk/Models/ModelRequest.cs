@@ -6,7 +6,7 @@ namespace MlHostSdk.Models
 {
     public class ModelRequest
     {
-        public string? VersionId { get; set; }
+        public string? ModelName { get; set; }
 
         public int? IntentLimit { get; set; }
     }

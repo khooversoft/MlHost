@@ -1,0 +1,41 @@
+﻿.program-icon {
+    max-width: 32px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td {
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    padding: 0.6rem;
+}
+
+.table-col0 {
+    width: 1%;
+    font-weight: 600;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+.table-padding {
+    padding-left: 0.3rem !important;
+    padding-right: 0px !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+    font-size: 0.9rem;
+    border: 0 !important;
+}
+
+.page-title {
+    font-weight: 600;
+    line-height: 1.2;
+    font-size: 1.75rem;
+}
+
+.page-subTitle {
+    font-size: .7rem;
+    font-weight: 500;
+}

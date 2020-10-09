@@ -5,9 +5,9 @@ namespace MlFrontEnd.Application
 {
     public interface IOption
     {
-        string? ApplicationUrl { get; }
-        string Environment { get; }
-        IList<HostOption> Hosts { get; }
-        RunEnvironment RunEnvironment { get; }
+        string Environment { get; set; }
+        IList<HostOption> Hosts { get; set; }
+        int? Port { get; set; }
+        RunEnvironment RunEnvironment { get; set; }
     }
 }

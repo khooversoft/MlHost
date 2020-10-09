@@ -21,7 +21,7 @@ namespace MlFrontEnd.Application
             option.Hosts
                 .VerifyNotNull("Host is required")
                 .VerifyAssert(x => x.Count > 0, "There must be at least 1 host specified")
-                .Select(x => x.VersionId!.ToLower())
+                .Select(x => x.ModelName!.ToLower())
                 .GroupBy(x => x)
                 .ForEach(x => x.Count().VerifyAssert(x => x == 1, "Duplicate versionIds are not allowed"));
 
@@ -41,8 +41,8 @@ namespace MlFrontEnd.Application
         public static void Verify(this HostOption hostOption)
         {
             hostOption.VerifyNotNull("Host is required");
-            hostOption.VersionId.VerifyNotEmpty("VersionId is required");
-            hostOption.Uri.VerifyNotEmpty($"Uri for {hostOption.VersionId} is required");
+            hostOption.ModelName.VerifyNotEmpty("VersionId is required");
+            hostOption.Uri.VerifyNotEmpty($"Uri for {hostOption.ModelName} is required");
         }
 
         public static void DumpConfigurations(this IOption option)

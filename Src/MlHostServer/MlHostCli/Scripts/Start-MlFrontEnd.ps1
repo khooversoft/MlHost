@@ -16,6 +16,9 @@
 #>
 
 Param(
+	[Parameter(Mandatory)]
+	[int] $Port,
+	
 	[string] $Configuration = "debug"
 )
 
@@ -31,5 +34,5 @@ if( !(Test-Path $frontEndBin) )
 	return;
 }
 
-& $frontEndBin;
+& $frontEndBin Port=$Port;
 
