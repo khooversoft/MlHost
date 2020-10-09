@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Toolbox.Tools;
 using Toolbox.Application;
+using System.Net.Sockets;
 
 namespace MlHostWeb.Server.Application
 {
@@ -59,6 +60,7 @@ namespace MlHostWeb.Server.Application
                 break;
             }
 
+            option.RunEnvironment = option.Environment.ConvertToEnvironment();
             option.Verify();
 
             return option;

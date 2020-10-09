@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Debug;
 using MlHostWeb.Server.Application;
 using Toolbox.Application;
+using Toolbox.Tools;
 
 namespace MlHostWeb.Server
 {
@@ -15,6 +16,8 @@ namespace MlHostWeb.Server
             IOption option = new OptionBuilder()
                 .SetArgs(args)
                 .Build();
+
+            option.DumpConfigurations();
 
             CreateHostBuilder(args, option)
                 .Build()
@@ -39,6 +42,11 @@ namespace MlHostWeb.Server
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+
+                    //if (option.RunEnvironment == RunEnvironment.Dev && !option.ApplicationUrl.IsEmpty())
+                    //{
+                    //    webBuilder.UseUrls(option.ApplicationUrl);
+                    //}
                 });
     }
 }

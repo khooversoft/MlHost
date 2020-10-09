@@ -8,6 +8,8 @@ using Microsoft.Extensions.Hosting;
 using System.Linq;
 using Microsoft.Net.Http.Headers;
 using MlHostWeb.Server.Services;
+using MlHostWeb.Server.Application;
+using Toolbox.Application;
 
 namespace MlHostWeb.Server
 {
@@ -31,9 +33,9 @@ namespace MlHostWeb.Server
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOption option)
         {
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() || option.RunEnvironment == RunEnvironment.Dev)
             {
                 app.UseDeveloperExceptionPage();
                 app.UseWebAssemblyDebugging();
@@ -43,15 +45,16 @@ namespace MlHostWeb.Server
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+                app.UseHttpsRedirection();
             }
 
             app.UseCors(policy =>
-                policy.WithOrigins("http://localhost:5020", "https://localhost:5021")
+                policy
+                .WithOrigins("http://localhost:5030", "https://localhost:5021")
                 .AllowAnyMethod()
                 .WithHeaders(HeaderNames.ContentType, HeaderNames.Authorization, "x-custom-header")
-                .AllowCredentials());
+                .AllowCredentials()); ;
 
-            app.UseHttpsRedirection();
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
 

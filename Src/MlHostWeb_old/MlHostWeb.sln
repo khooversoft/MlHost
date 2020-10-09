@@ -6,8 +6,17 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MlHostWeb.Client", "Client\MlHostWeb.Client.csproj", "{F297612F-A179-47FF-B4E8-237C4937F72F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MlHostWeb.Server", "Server\MlHostWeb.Server.csproj", "{8C980982-6AB4-4076-9C0C-1D86F5BAF19F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F297612F-A179-47FF-B4E8-237C4937F72F} = {F297612F-A179-47FF-B4E8-237C4937F72F}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MlHostWeb.Shared", "Shared\MlHostWeb.Shared.csproj", "{792D65B4-E041-433A-91EE-E0563138FA0C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{FA8BBE15-62BC-4FF7-9404-5D49DB0D5781}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbox", "..\Tools\Toolbox\Toolbox.csproj", "{A390DE4C-0A9A-4F7B-898E-7DC0C730F045}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MlHostSdk", "..\MlHostServer\MlHostSdk\MlHostSdk.csproj", "{D15AEE36-B472-4EBC-A743-5A00F9DCE57F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,9 +36,21 @@ Global
 		{792D65B4-E041-433A-91EE-E0563138FA0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{792D65B4-E041-433A-91EE-E0563138FA0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{792D65B4-E041-433A-91EE-E0563138FA0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A390DE4C-0A9A-4F7B-898E-7DC0C730F045}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A390DE4C-0A9A-4F7B-898E-7DC0C730F045}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A390DE4C-0A9A-4F7B-898E-7DC0C730F045}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A390DE4C-0A9A-4F7B-898E-7DC0C730F045}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D15AEE36-B472-4EBC-A743-5A00F9DCE57F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D15AEE36-B472-4EBC-A743-5A00F9DCE57F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D15AEE36-B472-4EBC-A743-5A00F9DCE57F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D15AEE36-B472-4EBC-A743-5A00F9DCE57F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A390DE4C-0A9A-4F7B-898E-7DC0C730F045} = {FA8BBE15-62BC-4FF7-9404-5D49DB0D5781}
+		{D15AEE36-B472-4EBC-A743-5A00F9DCE57F} = {FA8BBE15-62BC-4FF7-9404-5D49DB0D5781}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {36CAE62F-6165-4AC6-B02C-02847B944169}

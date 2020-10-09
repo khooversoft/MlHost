@@ -16,14 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\MlHostServer\MlHostSdk\MlHostSdk.csproj" />
-    <ProjectReference Include="..\..\Tools\Toolbox\Toolbox.csproj" />
     <ProjectReference Include="..\Shared\MlHostWeb.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Components\Breadcrumb - Copy.razor.cs">
-      <DependentUpon>Breadcrumb.razor.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
 
 </Project>

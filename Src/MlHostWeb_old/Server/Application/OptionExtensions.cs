@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Toolbox.Application;
 using Toolbox.Tools;
 
@@ -24,5 +25,19 @@ namespace MlHostWeb.Server.Application
 
             _ => throw new InvalidOperationException(),
         };
+
+        public static void DumpConfigurations(this IOption option)
+        {
+            const int maxWidth = 80;
+
+            option.GetConfigValues()
+                .Select(x => "  " + x)
+                .Prepend(new string('=', maxWidth))
+                .Prepend("Current configurations")
+                .Prepend(string.Empty)
+                .Append(string.Empty)
+                .Append(string.Empty)
+                .ForEach(x => Console.WriteLine(x));
+        }
     }
 }

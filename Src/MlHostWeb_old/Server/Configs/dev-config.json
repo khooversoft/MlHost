@@ -1,0 +1,39 @@
+﻿{
+  "ApplicationUrl": "http://localhost:5030",
+
+  "Models": [
+    {
+      "Name": "IdCard",
+      "VersionId": "idcard-classifier-v1",
+      "ModelUrl": "http://localhost:5000/api/question",
+      "SwaggerUrl": "http://localhost:5000/swagger",
+      "DocId": "IdCard.md",
+      "LogUrl": "http://localhost:5000/api/ping/logs"
+    },
+    {
+      "Name": "Intent",
+      "VersionId": "intent-classifier-v3",
+      "ModelUrl": "http://localhost:5001/api/question",
+      "SwaggerUrl": "http://localhost:5001/swagger",
+      "DocId": "Intent.md",
+      "DetailDocId": "Intent.details.md",
+      "LogUrl": "http://localhost:5001/api/ping/logs"
+    },
+    {
+      "Name": "Emotion",
+      "VersionId": "emotional-sentiment-v1",
+      "ModelUrl": "http://localhost:5002/api/question",
+      "SwaggerUrl": "http://localhost:5002/swagger",
+      "DocId": "Emotion.md",
+      "LogUrl": "http://localhost:5002/api/ping/logs"
+    }
+    //{
+    //  "Name": "Sentiment",
+    //  "VersionId": "sentiment-v2",
+    //  "ModelUrl": "http://localhost:5000/api/question",
+    //  "SwaggerUrl": "http://localhost:5000/swagger",
+    //  "DocId": "Sentiment.md",
+    //  "LogUrl": "http://localhost:5000/api/ping/logs"
+    //}
+  ]
+}
