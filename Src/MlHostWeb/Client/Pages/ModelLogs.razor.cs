@@ -38,7 +38,7 @@ namespace MlHostWeb.Client.Pages
 
 
         protected override void OnParametersSet()
-        {@
+        {
             ModelItem = ModelConfiguration.GetModel(ModelName);
             Context = StateCacheService.GetOrCreate(ModelName, () => new RunContext(ModelName));
 

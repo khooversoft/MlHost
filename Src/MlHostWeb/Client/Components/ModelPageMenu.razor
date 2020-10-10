@@ -24,7 +24,7 @@
         ModelItem = _modelConfiguration.GetModel(ModelName);
 
         MenuCollection = new MenuCollection()
-    {
+        {
             new MenuItem("Overview", $"model/{ModelName}", "oi-list-rich", !IsOverview),
             new MenuItem("Try It", $"model/{ModelName}/tryit", "oi-aperture", !IsTryIt),
             new MenuItem("Details", $"model/{ModelName}/details", "oi-list", !IsDetails),
@@ -37,9 +37,7 @@
     }
 
     private async Task ShowSwagger() => await _jsRuntime.OpenSwagger(ModelItem);
-}
 
-@code {
     private bool IsOverview => PageId == Constants.Pages.Model;
     private bool IsTryIt => PageId == Constants.Pages.TryIt;
     private bool IsDetails => PageId == Constants.Pages.Details;

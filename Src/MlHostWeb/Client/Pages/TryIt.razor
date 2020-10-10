@@ -2,6 +2,7 @@
 
 @using MlHostWeb.Client.Application;
 @using MlHostSdk.Models;
+@using MlHostWeb.Client.Components;
 
 <PageHeader ModelName="@ModelName" />
 
@@ -43,34 +44,7 @@
             break;
 
         case RunState.Result:
-            <div class="row">
-                <div class="col-md-12 p-4">
-                    <RadzenChart>
-                        <RadzenPieSeries Data="@Context.Response.GetTopIntents()" CategoryProperty="Label" ValueProperty="Score" />
-                    </RadzenChart>
-                </div>
-            </div>
-
-            <hr />
-
-            <button @onclick="SaveDataToCsv" class="btn btn-success">Export</button>
-
-            <div class="row">
-                <div class="p-4">
-                    <RadzenGrid AllowFiltering="false" AllowPaging="true" PageSize="5" AllowSorting="true" Data="@Context.Response.GetIntents()" TItem="Intent" ColumnWidth="200px">
-                        <Columns>
-                            <RadzenGridColumn TItem="Intent" Property="Label" Title="Label" />
-                            <RadzenGridColumn TItem="Intent" Property="Score" Title="Score" />
-                        </Columns>
-                    </RadzenGrid>
-                </div>
-            </div>
-
-            <hr />
-
-            <div class="editor">
-                <textarea @bind=Context.Result placeholder="model result" rows="20" style="width:100%" readonly></textarea>
-            </div>
+            <DisplayModelResult PredictResponse="@Context.Response" JsonResult="@Context.Result" />
             break;
     }
 </div>
