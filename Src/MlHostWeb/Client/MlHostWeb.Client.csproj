@@ -19,8 +19,4 @@
     <ProjectReference Include="..\Shared\MlHostWeb.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Application\" />
-  </ItemGroup>
-
 </Project>

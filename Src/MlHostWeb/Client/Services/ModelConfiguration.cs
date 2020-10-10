@@ -1,13 +1,16 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using MlHostSdk.RestApi;
 using MlHostWeb.Client.Application;
 using MlHostWeb.Shared;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Toolbox.Tools;
 
 namespace MlHostWeb.Client.Services
 {
@@ -15,7 +18,7 @@ namespace MlHostWeb.Client.Services
     {
         private Configuration _configuration;
         private readonly HttpClient _httpClient;
-        private Guid _instance = Guid.NewGuid();
+        private readonly ConcurrentDictionary<string, ModelRestApi> _apiCache = new ConcurrentDictionary<string, ModelRestApi>(StringComparer.OrdinalIgnoreCase);
 
         public ModelConfiguration(HttpClient httpClient) => _httpClient = httpClient;
 
@@ -33,5 +36,15 @@ namespace MlHostWeb.Client.Services
         public IReadOnlyList<ModelItem> GetModels() => _configuration.Models
             .OrderBy(x => x.Name)
             .ToList();
+
+        public ModelRestApi GetModelApi(string modelName)
+        {
+            return _apiCache.GetOrAdd(modelName, getRestApi);
+
+            ModelRestApi getRestApi(string key) => new ModelRestApi(_httpClient, getModelItem(key).ModelUrl);
+
+            ModelItem getModelItem(string modelName) => GetModel(modelName)
+                .VerifyNotNull($"{nameof(GetModelApi)}: Cannot find {modelName}");
+        }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
-using MlHostSdk.Api;
 using MlHostSdk.Models;
+using MlHostSdk.RestApi;
 using MlHostWeb.Client.Application;
 using MlHostWeb.Client.Application.Menu;
+using MlHostWeb.Client.Application.Models;
 using MlHostWeb.Client.Services;
 using MlHostWeb.Shared;
 using System;
@@ -21,10 +22,10 @@ namespace MlHostWeb.Client.Pages
         public HttpClient Http { get; set; }
 
         [Inject]
-        public IJson Json { get; set; }
+        public ModelConfiguration ModelConfiguration { get; set; }
 
         [Inject]
-        public ModelConfiguration ModelConfiguration { get; set; }
+        public StateCacheService StateCacheService { get; set; }
 
         [Parameter]
         public string ModelName { get; set; }
@@ -37,9 +38,9 @@ namespace MlHostWeb.Client.Pages
 
 
         protected override void OnParametersSet()
-        {
+        {@
             ModelItem = ModelConfiguration.GetModel(ModelName);
-            Context = new RunContext();
+            Context = StateCacheService.GetOrCreate(ModelName, () => new RunContext(ModelName));
 
             base.OnParametersSet();
         }
@@ -48,7 +49,10 @@ namespace MlHostWeb.Client.Pages
         {
             if (firstRender)
             {
-                await GetLogs();
+                if (Context.LogMessages == null)
+                {
+                    await GetLogs();
+                }
             }
         }
 
@@ -59,12 +63,12 @@ namespace MlHostWeb.Client.Pages
                 IsExecuting = true;
                 StateHasChanged();
 
-                PingLogs pingLogs = await Http.GetMlLogs();
-                Context.SetMessages(pingLogs.Count, pingLogs.Messages);
+                PingLogs pingLogs = await ModelConfiguration.GetModelApi(ModelName).GetMlLogs();
+                Context.SetLogMessages(pingLogs.Count, pingLogs.Messages);
             }
-            catch
+            catch (Exception ex)
             {
-                Context.SetError($"Cannot connect to {ModelItem.ModelUrl}");
+                Context.SetError($"Cannot connect to {ModelItem.ModelUrl}, {ex}");
             }
             finally
             {
@@ -73,41 +77,35 @@ namespace MlHostWeb.Client.Pages
             }
         }
 
-        public class RunContext
+        public class RunContext : RunContextBase
         {
-            public RunState RunState { get; private set; }
+            private readonly string _modelName;
+
+            public RunContext(string modelName) => _modelName = modelName;
 
             public int? Count { get; private set; }
 
-            public IList<MessageItem> Messages { get; private set; }
+            public IList<LogMessageItem> LogMessages { get; private set; }
 
-            public string ErrorMessage { get; private set; }
-
-            public void SetMessages(int count, IEnumerable<string> messages)
+            public void SetLogMessages(int count, IEnumerable<string> messages)
             {
                 Clear();
                 RunState = RunState.Result;
                 Count = count;
-                Messages = messages.Select((x, i) => new MessageItem(i, x)).ToList();
+                LogMessages = messages.Select((x, i) => new LogMessageItem(i, x)).ToList();
             }
 
-            public void SetError(string errorMessage)
-            {
-                Clear();
-                RunState = RunState.Error;
-                ErrorMessage = errorMessage;
-            }
+            public override string GetId() => _modelName;
 
-            private void Clear()
+            protected override void ClearState()
             {
-                RunState = RunState.Startup;
                 Count = null;
-                Messages = null;
+                LogMessages = null;
             }
 
-            public class MessageItem
+            public class LogMessageItem
             {
-                public MessageItem(int index, string message)
+                internal LogMessageItem(int index, string message)
                 {
                     Index = index;
                     Message = message;

@@ -4,12 +4,13 @@ using MlHostWeb.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Toolbox.Tools;
 
 namespace MlHostWeb.Client.Application
 {
-    public static class Extensions
+    internal static class Extensions
     {
         public static IReadOnlyList<Intent> GetIntents(this PredictResponse subject)
         {

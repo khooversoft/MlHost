@@ -8,11 +8,11 @@
 <ModelPageMenu ModelName="@ModelName" PageId=@Constants.Pages.TryIt />
 
 <div class="mt-md-2">
-    <EditForm OnSubmit="SubmitForm" Model="ModelInput">
+    <EditForm OnSubmit="SubmitForm" Model="Context">
         <div class="simple-form">
             <div class="form-group">
                 <label for="question">Question</label>
-                <input @bind="ModelInput.Question" type="text" class="form-control" id="question" placeholder="Enter question for model" />
+                <input @bind="Context.Request" type="text" class="form-control" id="question" placeholder="Enter question for model" />
             </div>
 
             @if (IsExecuting)

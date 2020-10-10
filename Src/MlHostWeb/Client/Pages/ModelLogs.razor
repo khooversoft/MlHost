@@ -28,13 +28,11 @@
 
         case RunState.Error:
             <div class="alert alert-danger" role="alert">
-                @Context.ErrorMessage
+                @Context.Message
             </div>
             break;
 
         case RunState.Result:
-            <hr />
-
             <div class="mt-md-2">
                 <table class="table">
                     <tbody>
@@ -50,10 +48,10 @@
 
             <div class="row">
                 <div class="p-4">
-                    <RadzenGrid AllowFiltering="false" AllowPaging="true" PageSize="20" AllowSorting="true" Data="@Context.Messages" TItem="RunContext.MessageItem" ColumnWidth="200px">
+                    <RadzenGrid AllowFiltering="false" AllowPaging="true" PageSize="20" AllowSorting="true" Data="@Context.LogMessages" TItem="RunContext.LogMessageItem" ColumnWidth="200px">
                         <Columns>
-                            <RadzenGridColumn TItem="RunContext.MessageItem" Property="Index" Title="#" Width="10px" />
-                            <RadzenGridColumn TItem="RunContext.MessageItem" Property="Message" Title="Detail" />
+                            <RadzenGridColumn TItem="RunContext.LogMessageItem" Property="Index" Title="#" Width="10px" />
+                            <RadzenGridColumn TItem="RunContext.LogMessageItem" Property="Message" Title="Detail" />
                         </Columns>
                     </RadzenGrid>
                 </div>

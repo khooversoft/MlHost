@@ -22,6 +22,8 @@ namespace MlHostWeb.Client
             builder.Services.AddScoped<NavMenuService>();
             builder.Services.AddSingleton<ClientContentService>();
             builder.Services.AddSingleton<ModelConfiguration>();
+            builder.Services.AddSingleton<StateCacheService>();
+
             builder.Services.AddSingleton<IJson, Json>();
             builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 

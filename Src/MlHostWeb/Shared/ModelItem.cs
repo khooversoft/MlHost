@@ -19,10 +19,5 @@ namespace MlHostWeb.Shared
         {
             Path = "Swagger"
         }.ToString();
-
-        public static string GetSubittUrl(this ModelItem subject) => new UriBuilder(subject.ModelUrl)
-        {
-            Path = "api/submit"
-        }.ToString();
     }
 }

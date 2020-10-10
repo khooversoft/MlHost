@@ -11,7 +11,8 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Toolbox.Services;
-using MlHostSdk.Api;
+using MlHostSdk.RestApi;
+using System.ComponentModel.DataAnnotations;
 
 namespace MlHostWeb.Client.Pages
 {
@@ -32,12 +33,13 @@ namespace MlHostWeb.Client.Pages
         [Inject]
         public IJSRuntime JsRuntime { get; set; }
 
+        [Inject]
+        public StateCacheService StateCacheService { get; set; }
+
         [Parameter]
         public string ModelName { get; set; }
 
         public ModelItem ModelItem { get; private set; }
-
-        public ModelQuestion ModelInput { get; set; } = new ModelQuestion();
 
         public bool IsExecuting { get; set; }
 
@@ -46,8 +48,7 @@ namespace MlHostWeb.Client.Pages
         protected override void OnParametersSet()
         {
             ModelItem = ModelConfiguration.GetModel(ModelName);
-            Context = new RunContext();
-            base.OnParametersSet();
+            Context = StateCacheService.GetOrCreate(ModelName, () => new RunContext(ModelName));
         }
 
         public async Task ShowSwagger() => await JsRuntime.OpenSwagger(ModelItem);
@@ -56,7 +57,7 @@ namespace MlHostWeb.Client.Pages
         {
             var request = new PredictRequest
             {
-                Request = ModelInput.Question,
+                Request = Context.Request,
             };
 
             try
@@ -64,7 +65,8 @@ namespace MlHostWeb.Client.Pages
                 IsExecuting = true;
                 StateHasChanged();
 
-                HttpResponseMessage httpResponseMessage = await Http.PostAsJsonAsync(ModelItem.GetSubittUrl(), request);
+                string requestUrl = ModelConfiguration.GetModelApi(ModelName).ModelUrl.GetRequestUrl();
+                HttpResponseMessage httpResponseMessage = await Http.PostAsJsonAsync(requestUrl, request);
 
                 string contentJson = await httpResponseMessage.Content.ReadAsStringAsync();
 
@@ -105,19 +107,18 @@ namespace MlHostWeb.Client.Pages
             await JsRuntime.InvokeAsync<object>("FileSaveAs", "mlresponse.csv", data);
         }
 
-        public class RunContext
+        public class RunContext : RunContextBase
         {
-            public RunContext() { }
+            private readonly string _modelName;
 
-            public RunState RunState { get; private set; }
+            public RunContext(string modelName) => _modelName = modelName;
 
-            public string Message { get; private set; }
+            [Required]
+            public string Request { get; set; }
 
             public string Result { get; set; }
 
             public PredictResponse Response { get; set; }
-
-            public void Start() => RunState = RunState.Startup;
 
             public void SetResult(PredictResponse response, string result)
             {
@@ -127,24 +128,10 @@ namespace MlHostWeb.Client.Pages
                 Response = response;
             }
 
-            public void SetMessage(string message)
-            {
-                Clear();
-                RunState = RunState.Message;
-                Message = message;
-            }
+            public override string GetId() => _modelName;
 
-            public void SetError(string errorMessage)
+            protected override void ClearState()
             {
-                Clear();
-                RunState = RunState.Error;
-                Message = errorMessage;
-            }
-
-            private void Clear()
-            {
-                RunState = RunState.Startup;
-                Message = null;
                 Result = null;
                 Response = null;
             }
