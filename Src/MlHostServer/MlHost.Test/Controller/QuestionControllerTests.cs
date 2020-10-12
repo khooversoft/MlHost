@@ -2,14 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MlHost.Test.Application;
 using MlHostSdk.Models;
-using MlHostSdk.Api;
-using System.Collections.Generic;
+using MlHostSdk.RestApi;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text;
 using System.Threading.Tasks;
-using Toolbox.Services;
 
 namespace MlHost.Test.Controller
 {
@@ -27,7 +22,7 @@ namespace MlHost.Test.Controller
                 Request = "I am sad",
             };
 
-            PredictResponse predictResponse = await host.Client.PostMlRequest(request);
+            PredictResponse predictResponse = (await new ModelRestApi(host.Client).PostRequest(request)).Value!;
             Verify(predictResponse, request.Request);
         }
 

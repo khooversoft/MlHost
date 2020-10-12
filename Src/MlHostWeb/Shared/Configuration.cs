@@ -6,8 +6,7 @@ namespace MlHostWeb.Shared
 {
     public class Configuration
     {
-        public Configuration() { }
-
+        public string FrontEndUrl { get; set; }
         public IList<ModelItem> Models { get; set; }
     }
 }

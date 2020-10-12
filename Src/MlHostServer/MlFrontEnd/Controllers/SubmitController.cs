@@ -56,15 +56,15 @@ namespace MlFrontEnd.Controllers
         /// <param name="request"></param>
         /// <returns>result from ML Model</returns>
         [OpenApiOperation("Submit", "Executes specific ML Model and returns intents")]
-        [HttpPost("{versionId}")]
+        [HttpPost("{modelName}")]
         [ProducesResponseType(typeof(PredictResponse), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<PredictResponse>> ProcessVersionId(string versionId, [FromBody] PredictRequest request, CancellationToken token)
+        public async Task<ActionResult<PredictResponse>> ProcessVersionId(string modelName, [FromBody] PredictRequest request, CancellationToken token)
         {
             _logger.LogInformation($"{nameof(Question)}: {_json.Serialize(request)}");
 
             if (request.IsValidRequest()) return StatusCode((int)HttpStatusCode.BadRequest);
 
-            return Ok(await _hostProxyService.Submit(versionId, request, token));
+            return Ok(await _hostProxyService.Submit(modelName, request, token));
         }
     }
 }

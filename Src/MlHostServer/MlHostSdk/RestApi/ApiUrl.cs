@@ -3,15 +3,15 @@ using Toolbox.Tools;
 
 namespace MlHostSdk.RestApi
 {
-    public class ModelUrl
+    public class ApiUrl
     {
         private readonly string? _baseAddress;
 
-        public ModelUrl()
+        public ApiUrl()
         {
         }
 
-        public ModelUrl(string baseAddress)
+        public ApiUrl(string baseAddress)
         {
             baseAddress.VerifyNotEmpty(nameof(baseAddress));
 
@@ -21,8 +21,6 @@ namespace MlHostSdk.RestApi
         public string GetRequestUrl() => CreateUrl("api/submit");
 
         public string GetLogsUrl() => CreateUrl("api/ping/logs");
-
-        public string GetBatchRequestUrl() => CreateUrl("api/submit");
 
         public string GetPingUrl() => CreateUrl("api/ping");
 

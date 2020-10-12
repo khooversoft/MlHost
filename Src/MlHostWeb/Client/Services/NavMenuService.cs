@@ -11,9 +11,9 @@ namespace MlHostWeb.Client.Services
 {
     public class NavMenuService
     {
-        private readonly ModelConfiguration _modelConfiguration;
+        private readonly HostConfigurationService _modelConfiguration;
 
-        public NavMenuService(ModelConfiguration modelConfiguration)
+        public NavMenuService(HostConfigurationService modelConfiguration)
         {
             _modelConfiguration = modelConfiguration;
         }
@@ -37,7 +37,7 @@ namespace MlHostWeb.Client.Services
             //    new MenuItem("ID Card", "model/idcard-v1", "oi-list-rich", true),
             //}),
 
-            new MenuItem("BOT", string.Empty, "oi-fork", true),
+            new MenuItem("Front End", "frontend", "oi-fork", true),
         };
     }
 }

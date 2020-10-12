@@ -53,7 +53,7 @@ namespace MlHostCli.Test.Tools
                 }
             };
 
-            await spec.WriteToFile(specFilePath, Json.Default);
+            await spec.WriteToFile(specFilePath);
 
             var args = new[]
             {

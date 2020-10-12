@@ -29,6 +29,7 @@ namespace MlHostWeb.Server.Controllers
         {
             return new Configuration
             {
+                FrontEndUrl = _option.FrontEndUrl,
                 Models = _option.Models.ToList(),
             };
         }

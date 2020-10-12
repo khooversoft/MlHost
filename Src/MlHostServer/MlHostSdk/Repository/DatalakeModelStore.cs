@@ -27,12 +27,10 @@ namespace MlHostSdk.Repository
     public class DatalakeModelStore : IModelStore
     {
         private readonly IDatalakeStore _datalakeStore;
-        private readonly IJson _json;
 
-        public DatalakeModelStore(IDatalakeStore datalakeRepository, IJson json)
+        public DatalakeModelStore(IDatalakeStore datalakeRepository)
         {
             _datalakeStore = datalakeRepository;
-            _json = json;
         }
 
         public async Task Upload(string modelVersionFile, ModelId modelId, bool force, CancellationToken token)
@@ -94,7 +92,7 @@ namespace MlHostSdk.Repository
             byte[] data = await _datalakeStore.Read(path, token);
             string jsonString = Encoding.UTF8.GetString(data);
 
-            return _json.Deserialize<T>(jsonString).VerifyNotNull("Deserialize failed");
+            return Json.Default.Deserialize<T>(jsonString).VerifyNotNull("Deserialize failed");
         }
 
         public async Task Write<T>(string path, T value, CancellationToken token) where T : class
@@ -102,7 +100,7 @@ namespace MlHostSdk.Repository
             path.VerifyNotEmpty(nameof(path));
             value.VerifyNotNull(nameof(value));
 
-            string jsonString = _json.Serialize(value);
+            string jsonString = Json.Default.Serialize(value);
             byte[] data = Encoding.UTF8.GetBytes(jsonString);
 
             await _datalakeStore.Write(path, data, true, token);

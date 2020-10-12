@@ -10,6 +10,7 @@ namespace MlHostWeb.Server.Application
     {
         public string? ConfigFile { get; set; }
         public string Environment { get; set; } = "dev";
+        public string FrontEndUrl { get; set; } = null!;
         public IList<ModelItem> Models { get; set; } = null!;
         public RunEnvironment RunEnvironment { get; set; }
     }

@@ -1,0 +1,82 @@
+﻿@page "/frontend"
+
+@using MlHostWeb.Client.Application;
+@using MlHostWeb.Client.Components;
+
+<PageHeader Header="Front End" SubHeader="Aggregate Support" />
+
+@*<DisplayMarkdown Id="FrontEnd.md" />*@
+
+<div class="mt-md-2">
+    <EditForm OnSubmit="SubmitForm" Model="Context">
+        <div class="form-group row">
+            <label class="col-md-1 col-form-label" for="request">Models</label>
+            <div class="col-md-11 pr-4">
+                @foreach (ModelSelect modelItem in Context.Models)
+                {
+                    <div class="custom-checkbox">
+                        <InputCheckbox @bind-Value="@modelItem.Checked" />
+                        @modelItem.Name
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-md-1 col-form-label" for="request">Request</label>
+            <div class="col-md-11">
+                <input @bind="Context.Request" type="text" class="form-control" id="request" placeholder="Enter question for model" />
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-md-1 col-form-label" for="request">Intent Limit</label>
+            <div class="col-md-5">
+                <InputSelect @bind-Value="Context.IntentLimitId" class="form-control">
+                    @foreach (var item in IntentLimitList)
+                    {
+                        <option value="@item.Key">@item.Value</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-sm-10">
+                @if (IsExecuting)
+                {
+                    <button class="btn btn-success disabled" disabled>
+                        <span class="spinner-border" style="width: 1.5rem; height: 1.5rem;" role="status"></span>&nbsp; Executing...
+                    </button>
+                }
+                else
+                {
+                    <button type="submit" class="btn btn-success">Submit</button>
+                }
+            </div>
+        </div>
+    </EditForm>
+
+    <hr />
+
+    @switch (Context.RunState)
+    {
+        case RunState.Startup:
+            break;
+
+        case RunState.Message:
+        case RunState.Error:
+            <div class="alert @(Context.RunState == RunState.Error ? "alert-danger" : "alert-warning")" role="alert">
+                @Context.Message
+            </div>
+            break;
+
+        case RunState.Result:
+            foreach (var response in Context.Responses)
+            {
+                <DisplayModelResult PredictResponse="@response" JsonResult="@Context.Result" />
+            }
+            break;
+    }
+</div>
+

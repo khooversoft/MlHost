@@ -53,7 +53,7 @@ namespace MlHostCli.Test.Application
                 config.Bind(blobStoreOption, x => x.BindNonPublicProperties = true);
                 blobStoreOption.Verify();
 
-                return _current = new ModelFixture(new DatalakeModelStore(new DatalakeStore(blobStoreOption, new NullLogger<DatalakeStore>()), new Json()));
+                return _current = new ModelFixture(new DatalakeModelStore(new DatalakeStore(blobStoreOption, new NullLogger<DatalakeStore>())));
             }
         }
     }

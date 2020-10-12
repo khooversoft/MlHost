@@ -21,10 +21,8 @@ namespace MlHostWeb.Client
 
             builder.Services.AddScoped<NavMenuService>();
             builder.Services.AddSingleton<ClientContentService>();
-            builder.Services.AddSingleton<ModelConfiguration>();
+            builder.Services.AddSingleton<HostConfigurationService>();
             builder.Services.AddSingleton<StateCacheService>();
-
-            builder.Services.AddSingleton<IJson, Json>();
             builder.Services.AddSingleton(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
             builder.Services.AddScoped<DialogService>();
@@ -35,7 +33,7 @@ namespace MlHostWeb.Client
 
             var host = builder.Build();
 
-            ModelConfiguration modelConfiguration = host.Services.GetRequiredService<ModelConfiguration>();
+            HostConfigurationService modelConfiguration = host.Services.GetRequiredService<HostConfigurationService>();
             await modelConfiguration.Initialize();
 
             await host.RunAsync();

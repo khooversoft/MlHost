@@ -17,7 +17,7 @@ namespace Toolbox.Tools
             folder.VerifyNotEmpty(nameof(folder));
 
             string filePath = Path.Combine(Path.GetTempPath(), folder, fileName);
-            
+
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
             using var stream = GetResourceStream(type, resourceId);
@@ -63,25 +63,23 @@ namespace Toolbox.Tools
             stream.CopyTo(writeFile);
         }
 
-        public static async Task WriteToFile<T>(this T subject, string filePath, IJson json) where T : class
+        public static async Task WriteToFile<T>(this T subject, string filePath) where T : class
         {
             subject.VerifyNotNull(nameof(subject));
             filePath.VerifyNotEmpty(nameof(filePath));
-            json.VerifyNotNull(nameof(json));
 
-            string jsonString = json.Serialize(subject);
+            string jsonString = Json.Default.Serialize(subject);
             await File.WriteAllTextAsync(filePath, jsonString);
         }
 
-        public static async Task<T?> ReadFromFile<T>(string filePath, IJson json) where T : class
+        public static async Task<T?> ReadFromFile<T>(string filePath) where T : class
         {
             filePath.VerifyNotEmpty(nameof(filePath));
-            json.VerifyNotNull(nameof(json));
 
             if (!File.Exists(filePath)) return null;
 
             string jsonString = await File.ReadAllTextAsync(filePath);
-            return json.Deserialize<T>(jsonString);
+            return Json.Default.Deserialize<T>(jsonString);
         }
 
         public static void DeleteDirectory(string path)

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MlFrontEnd.Application;
 using MlFrontEnd.Services;
+using NSwag;
 using Polly;
 using Polly.Extensions.Http;
 using Toolbox.Application;
@@ -22,6 +23,8 @@ namespace MlHostFrontEnd
 {
     public class Startup
     {
+        const string _policyName = "defaultPolicy";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -42,16 +45,35 @@ namespace MlHostFrontEnd
             using ServiceProvider service = services.BuildServiceProvider();
             IOption option = service.GetRequiredService<IOption>();
 
-            foreach(var item in option.Hosts)
+            services.AddSwaggerDocument(config =>
             {
-                services
-                    .AddHttpClient(item.ModelName, httpClient => httpClient.BaseAddress = new Uri(item.Uri));
+                config.PostProcess = document =>
+                {
+                    document.Info.Title = "ML Front End";
+                    document.Info.Description = "Front end for accessing ML models";
+                    document.Schemes = new[] { OpenApiSchema.Http | OpenApiSchema.Https };
+                };
+            });
 
+            foreach (var item in option.Hosts)
+            {
                 //services
-                //    .AddHttpClient(item.VersionId, httpClient => httpClient.BaseAddress = new Uri(item.Uri))
-                //        .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
-                //        .AddPolicyHandler(GetRetryPolicy());
+                //    .AddHttpClient(item.ModelName, httpClient => httpClient.BaseAddress = new Uri(item.Uri));
+
+                services
+                    .AddHttpClient(item.ModelName, httpClient => httpClient.BaseAddress = new Uri(item.Uri))
+                        .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
+                        .AddPolicyHandler(GetRetryPolicy());
             }
+
+            services.AddCors(x => x.AddPolicy(_policyName, builder =>
+            {
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .SetPreflightMaxAge(TimeSpan.FromHours(1));
+            }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,13 +89,13 @@ namespace MlHostFrontEnd
             }
 
             app.UseRouting();
-
+            app.UseCors(_policyName);
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
+
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
         }
 
         private IAsyncPolicy<HttpResponseMessage> GetRetryPolicy() => HttpPolicyExtensions

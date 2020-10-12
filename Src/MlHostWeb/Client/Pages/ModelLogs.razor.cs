@@ -22,7 +22,7 @@ namespace MlHostWeb.Client.Pages
         public HttpClient Http { get; set; }
 
         [Inject]
-        public ModelConfiguration ModelConfiguration { get; set; }
+        public HostConfigurationService ModelConfiguration { get; set; }
 
         [Inject]
         public StateCacheService StateCacheService { get; set; }
@@ -63,7 +63,7 @@ namespace MlHostWeb.Client.Pages
                 IsExecuting = true;
                 StateHasChanged();
 
-                PingLogs pingLogs = await ModelConfiguration.GetModelApi(ModelName).GetMlLogs();
+                PingLogs pingLogs = await ModelConfiguration.GetModelApi(ModelName).GetLogs();
                 Context.SetLogMessages(pingLogs.Count, pingLogs.Messages);
             }
             catch (Exception ex)

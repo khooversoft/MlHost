@@ -12,9 +12,12 @@ namespace MlHostWeb.Server.Application
         public static void Verify(this Option option)
         {
             option.VerifyNotNull(nameof(option));
+
+            option.VerifyNotNull($"{nameof(option.Environment)} is required");
+            option.VerifyNotNull($"{nameof(option.FrontEndUrl)} is required");
+
             option.Models.VerifyNotNull($"{nameof(option.Models)} is required");
             option.Models.VerifyAssert(x => x.Count > 0, $"{nameof(option.Models)} is required");
-            option.VerifyNotNull($"{nameof(option.Environment)} is required");
         }
 
         public static string ConvertToResourceId(this RunEnvironment subject) => subject switch

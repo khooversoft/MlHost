@@ -11,8 +11,10 @@
 
   <ItemGroup>
     <None Remove="Application\Data\About.md" />
+    <None Remove="Application\Data\BOT - Copy.md" />
     <None Remove="Application\Data\BOT.md" />
     <None Remove="Application\Data\Emotion.md" />
+    <None Remove="Application\Data\FrontEnd.md" />
     <None Remove="Application\Data\Home.md" />
     <None Remove="Application\Data\IdCard.md" />
     <None Remove="Application\Data\Intent.details.md" />
@@ -25,6 +27,7 @@
     <EmbeddedResource Include="Application\Data\About.md" />
     <EmbeddedResource Include="Application\Data\BOT.md" />
     <EmbeddedResource Include="Application\Data\Emotion.md" />
+    <EmbeddedResource Include="Application\Data\FrontEnd.md" />
     <EmbeddedResource Include="Application\Data\Home.md" />
     <EmbeddedResource Include="Application\Data\IdCard.md" />
     <EmbeddedResource Include="Application\Data\Intent.details.md" />

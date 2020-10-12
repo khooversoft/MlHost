@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Toolbox.Services;
 using MlHostSdk.RestApi;
 using System.ComponentModel.DataAnnotations;
+using Toolbox.Tools;
 
 namespace MlHostWeb.Client.Pages
 {
@@ -22,10 +23,7 @@ namespace MlHostWeb.Client.Pages
         public HttpClient Http { get; set; }
 
         [Inject]
-        public IJson Json { get; set; }
-
-        [Inject]
-        public ModelConfiguration ModelConfiguration { get; set; }
+        public HostConfigurationService ModelConfiguration { get; set; }
 
         [Inject]
         public NavMenuService NavMenuService { get; set; }
@@ -55,6 +53,13 @@ namespace MlHostWeb.Client.Pages
 
         protected async Task SubmitForm()
         {
+            if (Context.Request.IsEmpty())
+            {
+                Context.SetError("Request is required");
+                StateHasChanged();
+                return;
+            }
+
             var request = new PredictRequest
             {
                 Request = Context.Request,
@@ -65,31 +70,27 @@ namespace MlHostWeb.Client.Pages
                 IsExecuting = true;
                 StateHasChanged();
 
-                string requestUrl = ModelConfiguration.GetModelApi(ModelName).ModelUrl.GetRequestUrl();
-                HttpResponseMessage httpResponseMessage = await Http.PostAsJsonAsync(requestUrl, request);
+                PostResponse<PredictResponse> response = await ModelConfiguration
+                    .GetModelApi(ModelName)
+                    .PostRequest(request);
 
-                string contentJson = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                if (httpResponseMessage.StatusCode != System.Net.HttpStatusCode.OK)
+                if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 {
-                    if (contentJson.IndexOf("start", StringComparison.OrdinalIgnoreCase) >= 0)
+                    if (response.Starting)
                     {
                         Context.SetMessage("Service is starting, please wait and try again.  You can see more details in 'Log'");
                     }
                     else
                     {
-                        Context.SetError($"Returned StatusCode={httpResponseMessage.StatusCode}, content={contentJson}");
+                        Context.SetError($"Returned StatusCode={response.StatusCode}, content={response.Content}");
                     }
-                    return;
                 }
 
-                PredictResponse predictResponse = Json.Deserialize<PredictResponse>(contentJson);
-
-                Context.SetResult(predictResponse, Json.SerializeWithIndent(predictResponse));
+                Context.SetResult(response.Value, Json.Default.SerializeWithIndent(response.Value));
             }
             catch
             {
-                Context.SetError($"Cannot connect to {ModelItem.ModelUrl}");
+                Context.SetError($"Cannot connect to {ModelConfiguration.GetModelApi(ModelName).ApiUrl.GetRequestUrl()}");
                 return;
             }
             finally

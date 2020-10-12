@@ -1,14 +1,11 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MlFrontEnd.Test.Application;
-using MlHostSdk.Api;
 using MlHostSdk.Models;
-using System.Collections.Generic;
+using MlHostSdk.RestApi;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
+using System.Net;
 using System.Threading.Tasks;
-using Toolbox.Services;
 using Toolbox.Tools;
 
 namespace MlFrontEnd.Test.Controllers
@@ -31,7 +28,11 @@ namespace MlFrontEnd.Test.Controllers
                 }).ToList(),
             };
 
-            BatchResponse batchResponse = await host.HttpClient.PostMlBatchRequest(batchRequest);
+            PostResponse<BatchResponse> response = await new FrontEndRestApi(host.HttpClient).PostRequest(batchRequest);
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            BatchResponse batchResponse = response.Value!;
             batchResponse.Should().NotBeNull();
 
             batchResponse.Request.Should().Be(batchRequest.Request);

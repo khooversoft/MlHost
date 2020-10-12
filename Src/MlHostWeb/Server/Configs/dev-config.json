@@ -1,4 +1,6 @@
 ﻿{
+  "FrontEndUrl": "http://localhost:5015",
+
   "Models": [
     {
       "Name": "IdCard",
@@ -12,7 +14,7 @@
       "DetailDocId": "Intent.details.md"
     },
     {
-      "Name": "Emotion",
+      "Name": "Emotional",
       "ModelUrl": "http://localhost:5012",
       "DocId": "Emotion.md"
     }

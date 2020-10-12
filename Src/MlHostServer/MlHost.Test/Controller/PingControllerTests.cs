@@ -2,8 +2,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MlHost.Models;
 using MlHost.Test.Application;
-using MlHostSdk.Api;
 using MlHostSdk.Models;
+using MlHostSdk.RestApi;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Toolbox.Services;
@@ -44,7 +44,7 @@ namespace MlHost.Test.Controller
             TestWebsiteHost host = await TestApplication.GetHost();
             await host.WaitForStartup();
 
-            PingLogs pingLogs = await host.Client.GetMlLogs();
+            PingLogs pingLogs = await new ModelRestApi(host.Client).GetLogs();
             pingLogs.Should().NotBeNull();
             pingLogs.Messages.Should().NotBeNull();
             pingLogs.Messages!.Count.Should().BeGreaterThan(0);

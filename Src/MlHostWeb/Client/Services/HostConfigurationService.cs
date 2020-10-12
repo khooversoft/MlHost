@@ -14,13 +14,14 @@ using Toolbox.Tools;
 
 namespace MlHostWeb.Client.Services
 {
-    public class ModelConfiguration
+    public class HostConfigurationService
     {
         private Configuration _configuration;
         private readonly HttpClient _httpClient;
         private readonly ConcurrentDictionary<string, ModelRestApi> _apiCache = new ConcurrentDictionary<string, ModelRestApi>(StringComparer.OrdinalIgnoreCase);
+        private FrontEndRestApi _frontEndRestApi;
 
-        public ModelConfiguration(HttpClient httpClient) => _httpClient = httpClient;
+        public HostConfigurationService(HttpClient httpClient) => _httpClient = httpClient;
 
         public async Task Initialize() => _configuration ??= (await _httpClient.GetFromJsonAsync<Configuration>("api/config"));
 
@@ -46,5 +47,7 @@ namespace MlHostWeb.Client.Services
             ModelItem getModelItem(string modelName) => GetModel(modelName)
                 .VerifyNotNull($"{nameof(GetModelApi)}: Cannot find {modelName}");
         }
+
+        public FrontEndRestApi GetFrontEndApi() => _frontEndRestApi ??= new FrontEndRestApi(_httpClient, _configuration.FrontEndUrl);
     }
 }
