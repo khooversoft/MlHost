@@ -55,7 +55,7 @@ namespace MlFrontEnd.Test.Application
             string[] args = config
                 .SelectMany((x, i) => new[]
                 {
-                    $"Hosts:[{i}]:VersionId={x.Key}",
+                    $"Hosts:[{i}]:ModelName={x.Key}",
                     $"Hosts:[{i}]:Uri=http://localhost:{i + 4000:D4}"
                 })
                 .ToArray();

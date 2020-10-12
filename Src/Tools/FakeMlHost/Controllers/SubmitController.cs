@@ -50,7 +50,7 @@ namespace FakeMlHost.Controllers
             {
                 Model = new Model
                 {
-                    Name = _option.VersionId,
+                    Name = _option.ModelName,
                     Version = "1.0"
                 },
                 Request = request.Request ?? request.Sentence,

@@ -11,13 +11,13 @@ namespace MlFrontEnd.Test.Application
 {
     internal class TestFakeMlHost : TestHostBase
     {
-        private readonly string _versionId;
+        private readonly string _modelName;
 
-        public TestFakeMlHost(string versionId)
+        public TestFakeMlHost(string modelName)
         {
-            versionId.VerifyNotEmpty(nameof(versionId));
+            modelName.VerifyNotEmpty(nameof(modelName));
 
-            _versionId = versionId;
+            _modelName = modelName;
         }
 
         public TestFakeMlHost StartApiServer()
@@ -48,7 +48,7 @@ namespace MlFrontEnd.Test.Application
         {
             string[] args = new[]
             {
-                $"VersionId={_versionId}",
+                $"ModelName={_modelName}",
             };
 
             return new OptionBuilder()

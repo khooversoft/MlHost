@@ -8,6 +8,6 @@ namespace FakeMlHost.Application
     public class Option : IOption
     {
         public int Port { get; set; } = 5010;
-        public string VersionId { get; set; } = "DefaultVersionId";
+        public string ModelName { get; set; } = "DefaultModelName";
     }
 }

@@ -21,7 +21,7 @@ namespace MlFrontEnd.Test.Controllers
             var batchRequest = new BatchRequest
             {
                 Request = "I am happy",
-                Models = TestApplication.VersionIds.Select(x => new ModelRequest
+                Models = TestApplication.ModelNames.Select(x => new ModelRequest
                 {
                     ModelName = x,
                     IntentLimit = 1,
@@ -37,10 +37,10 @@ namespace MlFrontEnd.Test.Controllers
 
             batchResponse.Request.Should().Be(batchRequest.Request);
             batchResponse.Responses.Should().NotBeNull();
-            batchResponse.Responses!.Count.Should().Be(TestApplication.VersionIds.Count);
+            batchResponse.Responses!.Count.Should().Be(TestApplication.ModelNames.Count);
             batchResponse.Responses.All(x => x?.Model?.Name.ToNullIfEmpty() != null).Should().BeTrue();
 
-            TestApplication.VersionIds.OrderBy(x => x)
+            TestApplication.ModelNames.OrderBy(x => x)
                 .Zip(batchResponse.Responses.OrderBy(x => x!.Model!.Name), (versionId, batchResponse) => (versionId, batchResponse))
                 .ForEach(x =>
                 {

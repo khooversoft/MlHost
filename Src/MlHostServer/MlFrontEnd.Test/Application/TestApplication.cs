@@ -27,7 +27,7 @@ namespace MlFrontEnd.Test.Application
                 .CreateLogger("test");
         }
 
-        internal static IReadOnlyList<string> VersionIds { get; } = new[]
+        internal static IReadOnlyList<string> ModelNames { get; } = new[]
         {
             "model_1",
             "model_2",
@@ -53,7 +53,7 @@ namespace MlFrontEnd.Test.Application
             {
                 if (_testFrontendHost != null) return _testFrontendHost;
 
-                VersionIds
+                ModelNames
                     .ForEach(x => GetMlHost(x));
 
                 return _testFrontendHost = new TestFrontendHost()
@@ -61,17 +61,17 @@ namespace MlFrontEnd.Test.Application
             }
         }
 
-        private static void GetMlHost(string versionId)
+        private static void GetMlHost(string modelName)
         {
-            versionId.VerifyNotEmpty(nameof(versionId));
+            modelName.VerifyNotEmpty(nameof(modelName));
 
-            if (_hosts.TryGetValue(versionId, out TestFakeMlHost? testMlHost)) return;
+            if (_hosts.TryGetValue(modelName, out TestFakeMlHost? testMlHost)) return;
 
-            _logger.LogInformation($"Starting server {versionId}");
+            _logger.LogInformation($"Starting server {modelName}");
 
-            var testHost = new TestFakeMlHost(versionId);
+            var testHost = new TestFakeMlHost(modelName);
 
-            _hosts.TryAdd(versionId, testHost)
+            _hosts.TryAdd(modelName, testHost)
                 .VerifyAssert(x => x == true, "Failed to add");
 
             testHost.StartApiServer();
